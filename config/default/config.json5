@@ -1,0 +1,10 @@
+{
+  database: {
+    host: "127.0.0.1",
+    password: "123456",
+    username: "root",
+    database_name: "bot",
+    port: 3306,
+    auto_commit: true
+  }
+}

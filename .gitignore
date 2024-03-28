@@ -1,0 +1,5 @@
+/config/*.json*
+/logs
+/.venv
+/.idea
+**/__init__.py

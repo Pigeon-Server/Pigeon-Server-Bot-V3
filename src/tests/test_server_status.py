@@ -1,7 +1,3 @@
-from os import chdir
-
-chdir("../../")
-
 from src.module.server_status import ServerStatus
 from unittest import IsolatedAsyncioTestCase
 

@@ -1,0 +1,49 @@
+{
+    "ban": {
+        "permission": []
+    },
+    "default": {
+        "permission": [
+            "Question.GetAnswer",
+            "Whitelist.Apply"
+        ]
+    },
+    "player": {
+        "parent": ["default"],
+        "permission": [
+            "Whitelist.Change",
+            "Blacklist.Check",
+            "Question.Shutup",
+            "Blacklist.List",
+            "Mcsm.List"
+        ]
+    },
+    "admin": {
+        "parent": ["player"],
+        "permission": [
+            "Whitelist.Agree",
+            "Whitelist.Refuse",
+            "Whitelist.AgreeALL",
+            "Whitelist.List.Wait",
+            "Blacklist.Add",
+            "Blacklist.Remove",
+            "Mcsm.*"
+        ]
+    },
+    "psAdmin": {
+        "parent": ["admin"],
+        "permission": [
+            "Permission.Player.Give",
+            "Permission.Player.Remove",
+            "Permission.Player.Check",
+            "Permission.Player.List",
+            "Permission.Player.Del",
+            "Permission.Player.Info"
+        ]
+    },
+    "root": {
+        "permission": [
+            "*.*"
+        ]
+    }
+}

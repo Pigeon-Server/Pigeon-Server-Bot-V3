@@ -1,5 +1,6 @@
-from src.module.server_status import ServerStatus
 from unittest import IsolatedAsyncioTestCase
+
+from src.module.server_status import ServerStatus
 
 
 class TestServerStatus(IsolatedAsyncioTestCase):

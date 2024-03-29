@@ -1,7 +1,7 @@
+from os import makedirs
+from os.path import exists
 from pathlib import Path
 from typing import Union
-from os.path import exists
-from os import makedirs
 
 
 def check_directory(directory: Union[str, Path], create_if_not_exist: bool = False) -> bool:

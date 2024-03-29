@@ -1,6 +1,7 @@
 from mcstatus import JavaServer
-from src.exception.exception import IncomingParametersError, NoParametersError
+
 from src.base.logger import logger
+from src.exception.exception import IncomingParametersError, NoParametersError
 
 
 class ServerStatus:

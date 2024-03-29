@@ -1,6 +1,7 @@
+from re import Pattern, compile, search, sub
+
 from satori import Event, LoginStatus, WebsocketsInfo
 from satori.client import Account, App
-from re import Pattern, search, compile, sub
 
 from src.base.config import config
 from src.base.logger import logger

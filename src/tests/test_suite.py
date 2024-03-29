@@ -1,5 +1,5 @@
-from unittest import TestLoader
 from datetime import datetime
+from unittest import TestLoader
 
 from HTMLTestRunner.HTMLTestRunner import HTMLTestRunner
 

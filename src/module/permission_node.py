@@ -1,12 +1,12 @@
-from src.module.permissions import *
+from typing import Optional, Union
+
 from src.base.config import ConfigSet
-from typing import Union, Optional
+from src.module.json_database import JsonDataBase
+from src.module.permissions import *
 
-from src.module.json_database_class import JsonDataBaseCLass
 
-
-class PermissionClass(JsonDataBaseCLass):
-    _group_permission: JsonDataBaseCLass
+class PermissionClass(JsonDataBase):
+    _group_permission: JsonDataBase
     _permission_node_list: list
 
     def __init__(self) -> None:
@@ -14,9 +14,9 @@ class PermissionClass(JsonDataBaseCLass):
         类构造函数
         """
         super().__init__("permission.json", 5)
-        self._group_permission = JsonDataBaseCLass("permissionGroup.json", 5)
-        if self._group_permission.stored_data == {}:
-            self._group_permission.stored_data = self.load_config("permission.json5")
+        self._group_permission = JsonDataBase("permissionGroup.json", 5)
+        if self._group_permission._stored_data == {}:
+            self._group_permission._stored_data = self.load_config("permission.json5")
             self._group_permission.write_data()
         self._permission_node_list = Mcsm.get_all_permission_node()
         self._permission_node_list += Permission.get_all_permission_node()
@@ -36,27 +36,27 @@ class PermissionClass(JsonDataBaseCLass):
         """
         try:
             if over_write:
-                self._group_permission.stored_data = ConfigSet.load_config("permission.json5")
+                self._group_permission._stored_data = ConfigSet.load_config("permission.json5")
                 self._group_permission.write_data()
             else:
                 raw: str
                 data: dict = ConfigSet.load_config("permission.json5")
                 for raw in data:
-                    if raw in self._group_permission.stored_data.keys():
+                    if raw in self._group_permission._stored_data.keys():
                         temp = data[raw]["permission"]
                         for item in temp:
-                            if item not in self._group_permission.stored_data[raw]["permission"]:
-                                self._group_permission.stored_data[raw]["permission"].append(item)
+                            if item not in self._group_permission._stored_data[raw]["permission"]:
+                                self._group_permission._stored_data[raw]["permission"].append(item)
                         if "parent" in data[raw].keys():
-                            if "parent" in self._group_permission.stored_data[raw].keys():
+                            if "parent" in self._group_permission._stored_data[raw].keys():
                                 temp = data[raw]["parent"]
                                 for item in temp:
-                                    if item not in self._group_permission.stored_data[raw]["parent"]:
-                                        self._group_permission.stored_data[raw]["parent"].append(item)
+                                    if item not in self._group_permission._stored_data[raw]["parent"]:
+                                        self._group_permission._stored_data[raw]["parent"].append(item)
                             else:
-                                self._group_permission.stored_data[raw]["parent"] = data[raw]["parent"]
+                                self._group_permission._stored_data[raw]["parent"] = data[raw]["parent"]
                     else:
-                        self._group_permission.stored_data[raw] = data[raw]
+                        self._group_permission._stored_data[raw] = data[raw]
                 self._group_permission.write_data()
         except:
             return "重载权限组失败"
@@ -77,10 +77,10 @@ class PermissionClass(JsonDataBaseCLass):
         if not isinstance(group_name, list):
             group_name = list(group_name)
         for name in group_name:
-            if name in self._group_permission.stored_data.keys():
-                if "parent" in self._group_permission.stored_data[name].keys():
-                    result += self.get_group_permission(self._group_permission.stored_data[name]["parent"])
-                result += self._group_permission.stored_data[name]["permission"]
+            if name in self._group_permission._stored_data.keys():
+                if "parent" in self._group_permission._stored_data[name].keys():
+                    result += self.get_group_permission(self._group_permission._stored_data[name]["parent"])
+                result += self._group_permission._stored_data[name]["permission"]
         return list(set(result))
 
     def get_player_permission(self, user_id: str) -> list:
@@ -92,12 +92,12 @@ class PermissionClass(JsonDataBaseCLass):
             返回权限节点列表
         """
         try:
-            if user_id in self.stored_data.keys():
+            if user_id in self._stored_data.keys():
                 result: list = []
-                if "permission" in self.stored_data[user_id].keys():
-                    result += self.stored_data[user_id]["permission"]
-                if "group" in self.stored_data[user_id].keys():
-                    result += self.get_group_permission(self.stored_data[user_id]["group"])
+                if "permission" in self._stored_data[user_id].keys():
+                    result += self._stored_data[user_id]["permission"]
+                if "group" in self._stored_data[user_id].keys():
+                    result += self.get_group_permission(self._stored_data[user_id]["group"])
                 return result
             else:
                 return []
@@ -114,17 +114,17 @@ class PermissionClass(JsonDataBaseCLass):
             执行信息
         """
         try:
-            if user_id in self.stored_data.keys():
-                if "group" in self.stored_data[user_id]:
-                    userPermission = self.get_group_permission(self.stored_data[user_id]["group"]) + self.stored_data[user_id]["permission"]
+            if user_id in self._stored_data.keys():
+                if "group" in self._stored_data[user_id]:
+                    userPermission = self.get_group_permission(self._stored_data[user_id]["group"]) + self._stored_data[user_id]["permission"]
                 else:
-                    userPermission = self.stored_data[user_id]["permission"]
+                    userPermission = self._stored_data[user_id]["permission"]
                 if permission in userPermission:
-                    return f"此用户已有{permission}权限" if permission in self.stored_data[user_id]["permission"] else "该用户下某一用户组具有该权限"
+                    return f"此用户已有{permission}权限" if permission in self._stored_data[user_id]["permission"] else "该用户下某一用户组具有该权限"
                 else:
-                    self.stored_data[user_id]["permission"].append(permission)
+                    self._stored_data[user_id]["permission"].append(permission)
             else:
-                self.stored_data[user_id] = {
+                self._stored_data[user_id] = {
                     "group": ["default"],
                     "permission": [permission]
                 }
@@ -144,9 +144,9 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if user_id in self.stored_data.keys():
-                if permission in self.stored_data[user_id]["permission"]:
-                    self.stored_data[user_id]["permission"].remove(permission)
+            if user_id in self._stored_data.keys():
+                if permission in self._stored_data[user_id]["permission"]:
+                    self._stored_data[user_id]["permission"].remove(permission)
                 else:
                     return f"此用户没有“{permission}”权限"
             self.write_data()
@@ -166,12 +166,12 @@ class PermissionClass(JsonDataBaseCLass):
         """
         user_id = str(user_id)
         try:
-            if user_id in self.stored_data.keys():
+            if user_id in self._stored_data.keys():
                 # data: list = self.Data[userId]["permission"] 错误用法！！！！！！！！！！！！！！！！！！！！
                 data: list = []
-                data += self.stored_data[user_id]["permission"]
-                if "group" in self.stored_data[user_id].keys():
-                    data += self.get_group_permission(self.stored_data[user_id]["group"])
+                data += self._stored_data[user_id]["permission"]
+                if "group" in self._stored_data[user_id].keys():
+                    data += self.get_group_permission(self._stored_data[user_id]["group"])
                 if f"-{permission}" in data:
                     return False
                 data = self._permission_del(data)
@@ -191,10 +191,10 @@ class PermissionClass(JsonDataBaseCLass):
             返回执行消息
         """
         try:
-            if from_id not in self.stored_data.keys():
+            if from_id not in self._stored_data.keys():
                 return f"无法查询到「{from_id}」的权限记录"
             else:
-                self.stored_data[to_id] = self.stored_data[from_id]
+                self._stored_data[to_id] = self._stored_data[from_id]
                 self.write_data()
         except:
             return "克隆权限时出现错误"
@@ -209,8 +209,8 @@ class PermissionClass(JsonDataBaseCLass):
         Returns:
             如果玩家不存在返回None，存在返回字典
         """
-        if user_id in self.stored_data.keys():
-            return self.stored_data[user_id]
+        if user_id in self._stored_data.keys():
+            return self._stored_data[user_id]
         else:
             return None
 
@@ -222,8 +222,8 @@ class PermissionClass(JsonDataBaseCLass):
         Returns:
             如果权限组不存在返回None，存在返回字典
         """
-        if group_name in self._group_permission.stored_data.keys():
-            return self._group_permission.stored_data[group_name]
+        if group_name in self._group_permission._stored_data.keys():
+            return self._group_permission._stored_data[group_name]
         else:
             return None
 
@@ -237,10 +237,10 @@ class PermissionClass(JsonDataBaseCLass):
             返回执行消息
         """
         try:
-            if from_group not in self._group_permission.stored_data.keys():
+            if from_group not in self._group_permission._stored_data.keys():
                 return f"权限组「{from_group}」不存在"
             else:
-                self._group_permission.stored_data[to_group] = self._group_permission.stored_data[from_group]
+                self._group_permission._stored_data[to_group] = self._group_permission._stored_data[from_group]
                 self._group_permission.write_data()
         except:
             return "克隆权限时出现错误"
@@ -265,10 +265,10 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if group_name in self._group_permission.stored_data.keys():
-                self._group_permission.stored_data[group_name]["permission"].append(permission)
+            if group_name in self._group_permission._stored_data.keys():
+                self._group_permission._stored_data[group_name]["permission"].append(permission)
             else:
-                self._group_permission.stored_data[group_name] = {
+                self._group_permission._stored_data[group_name] = {
                     "permission": [
                         permission
                     ]
@@ -289,14 +289,14 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if group_name in self._group_permission.stored_data.keys():
-                if "permission" in self._group_permission.stored_data[group_name].keys():
-                    if permission in self._group_permission.stored_data[group_name]["permission"]:
-                        self._group_permission.stored_data[group_name]["permission"].remove(permission)
+            if group_name in self._group_permission._stored_data.keys():
+                if "permission" in self._group_permission._stored_data[group_name].keys():
+                    if permission in self._group_permission._stored_data[group_name]["permission"]:
+                        self._group_permission._stored_data[group_name]["permission"].remove(permission)
                     else:
                         return f"权限组「{group_name}」未拥有“{permission}”权限"
                 else:
-                    self._group_permission.stored_data[group_name]["permission"] = []
+                    self._group_permission._stored_data[group_name]["permission"] = []
                 self._group_permission.write_data()
             else:
                 return f"权限组「{group_name}」不存在"
@@ -335,16 +335,16 @@ class PermissionClass(JsonDataBaseCLass):
             返回运行结果
         """
         try:
-            if parent_group not in self._group_permission.stored_data.keys():
+            if parent_group not in self._group_permission._stored_data.keys():
                 return f"权限组「{parent_group}」不存在"
-            if group_name in self._group_permission.stored_data.keys():
-                if "parent" in self._group_permission.stored_data[group_name].keys():
-                    self._group_permission.stored_data[group_name]["parent"].append(parent_group)
+            if group_name in self._group_permission._stored_data.keys():
+                if "parent" in self._group_permission._stored_data[group_name].keys():
+                    self._group_permission._stored_data[group_name]["parent"].append(parent_group)
                 else:
-                    self._group_permission.stored_data[group_name]["parent"] = [parent_group]
+                    self._group_permission._stored_data[group_name]["parent"] = [parent_group]
                 self._group_permission.write_data()
             else:
-                self._group_permission.stored_data[group_name] = {
+                self._group_permission._stored_data[group_name] = {
                     "parent": [parent_group]
                 }
                 self._group_permission.write_data()
@@ -364,11 +364,11 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if parent_group not in self._group_permission.stored_data.keys():
+            if parent_group not in self._group_permission._stored_data.keys():
                 return f"权限组「{parent_group}」不存在"
-            if group_name in self._group_permission.stored_data.keys():
-                if "parent" in self._group_permission.stored_data[group_name]:
-                    self._group_permission.stored_data[group_name]["parent"].remove(parent_group)
+            if group_name in self._group_permission._stored_data.keys():
+                if "parent" in self._group_permission._stored_data[group_name]:
+                    self._group_permission._stored_data[group_name]["parent"].remove(parent_group)
                     self._group_permission.write_data()
                 else:
                     return f"权限组「{group_name}」还没有父权限组"
@@ -389,16 +389,16 @@ class PermissionClass(JsonDataBaseCLass):
             返回执行结果
         """
         try:
-            if parent_group not in self._group_permission.stored_data.keys():
+            if parent_group not in self._group_permission._stored_data.keys():
                 return f"权限组「{parent_group}」不存在"
-            if user_id in self.stored_data.keys():
-                if "group" in self.stored_data[user_id].keys():
-                    self.stored_data[user_id]["group"].append(parent_group)
+            if user_id in self._stored_data.keys():
+                if "group" in self._stored_data[user_id].keys():
+                    self._stored_data[user_id]["group"].append(parent_group)
                 else:
-                    self.stored_data[user_id]["group"] = [parent_group]
+                    self._stored_data[user_id]["group"] = [parent_group]
                 self.write_data()
             else:
-                self.stored_data[user_id] = {
+                self._stored_data[user_id] = {
                     "group": [parent_group]
                 }
                 self._group_permission.write_data()
@@ -418,11 +418,11 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if parent_group not in self._group_permission.stored_data.keys():
+            if parent_group not in self._group_permission._stored_data.keys():
                 return f"权限组「{parent_group}」不存在"
-            if user_id in self.stored_data.keys():
-                if "group" in self.stored_data[user_id].keys():
-                    self.stored_data[user_id]["group"].remove(parent_group)
+            if user_id in self._stored_data.keys():
+                if "group" in self._stored_data[user_id].keys():
+                    self._stored_data[user_id]["group"].remove(parent_group)
                     self.write_data()
                 else:
                     return f"用户「{user_id}」未被设置过权限组"
@@ -442,8 +442,8 @@ class PermissionClass(JsonDataBaseCLass):
             返回执行结果
         """
         try:
-            if group_name in self._group_permission.stored_data.keys():
-                del self._group_permission.stored_data[group_name]
+            if group_name in self._group_permission._stored_data.keys():
+                del self._group_permission._stored_data[group_name]
                 self._group_permission.write_data()
             else:
                 return f"权限组「{group_name}」不存在"
@@ -461,8 +461,8 @@ class PermissionClass(JsonDataBaseCLass):
             返回执行结果
         """
         try:
-            if user_id in self.stored_data.keys():
-                del self.stored_data[user_id]
+            if user_id in self._stored_data.keys():
+                del self._stored_data[user_id]
                 self.write_data()
             else:
                 return f"无法找到用户「{user_id}」"
@@ -481,13 +481,13 @@ class PermissionClass(JsonDataBaseCLass):
             执行结果
         """
         try:
-            if user_id in self.stored_data.keys():
+            if user_id in self._stored_data.keys():
                 if group_name is None:
-                    self.stored_data[user_id]["group"] = []
+                    self._stored_data[user_id]["group"] = []
                 elif isinstance(group_name, str):
-                    self.stored_data[user_id]["group"] = [group_name]
+                    self._stored_data[user_id]["group"] = [group_name]
                 elif isinstance(group_name, list):
-                    self.stored_data[user_id]["group"] = group_name
+                    self._stored_data[user_id]["group"] = group_name
                 else:
                     raise ValueError
                 self.write_data()
@@ -504,8 +504,8 @@ class PermissionClass(JsonDataBaseCLass):
         Returns:
             执行结果
         """
-        if group_name not in self._group_permission.stored_data.keys():
-            self._group_permission.stored_data[group_name] = {
+        if group_name not in self._group_permission._stored_data.keys():
+            self._group_permission._stored_data[group_name] = {
                 "parent": ["default"],
                 "permission": []
             }
@@ -523,8 +523,8 @@ class PermissionClass(JsonDataBaseCLass):
         Returns:
             执行结果
         """
-        if user_id not in self.stored_data.keys():
-            self.stored_data[user_id] = {
+        if user_id not in self._stored_data.keys():
+            self._stored_data[user_id] = {
                 "group": ["default" if group is None else group],
                 "permission": []
             }

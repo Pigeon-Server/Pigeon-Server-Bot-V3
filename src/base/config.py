@@ -1,6 +1,6 @@
 from os.path import join
 from os import getcwd
-from typing import Optional, Union
+from typing import Any, Callable, Mapping, Optional, Union
 
 from json5.lib import load
 from src.base.logger import logger
@@ -12,8 +12,8 @@ class ConfigSet:
     _config: Config
 
     @staticmethod
-    def load_config(filename: str) -> Optional[Union[Config]]:
-        def read_config(file: str) -> Optional[Union[Config]]:
+    def load_config(filename: str) -> Optional[dict]:
+        def read_config(file: str) -> Optional[dict]:
             try:
                 with open(file, "r", encoding="utf-8") as _f:
                     return load(_f)
@@ -41,8 +41,11 @@ class ConfigSet:
         return f"ConfigSet({self._config})"
 
     def reload_config(self):
-        self._config = self.load_config("config.json5")
+        self._config = Config(self.load_config("config.json5"))
 
     @property
     def config(self) -> Config:
         return self._config
+
+
+config = ConfigSet()

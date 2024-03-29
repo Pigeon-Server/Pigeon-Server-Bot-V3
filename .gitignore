@@ -3,3 +3,6 @@
 /.venv
 /.idea
 **/__init__.py
+**/*.spec
+/dist
+/build

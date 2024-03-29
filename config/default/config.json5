@@ -6,5 +6,16 @@
     database_name: "bot",
     port: 3306,
     auto_commit: true
+  },
+  group_config: {
+    admin_group: "12345678"
+  },
+  login_config: {
+    qq: "",
+    host: "127.0.0.1",
+    port: 5500,
+    token: ""
+  },
+  server_list: {
   }
 }

@@ -4,6 +4,7 @@ from os import getcwd
 from os.path import join
 from typing import Optional, Union
 
+from src.base.logger import logger
 from src.base.config import ConfigSet
 from src.exception.exception import NoKeyError
 from src.utils.file_utils import check_directory, check_file
@@ -104,12 +105,14 @@ class JsonDataBase:
         """
         重新从文件加载数据\n
         """
+        logger.debug(f"Reload file {self._data_file_path}")
         self._stored_data = load(open(self._data_file_path, "r", encoding="UTF-8", errors="ignore"))
 
     def write_data(self) -> None:
         """
         将本地缓存的内容写入文件\n
         """
+        logger.debug(f"Save file {self._data_file_path}")
         with open(self._data_file_path, 'w', encoding="UTF-8") as file:
             file.write(dumps(self._stored_data, indent=4, ensure_ascii=False))
 

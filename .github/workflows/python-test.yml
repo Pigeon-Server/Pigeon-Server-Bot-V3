@@ -31,7 +31,7 @@ jobs:
       run: pyinstaller main.py
 
     - name: Test python
-      run: run_test.bat
+      run: .\run_test.bat
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4

@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from unittest import TestLoader
 
@@ -16,4 +17,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    print(sys.path)
     main()

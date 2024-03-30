@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.12"
         cache: 'pip'
@@ -31,7 +31,7 @@ jobs:
       run: pyinstaller main.py
 
     - name: Test python
-      run: python.exe .\src\tests\test_suite.py
+      run: run_test.bat
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4

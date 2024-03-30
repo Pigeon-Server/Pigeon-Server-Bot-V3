@@ -9,4 +9,4 @@ class TestServerStatus(IsolatedAsyncioTestCase):
             "模组服-模块化科技": "play.pigeon-server.cn:25566",
         })
         result = await server.get_online_player()
-        print(result)
+        self.assertIsNotNone(result)

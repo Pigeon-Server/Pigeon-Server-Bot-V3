@@ -7,5 +7,4 @@ class TestConfig(TestCase):
 
     def test_load_config(self):
         config = ConfigSet()
-        print(f"{config = }")
-        print(f"{config.config = }")
+        self.assertIsNotNone(config)

@@ -1,8 +1,6 @@
 import sys
 from datetime import datetime
-from unittest import TestLoader
-
-from HTMLTestRunner.HTMLTestRunner import HTMLTestRunner
+from unittest import TestLoader, TextTestRunner
 
 
 def get_suite():
@@ -10,12 +8,11 @@ def get_suite():
 
 
 def main() -> None:
-    with open(f"./report/report_{datetime.strftime(datetime.now(), '%Y-%m-%d_%H_%M_%S')}.html", "w") as f:
-        runner = HTMLTestRunner(stream=f, title="Test Report", verbosity=2)
+    with open(f"./report/report_{datetime.strftime(datetime.now(), '%Y-%m-%d_%H_%M_%S')}.txt", "w") as f:
+        runner = TextTestRunner(stream=f, descriptions=True, verbosity=2)
         suite = get_suite()
         runner.run(suite)
 
 
 if __name__ == '__main__':
-    print(sys.path)
     main()

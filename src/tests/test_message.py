@@ -1,3 +1,4 @@
+import sys
 from unittest import TestCase
 
 from satori import Event
@@ -36,8 +37,17 @@ class TestMessage(TestCase):
         }))
 
     def test_raw_message(self):
-        print(self.message.raw_message)
+        print(f"{'-' * 10}\n"
+              f"Function: {sys._getframe().f_code.co_name}\n"
+              f"{self.message.raw_message}\n"
+              f"{'-' * 10}")
 
     def test_message(self):
-        print(self.message.message)
-        self.assertEqual("[睁眼][图片]test[文件]", self.message.message)
+        expect_result = "[睁眼][图片]test[文件]"
+        res = self.message.message
+        print(f"{'-' * 10}\n"
+              f"Function: {sys._getframe().f_code.co_name}\n"
+              f"Expect result: {expect_result}\n"
+              f"Actual result: {res}\n"
+              f"{'-' * 10}")
+        self.assertEqual(expect_result, res)

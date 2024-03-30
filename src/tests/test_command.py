@@ -1,3 +1,4 @@
+import sys
 from unittest import TestCase
 
 from satori import Event
@@ -37,9 +38,14 @@ class TestCommand(TestCase):
         }))
 
     def test_command_split(self):
+        expect_result: list = ["ps", "add", "123", "222"]
         res = Command.command_split(self.message)
-        print(res)
-        self.assertEqual(["ps", "add", "123", "222"], res)
+        print(f"{'-' * 10}\n"
+              f"Function: {sys._getframe().f_code.co_name}\n"
+              f"Expect result: {expect_result}\n"
+              f"Actual result: {res}\n"
+              f"{'-' * 10}")
+        self.assertEqual(expect_result, res)
 
     def test_command_parsing(self):
         pass

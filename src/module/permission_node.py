@@ -480,7 +480,7 @@ class PermissionManager(JsonDataBase):
         self._group_permission.write_data()
         return Result.of_success(f"权限组「{group_name}」创建成功")
 
-    def creat_player(self, user_id: str, group: str = None) -> Result:
+    def create_player(self, user_id: str, group: str = None) -> Result:
         """
         创建玩家\n
         Args:

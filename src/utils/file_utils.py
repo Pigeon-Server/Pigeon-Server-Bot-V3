@@ -15,6 +15,8 @@ def check_directory(directory: Union[str, Path], create_if_not_exist: bool = Fal
 def check_file(file: Union[str, Path], create_if_not_exist: bool = False, file_content: Union[str, bytes] = "") -> bool:
     if isinstance(file, str):
         file = Path(file)
+    if isinstance(file_content, str):
+        file_content = file_content.encode("utf-8")
     if file.is_file():
         return True
     if create_if_not_exist:

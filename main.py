@@ -1,13 +1,11 @@
-from satori import Event, LoginStatus, WebsocketsInfo
-from satori.client import Account, App
+from satori import Event, LoginStatus
+from satori.client import Account
 
 from src.base.config import config
 from src.base.logger import logger
+from src.bot.App import app
 from src.module.command import Command
 from src.module.message import Message
-
-app = App(WebsocketsInfo(host=config.config.login_config.host, port=config.config.login_config.port,
-                         token=config.config.login_config.token))
 
 
 @app.register

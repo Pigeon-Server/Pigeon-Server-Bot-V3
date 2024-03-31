@@ -1,8 +1,8 @@
-from typing import Type, Union
 from typing import List
+from typing import Type, Union
 
 from satori import Element, Event, MessageObject
-from satori.element import At, Text, Image, Audio, Video, File, Quote, Custom
+from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
@@ -86,3 +86,7 @@ class Message:
     @property
     def sender_info(self) -> str:
         return f"{self.sender_name}({self.sender_id})"
+
+    @property
+    def message_id(self) -> str:
+        return self._event.message.id

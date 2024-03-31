@@ -1,13 +1,14 @@
-from typing import Optional, Union
+from typing import Optional
 
 from satori import At, Event
 from satori.client import Account
 
 from src.base.config import config
+from src.bot.App import reply_manager
 from src.module.message import Message
 from src.module.permission_node import PermissionManager
 from src.module.permissions import Permission
-from src.module.result import Result
+from src.module.reply_message import ReplyType
 from src.module.server_status import ServerStatus
 
 server = ServerStatus(config.config.server_list)
@@ -123,6 +124,40 @@ class Command:
                                     if "permission" in data.keys():
                                         msg += "权限: \n" + "\n".join(data["permission"])
                                     await send(msg.removesuffix("\n"))
+                                    return
+                                case "del" | "d":
+                                    # async def wait_callback(reply_type: ReplyType) -> None:
+                                    #     match reply_type:
+                                    #         case ReplyType.ACCEPT:
+                                    #             await send("确认成功")
+                                    #         case ReplyType.REJECT:
+                                    #             await send("拒绝成功")
+                                    #         case ReplyType.TIMEOUT:
+                                    #             await send("确认时间超时")
+                                    #
+                                    # reply_manager.create_reply(message, wait_callback, 10).start()
+                                    reply_type = await reply_manager.wait_reply_async(message, 10)
+                                    match reply_type:
+                                        case ReplyType.ACCEPT:
+                                            await send("确认成功")
+                                        case ReplyType.REJECT:
+                                            await send("拒绝成功")
+                                        case ReplyType.TIMEOUT:
+                                            await send("确认时间超时")
+                                    # if command_length >= 5:
+                                    #     await send(f"Usage：\n/permission player del (At | id) ")
+                                    #     return
+                                    # if not check_player(Permission.Player.Del):
+                                    #     await send("你无权这么做")
+                                    #     return
+                                    # if command[3].startswith("@"):
+                                    #     at_list: list[At] = message.find(At)
+                                    #     msg = f"{at_list[0].id}拥有的权限为：\n"
+                                    #     msg += "\n".join(per.get_player_permission(str(at_list[0].id)))
+                                    # else:
+                                    #     msg = f"{command[3]}拥有的权限为：\n"
+                                    #     msg += "\n".join(per.get_player_permission(str(command[3])))
+                                    # await send(msg.removesuffix("\n"))
                                     return
                             return
 

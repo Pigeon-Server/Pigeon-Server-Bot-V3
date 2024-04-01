@@ -3,8 +3,8 @@ from satori.client import Account
 
 from src.base.config import config
 from src.base.logger import logger
-from src.bot.App import app
-from src.module.command import Command
+from src.bot.app import app
+from src.command.command import Command
 from src.module.message import Message
 
 

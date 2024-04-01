@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 from src.base.config import ConfigSet
-from src.module.json_database import JsonDataBase, DataType
+from src.module.json_database import DataType, JsonDataBase
 from src.module.permissions import *
 from src.module.result import Result
 

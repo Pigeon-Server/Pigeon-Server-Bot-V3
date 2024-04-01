@@ -1,5 +1,6 @@
 import sys
 from unittest import TestCase
+
 from src.module.permission_node import PermissionManager
 
 

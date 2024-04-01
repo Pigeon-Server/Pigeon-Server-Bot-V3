@@ -1,9 +1,9 @@
+from json import load as js_load
 from os import getcwd
 from os.path import join
 from typing import Optional
 
 from json5.lib import load as js5_load
-from json import load as js_load
 
 from src.base.logger import logger
 from src.type.Config import Config

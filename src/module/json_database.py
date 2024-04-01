@@ -4,8 +4,8 @@ from os import getcwd
 from os.path import join
 from typing import Optional, Union
 
-from src.base.logger import logger
 from src.base.config import ConfigSet
+from src.base.logger import logger
 from src.exception.exception import NoKeyError
 from src.utils.file_utils import check_directory, check_file
 

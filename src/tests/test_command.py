@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from satori import Event
 
-from src.module.command import Command
+from src.command.command import Command
 from src.module.message import Message
 
 

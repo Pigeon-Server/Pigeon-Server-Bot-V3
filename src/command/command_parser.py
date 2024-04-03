@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from src.bot.tools import per
 from src.module.message import Message
@@ -6,10 +6,10 @@ from src.module.result import Result
 
 
 class CommandParser:
-    def __init__(self):
-        pass
+    _message: Message
 
-    async def parse(self, sender: str, command: List[str], message: Message) -> Result:
+    async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
+        self._message = message
         return Result.of_failure("Method not implemented")
 
     @staticmethod

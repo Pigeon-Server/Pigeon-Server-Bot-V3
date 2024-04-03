@@ -114,16 +114,16 @@ class PermissionManager(JsonDataBase):
                     "group": ["default"],
                     "permission": [permission]
                 }
-                return Result.of_success(f"成功为「{user_id}」添加权限”{permission}“")
+                return Result.of_success(f"成功为「{user_id}」添加权限「{permission}」")
             user_permission = self._stored_data[user_id]["permission"]
             if "group" in self._stored_data[user_id]:
                 user_permission += self.get_group_permission(self._stored_data[user_id]["group"])
             if permission in user_permission:
-                return Result.of_failure(f"「{user_id}」已有{permission}权限")
+                return Result.of_failure(f"「{user_id}」已有「{permission}」权限")
             self._stored_data[user_id]["permission"].append(permission)
-            return Result.of_success(f"成功为「{user_id}」添加权限”{permission}“")
+            return Result.of_success(f"成功为「{user_id}」添加权限「{permission}」")
         except:
-            return Result.of_failure(f"向「{user_id}」添加权限“{permission}”失败")
+            return Result.of_failure(f"向「{user_id}」添加权限「{permission}」失败")
         finally:
             self.write_data()
 
@@ -140,12 +140,12 @@ class PermissionManager(JsonDataBase):
             if user_id not in self._stored_data.keys():
                 return Result.of_failure(f"无法找到用户「{user_id}」的权限信息")
             if permission not in self._stored_data[user_id]["permission"]:
-                return Result.of_failure(f"此用户没有“{permission}”权限")
+                return Result.of_failure(f"此用户没有「{permission}」权限")
             self._stored_data[user_id]["permission"].remove(permission)
             self.write_data()
-            return Result.of_success(f"成功移除「{user_id}」权限“{permission}”")
+            return Result.of_success(f"成功移除「{user_id}」权限「{permission}」")
         except:
-            return Result.of_failure(f"移除「{user_id}」的权限”{permission}“失败")
+            return Result.of_failure(f"移除「{user_id}」的权限「{permission}」失败")
 
     def check_player_permission(self, user_id: Union[str, int], permission: str) -> Result:
         """
@@ -261,9 +261,9 @@ class PermissionManager(JsonDataBase):
                     ]
                 }
             self._group_permission.write_data()
-            return Result.of_success(f"成功向权限组「{group_name}」添加权限”{permission}“")
+            return Result.of_success(f"成功向权限组「{group_name}」添加权限「{permission}」")
         except:
-            return Result.of_failure(f"向权限组「{group_name}」添加权限“{group_name}”失败")
+            return Result.of_failure(f"向权限组「{group_name}」添加权限「{permission}」失败")
 
     def remove_group_permission(self, group_name: str, permission: str) -> Result:
         """
@@ -279,14 +279,14 @@ class PermissionManager(JsonDataBase):
                 return Result.of_failure(f"权限组「{group_name}」不存在")
             if "permission" in self._group_permission._stored_data[group_name].keys():
                 if permission not in self._group_permission._stored_data[group_name]["permission"]:
-                    return Result.of_failure(f"权限组「{group_name}」未拥有“{permission}”权限")
+                    return Result.of_failure(f"权限组「{group_name}」未拥有「{permission}」权限")
                 self._group_permission._stored_data[group_name]["permission"].remove(permission)
             else:
                 self._group_permission._stored_data[group_name]["permission"] = []
             self._group_permission.write_data()
-            return Result.of_success(f"成功移除权限组「{group_name}」权限“{permission}”")
+            return Result.of_success(f"成功移除权限组「{group_name}」权限「{permission}」")
         except:
-            return Result.of_failure(f"移除权限组「{group_name}」的权限”{permission}“失败")
+            return Result.of_failure(f"移除权限组「{group_name}」的权限「{permission}」失败")
 
     def check_group_permission(self, group_name: str, permission: str) -> Result:
         """
@@ -371,14 +371,14 @@ class PermissionManager(JsonDataBase):
                 self._stored_data[user_id] = {
                     "group": [parent_group]
                 }
-                return Result.of_failure(f"无法找到目标{user_id},已自动创建")
+                return Result.of_failure(f"无法找到目标「{user_id}」,已自动创建")
             if "group" in self._stored_data[user_id].keys():
                 self._stored_data[user_id]["group"].append(parent_group)
             else:
                 self._stored_data[user_id]["group"] = [parent_group]
-            return Result.of_success(f"向用户{user_id}添加权限组{parent_group}成功")
+            return Result.of_success(f"向用户「{user_id}」添加权限组「{parent_group}」成功")
         except:
-            return Result.of_failure(f"向用户{user_id}添加权限组{parent_group}失败")
+            return Result.of_failure(f"向用户「{user_id}」添加权限组「{parent_group}」失败")
         finally:
             self.write_data()
 
@@ -400,9 +400,9 @@ class PermissionManager(JsonDataBase):
                 return Result.of_failure(f"用户「{user_id}」未被设置过权限组")
             self._stored_data[user_id]["group"].remove(parent_group)
             self.write_data()
-            return Result.of_success(f"移除用户「{user_id}」权限组{parent_group}成功")
+            return Result.of_success(f"移除用户「{user_id}」权限组「{parent_group}」成功")
         except:
-            return Result.of_failure(f"移除用户「{user_id}」权限组{parent_group}失败")
+            return Result.of_failure(f"移除用户「{user_id}」权限组「{parent_group}」失败")
 
     def del_group(self, group_name: str) -> Result:
         """
@@ -434,7 +434,7 @@ class PermissionManager(JsonDataBase):
                 return Result.of_failure(f"无法找到用户「{user_id}」")
             del self._stored_data[user_id]
             self.write_data()
-            return Result.of_success(f"成功删除用户：{user_id}")
+            return Result.of_success(f"成功删除用户：「{user_id}」")
         except:
             return Result.of_failure(f"删除用户「{user_id}」失败")
 

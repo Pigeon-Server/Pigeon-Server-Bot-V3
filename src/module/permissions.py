@@ -37,7 +37,7 @@ class Permission:
         Info: str = "Permission.Player.Info"
         Create: str = "Permission.Player.Create"
 
-        class Inherit:
+        class Parent:
             Add: str = "Permission.Player.Inherit.Add"
             Del: str = "Permission.Player.Inherit.Del"
             Set: str = "Permission.Player.Inherit.Set"
@@ -52,7 +52,7 @@ class Permission:
         Check: str = "Permission.Group.Check"
         Create: str = "Permission.Group.Create"
 
-        class Inherit:
+        class Parent:
             Add: str = "Permission.Group.Inherit.Add"
             Del: str = "Permission.Group.Inherit.Del"
 
@@ -65,12 +65,12 @@ class Permission:
     @staticmethod
     def get_all_permission_node() -> list:
         return [Permission.Player.Check, Permission.Player.Clone, Permission.Player.Give, Permission.Player.Remove,
-                Permission.Player.List, Permission.Player.Inherit.Del, Permission.Player.Inherit.Add,
+                Permission.Player.List, Permission.Player.Parent.Del, Permission.Player.Parent.Add,
                 Permission.Player.Del, Permission.Player.Info,
-                Permission.Player.Create, Permission.Player.Inherit.Set,
+                Permission.Player.Create, Permission.Player.Parent.Set,
                 Permission.Group.List, Permission.Group.Clone, Permission.Group.Remove, Permission.Group.Give,
                 Permission.Group.Info,
-                Permission.Group.Del, Permission.Group.Inherit.Add, Permission.Group.Inherit.Del,
+                Permission.Group.Del, Permission.Group.Parent.Add, Permission.Group.Parent.Del,
                 Permission.Group.Check,
                 Permission.Reload.Common, Permission.Reload.Force, Permission.Group.Create,
                 Permission.ShowList]

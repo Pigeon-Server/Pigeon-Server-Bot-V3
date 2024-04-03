@@ -19,11 +19,15 @@ class Result:
 
     @property
     def is_success(self) -> bool:
-        return self._status is True
+        return self._status
+
+    @property
+    def has_message(self) -> bool:
+        return self._message is not None
 
     @property
     def is_fail(self) -> bool:
-        return self._status is False
+        return not self._status
 
     @classmethod
     def of_success(cls, message: Optional[str] = None) -> 'Result':

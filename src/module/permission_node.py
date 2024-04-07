@@ -71,7 +71,7 @@ class PermissionManager(JsonDataBase):
         result = []
         name: str
         if not isinstance(group_name, list):
-            group_name = list(group_name)
+            group_name = [group_name]
         for name in group_name:
             if name in self._group_permission._stored_data.keys():
                 if "parent" in self._group_permission._stored_data[name].keys():
@@ -438,7 +438,7 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"删除用户「{user_id}」失败")
 
-    def set_player_group(self, user_id: str, group_name: Union[str, list] = None) -> Result:
+    def set_player_parent(self, user_id: str, group_name: Union[str, list] = None) -> Result:
         """
         为某一玩家设置权限组\n
         Args:
@@ -463,18 +463,19 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"设置「{user_id}」的权限组失败")
 
-    def creat_group(self, group_name: str) -> Result:
+    def create_group(self, group_name: str, group: str = None) -> Result:
         """
         创建权限组\n
         Args:
             group_name: 权限组名
+            group: 初始继承的权限组
         Returns:
             执行结果
         """
         if group_name in self._group_permission._stored_data.keys():
             return Result.of_failure(f"权限组「{group_name}」已存在")
         self._group_permission._stored_data[group_name] = {
-            "parent": ["default"],
+            "parent": [group if group else "default"],
             "permission": []
         }
         self._group_permission.write_data()
@@ -492,7 +493,7 @@ class PermissionManager(JsonDataBase):
         if user_id in self._stored_data.keys():
             return Result.of_failure(f"用户「{user_id}」已存在")
         self._stored_data[user_id] = {
-            "group": ["default" if group is None else group],
+            "group": [group if group else "default"],
             "permission": []
         }
         self.write_data()

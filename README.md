@@ -1,7 +1,7 @@
 <div align="center" style="text-align:center">
    <h1> Pigeon-Server-Bot-V3 </h1>
    <p>
-      <code><b> v0.1.0 </b></code>
+      <code><b> v1.0.0 </b></code>
    </p>
    <p>
       <img alt="GitHub Top Language" src="https://img.shields.io/github/languages/top/Pigeon-Server/Pigeon-Server-Bot-V3?label=Python">

@@ -1,5 +1,5 @@
 from re import Pattern, compile, search
-from typing import Awaitable, Callable, List, Optional
+from typing import Awaitable, Callable, Dict, List, Optional
 
 from src.bot.app import message_sender, reply_manager
 from src.bot.tools import per
@@ -64,7 +64,6 @@ class PermissionCommand(CommandParser):
 
     def __init__(self):
         super().__init__()
-        self._get_command_helper()
 
     async def _parse_other_command(self, command: List[str]) -> Optional[Result]:
         command_length = len(command)
@@ -105,7 +104,30 @@ class PermissionCommand(CommandParser):
                 return await self._parse_player_parent_command(command, command_length)
 
     async def _parse_group_command(self, command: List[str]) -> Optional[Result]:
-        pass
+        command_length = len(command)
+        if command_length <= 1 or command[1] not in ["group", "g"]:
+            return
+        if command_length < 4:
+            return self._group_command_helper
+        match command[2]:
+            case "list" | "l":
+                return await self._parse_group_list_command(command, command_length)
+            case "info" | "i":
+                return await self._parse_group_info_command(command, command_length)
+            case "del" | "d":
+                return await self._parse_group_delete_command(command, command_length)
+            case "create" | "c":
+                return await self._parse_group_create_command(command, command_length)
+            case "add" | "a":
+                return await self._parse_group_add_command(command, command_length)
+            case "remove" | "r":
+                return await self._parse_group_remove_command(command, command_length)
+            case "clone":
+                return await self._parse_group_clone_command(command, command_length)
+            case "check":
+                return await self._parse_group_check_command(command, command_length)
+            case "group" | "g":
+                return await self._parse_group_parent_command(command, command_length)
 
     async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
         await super().parse(message, command)
@@ -131,6 +153,18 @@ class PermissionCommand(CommandParser):
         if self.check_player(self._message.sender_id, permission):
             return False
         return True
+
+    @staticmethod
+    def _parse_permission_data(msg: str, data: Dict[str, str]) -> Result:
+        if data is None:
+            return Result.of_success("未查询到权限记录")
+        if "group" in data.keys():
+            msg += "权限组: \n" + "\n".join(data["group"]) + "\n"
+        if "parent" in data.keys():
+            msg += "父权限组: \n" + "\n".join(data["parent"]) + "\n"
+        if "permission" in data.keys():
+            msg += "权限: \n" + "\n".join(data["permission"])
+        return Result.of_success(msg.removesuffix("\n"))
 
     async def _parse_list_command(self, command: List[str], command_length: int) -> Result:
         if self._check_permission(Permission.ShowList):
@@ -171,13 +205,7 @@ class PermissionCommand(CommandParser):
         user_id = self._get_user_id(command[3])
         data = per.get_player_info(user_id)
         msg = f"「{user_id}」拥有的权限为：\n"
-        if data is None:
-            return Result.of_success("未查询到权限记录")
-        if "group" in data.keys():
-            msg += "权限组: \n" + "\n".join(data["group"]) + "\n"
-        if "permission" in data.keys():
-            msg += "权限: \n" + "\n".join(data["permission"])
-        return Result.of_success(msg.removesuffix("\n"))
+        return self._parse_permission_data(msg, data)
 
     async def _parse_player_delete_command(self, command: List[str], command_length: int) -> Result:
         if command_length >= 5:
@@ -279,7 +307,10 @@ class PermissionCommand(CommandParser):
             return self._permission_reject
         if command[4] not in per.permission_node:
             return Result.of_failure(f"{command[4]}不是一个有效的权限节点")
-        return per.check_player_permission(self._get_user_id(command[3]), command[4])
+        res = per.check_player_permission(self._get_user_id(command[3]), command[4])
+        if res.is_success:
+            return Result.of_success(f"用户「{self._get_user_id(command[3])}」拥有权限节点「{command[4]}」")
+        return Result.of_success(f"用户「{self._get_user_id(command[3])}」没有权限节点「{command[4]}」")
 
     async def _parse_player_parent_add_command(self, command: List[str], command_length: int) -> Result:
         if command_length >= 7:
@@ -300,7 +331,7 @@ class PermissionCommand(CommandParser):
             return Result.of_failure(f"Usage：\n/permission player group set (At | id) (groupName)")
         if self._check_permission(Permission.Player.Parent.Del):
             return self._permission_reject
-        return per.set_player_group(self._get_user_id(command[4]), command[5])
+        return per.set_player_parent(self._get_user_id(command[4]), command[5])
 
     async def _parse_player_parent_command(self, command: List[str], command_length: int) -> Result:
         match command[3]:
@@ -314,3 +345,146 @@ class PermissionCommand(CommandParser):
                                  "/permission player group add (At | id) (groupName)\n"
                                  "/permission player group remove (At | id) (groupName)\n"
                                  "/permission player group set (At | id) (groupName)")
+
+    async def _parse_group_list_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 5:
+            return Result.of_failure(f"Usage：\n/permission group list (groupName) ")
+        if self._check_permission(Permission.Group.List):
+            return self._permission_reject
+        msg = f"「{command[3]}」拥有的权限为：\n"
+        msg += "\n".join(per.get_group_permission(command[3]))
+        return Result.of_success(msg.removesuffix("\n"))
+
+    async def _parse_group_info_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 5:
+            return Result.of_failure(f"Usage：\n/permission group info (groupName) ")
+        if self._check_permission(Permission.Group.Info):
+            return self._permission_reject
+        data = per.get_group_info(command[3])
+        msg = f"「{command[3]}」拥有的权限为：\n"
+        return self._parse_permission_data(msg, data)
+
+    async def _parse_group_delete_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 5:
+            return Result.of_failure(f"Usage：\n/permission group del (groupName) ")
+        if self._check_permission(Permission.Group.Del):
+            return self._permission_reject
+        msg = f"是否删除权限组「{command[3]}」(是/否)？"
+        target = (await message_sender.send_message(self._message.group_id, msg))[0]
+        result = await reply_manager.wait_reply_async(self._message, 60)
+        match result:
+            case ReplyType.REJECT:
+                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                        self._message.sender_id)
+                return Result.of_success()
+            case ReplyType.ACCEPT:
+                res = per.del_group(command[3])
+                if res.is_success:
+                    await message_sender.send_quote_message(self._message.group_id, target.id,
+                                                            f"操作成功, {res.message}",
+                                                            self._message.sender_id)
+                    return Result.of_success()
+                await message_sender.send_quote_message(self._message.group_id, target.id,
+                                                        f"操作失败, {res.message}",
+                                                        self._message.sender_id)
+                return Result.of_failure()
+            case ReplyType.TIMEOUT:
+                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                        self._message.sender_id)
+                return Result.of_failure()
+        return Result.of_failure()
+
+    async def _parse_group_create_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 6:
+            return Result.of_failure(f"Usage：\n/permission group create (groupName) [groupName]")
+        if self._check_permission(Permission.Group.Create):
+            return self._permission_reject
+        if command_length == 4:
+            res = per.create_group(command[3])
+        else:
+            res = per.create_group(command[3], command[4])
+        return res
+
+    async def _parse_group_add_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 6:
+            return Result.of_failure(f"Usage：\n/permission group add (groupName) (permission)")
+        if self._check_permission(Permission.Group.Give):
+            return self._permission_reject
+        if command[4] not in per.permission_node:
+            return Result.of_failure(f"{command[4]}不是一个有效的权限节点")
+        return per.add_group_permission(command[3], command[4])
+
+    async def _parse_group_remove_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 6:
+            return Result.of_failure(f"Usage：\n/permission group remove (groupName) (permission)")
+        if self._check_permission(Permission.Group.Remove):
+            return self._permission_reject
+        if command[4] not in per.permission_node:
+            return Result.of_failure(f"{command[4]}不是一个有效的权限节点")
+        return per.remove_group_permission(command[3], command[4])
+
+    async def _parse_group_clone_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 6:
+            return Result.of_failure(f"Usage：\n/permission group clone (groupName) (groupName)")
+        if self._check_permission(Permission.Group.Clone):
+            return self._permission_reject
+        msg = f"确认克隆权限组「{command[3]}」的`所有权限`到权限组「{command[4]}」(是/否)？"
+        target = (await message_sender.send_message(self._message.group_id, msg))[0]
+        result = await reply_manager.wait_reply_async(self._message, 60)
+        match result:
+            case ReplyType.REJECT:
+                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                        self._message.sender_id)
+                return Result.of_success()
+            case ReplyType.ACCEPT:
+                res = per.clone_group_permission(command[3], command[4])
+                if res.is_success:
+                    await message_sender.send_quote_message(self._message.group_id, target.id,
+                                                            f"操作成功, {res.message}",
+                                                            self._message.sender_id)
+                    return Result.of_success()
+                await message_sender.send_quote_message(self._message.group_id, target.id,
+                                                        f"操作失败, {res.message}",
+                                                        self._message.sender_id)
+                return Result.of_failure()
+            case ReplyType.TIMEOUT:
+                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                        self._message.sender_id)
+                return Result.of_failure()
+        return Result.of_failure()
+
+    async def _parse_group_check_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 6:
+            return Result.of_failure(f"Usage：\n/permission group check (groupName) (permission)")
+        if self._check_permission(Permission.Group.Check):
+            return self._permission_reject
+        if command[4] not in per.permission_node:
+            return Result.of_failure(f"{command[4]}不是一个有效的权限节点")
+        res = per.check_group_permission(command[3], command[4])
+        if res.is_success:
+            return Result.of_success(f"权限节点「{command[4]}」存在于权限组「{command[3]}」中")
+        return Result.of_success(f"权限节点「{command[4]}」不存在于权限组「{command[3]}」中")
+
+    async def _parse_group_parent_add_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 7:
+            return Result.of_failure(f"Usage：\n/permission group group add (groupName) (groupName)")
+        if self._check_permission(Permission.Group.Parent.Add):
+            return self._permission_reject
+        return per.add_group_parent(self._get_user_id(command[4]), command[5])
+
+    async def _parse_group_parent_remove_command(self, command: List[str], command_length: int) -> Result:
+        if command_length >= 7:
+            return Result.of_failure(f"Usage：\n/permission group group remove (groupName) (groupName)")
+        if self._check_permission(Permission.Group.Parent.Del):
+            return self._permission_reject
+        return per.remove_group_parent(self._get_user_id(command[4]), command[5])
+
+    async def _parse_group_parent_command(self, command: List[str], command_length: int) -> Result:
+        match command[3]:
+            case "add" | "a":
+                return await self._parse_group_parent_add_command(command, command_length)
+            case "remove" | "r":
+                return await self._parse_group_parent_remove_command(command, command_length)
+        return Result.of_failure("Usage：\n"
+                                 "/permission group group add (groupName) (groupName)\n"
+                                 "/permission group group remove (groupName) (groupName)")

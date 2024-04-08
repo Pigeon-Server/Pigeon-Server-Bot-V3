@@ -7,7 +7,7 @@ from satori.client import Account, App
 from src.base.config import config
 from src.base.logger import logger
 from src.bot.message import MessageSender
-from src.module.permissions import Root
+from src.element.permissions import Root
 from src.module.reply_message import ReplyManager
 from src.utils.file_utils import check_directory, check_file, text_to_image
 

@@ -2,8 +2,8 @@ from typing import List, Optional, Union
 
 from src.base.config import ConfigSet
 from src.module.json_database import DataType, JsonDataBase
-from src.module.permissions import *
-from src.module.result import Result
+from src.element.permissions import *
+from src.element.result import Result
 
 
 class PermissionManager(JsonDataBase):

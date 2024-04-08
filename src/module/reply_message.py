@@ -8,7 +8,7 @@ from satori import Event
 from satori.client import Account, App
 from typing_extensions import Any
 
-from src.module.message import Message
+from src.element.message import Message
 
 
 class ReplyType(Enum):

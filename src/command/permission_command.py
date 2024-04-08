@@ -6,11 +6,11 @@ from satori import Image
 from src.bot.app import message_sender, permission_image_dir, reply_manager
 from src.bot.tools import per
 from src.command.command_parser import CommandParser
-from src.module.message import Message
-from src.module.permissions import Permission
+from src.element.message import Message
+from src.element.permissions import Permission
 from src.module.reply_message import ReplyType
-from src.module.result import Result
-from src.module.tree import BinaryTree
+from src.element.result import Result
+from src.element.tree import BinaryTree
 
 
 class PermissionCommand(CommandParser):

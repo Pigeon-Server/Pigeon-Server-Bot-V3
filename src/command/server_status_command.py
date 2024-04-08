@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from src.bot.tools import server
 from src.command.command_parser import CommandParser
-from src.module.message import Message
-from src.module.result import Result
+from src.element.message import Message
+from src.element.result import Result
 
 
 class ServerStatusCommand(CommandParser):

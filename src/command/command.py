@@ -8,7 +8,7 @@ from src.bot.tools import per
 from src.command.command_parser import CommandParser
 from src.command.permission_command import PermissionCommand
 from src.command.server_status_command import ServerStatusCommand
-from src.module.message import Message
+from src.element.message import Message
 
 command_parsers: List[CommandParser] = [
     ServerStatusCommand(),
@@ -24,7 +24,7 @@ class Command:
         return None
 
     @staticmethod
-    async def command_parsing(message: Message, account: Account, event: Event) -> None:
+    async def command_parsing(message: Message, _: Account, event: Event) -> None:
 
         command = Command.command_split(message)
 

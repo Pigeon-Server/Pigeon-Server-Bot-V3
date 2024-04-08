@@ -4,7 +4,7 @@ from unittest import TestCase
 from satori import Event
 
 from src.command.command import Command
-from src.module.message import Message
+from src.element.message import Message
 
 
 class TestCommand(TestCase):

@@ -4,7 +4,7 @@ from satori.client import Account
 from src.base.logger import logger
 from src.bot.app import app
 from src.command.command import Command
-from src.module.message import Message
+from src.element.message import Message
 
 
 @app.register

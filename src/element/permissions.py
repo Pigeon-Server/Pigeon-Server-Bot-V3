@@ -1,4 +1,4 @@
-from src.module.tree import BinaryTree
+from src.element.tree import BinaryTree
 
 
 class Mcsm:

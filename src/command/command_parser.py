@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 from src.bot.tools import per
-from src.module.message import Message
-from src.module.result import Result
-from src.module.tree import BinaryTree
+from src.element.message import Message
+from src.element.result import Result
+from src.element.tree import BinaryTree
 
 
 class CommandParser:

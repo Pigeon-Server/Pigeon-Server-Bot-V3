@@ -1,7 +1,7 @@
 from os import getcwd
 from os.path import join
 
-from satori import Image, LoginStatus, WebsocketsInfo
+from satori import LoginStatus, WebsocketsInfo
 from satori.client import Account, App
 
 from src.base.config import config

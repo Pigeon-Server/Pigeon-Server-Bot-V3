@@ -3,13 +3,14 @@ from typing import Awaitable, Callable, Dict, List, Optional
 
 from satori import Image
 
-from src.bot.app import message_sender, reply_manager
+from src.bot.app import message_sender, permission_image_dir, reply_manager
 from src.bot.tools import per
 from src.command.command_parser import CommandParser
 from src.module.message import Message
 from src.module.permissions import Permission
 from src.module.reply_message import ReplyType
 from src.module.result import Result
+from src.module.tree import BinaryTree
 
 
 class PermissionCommand(CommandParser):
@@ -146,12 +147,15 @@ class PermissionCommand(CommandParser):
 
         return None
 
-    def _get_user_id(self, command: str) -> str:
+    def _get_user_id(self, command: str) -> Optional[str]:
         if not command.startswith("@"):
             return command
-        return search(self._match_user_id, command).group()[1:-1]
+        res = search(self._match_user_id, command)
+        if res is None:
+            return None
+        return res.group()[1:-1]
 
-    def _check_permission(self, permission: str) -> bool:
+    def _check_permission(self, permission: BinaryTree) -> bool:
         if self.check_player(self._message.sender_id, permission):
             return False
         return True
@@ -168,25 +172,22 @@ class PermissionCommand(CommandParser):
             msg += "权限: \n" + "\n".join(data["permission"])
         return Result.of_success(msg.removesuffix("\n"))
 
-    async def _parse_list_command(self, command: List[str], command_length: int) -> Result:
-        # if self._check_permission(Permission.ShowList):
-        #     return self._permission_reject
+    async def _parse_list_command(self, _: List[str], command_length: int) -> Result:
+        if self._check_permission(Permission.ShowList):
+            return self._permission_reject
         if command_length == 2:
-            await message_sender.send_message(self._message.group_id, [])
+            with open(permission_image_dir, "rb") as f:
+                await message_sender.send_message(self._message.group_id, [Image.of(raw=f.read(), mime="image/png")])
             return Result.of_success()
-            # return Result.of_success(f"所有权限节点: \n{per.permission_node}")
-        if command_length == 3:
-            return Result.of_success(
-                f"{command[2]}权限节点: \n{'\n'.join(list(filter(lambda x: command[2] in x, per.permission_node)))}")
-        return Result.of_failure(f"Usage：\n/permission list [word]")
+        return Result.of_failure(f"Usage：\n/permission list")
 
     async def _parse_reload_command(self, command: List[str], command_length: int) -> Result:
         if command_length == 2:
-            if self._check_permission(Permission.Reload.Common):
+            if self._check_permission(Permission.Group.Reload.Common):
                 return self._permission_reject
             return Result.of_success(per.reload_group_permission().message)
         if command_length == 3 and command[2] == "true":
-            if self._check_permission(Permission.Reload.Force):
+            if self._check_permission(Permission.Group.Reload.Force):
                 return self._permission_reject
             return Result.of_success(per.reload_group_permission(True).message)
         return Result.of_failure(f"Usage：\n/permission reload [force]")
@@ -345,10 +346,11 @@ class PermissionCommand(CommandParser):
                 return await self._parse_player_parent_remove_command(command, command_length)
             case "set" | "s":
                 return await self._parse_player_parent_set_command(command, command_length)
-        return Result.of_failure("Usage：\n"
-                                 "/permission player group add (At | id) (groupName)\n"
-                                 "/permission player group remove (At | id) (groupName)\n"
-                                 "/permission player group set (At | id) (groupName)")
+            case _:
+                return Result.of_failure("Usage：\n"
+                                         "/permission player group add (At | id) (groupName)\n"
+                                         "/permission player group remove (At | id) (groupName)\n"
+                                         "/permission player group set (At | id) (groupName)")
 
     async def _parse_group_list_command(self, command: List[str], command_length: int) -> Result:
         if command_length >= 5:
@@ -489,6 +491,7 @@ class PermissionCommand(CommandParser):
                 return await self._parse_group_parent_add_command(command, command_length)
             case "remove" | "r":
                 return await self._parse_group_parent_remove_command(command, command_length)
-        return Result.of_failure("Usage：\n"
-                                 "/permission group group add (groupName) (groupName)\n"
-                                 "/permission group group remove (groupName) (groupName)")
+            case _:
+                return Result.of_failure("Usage：\n"
+                                         "/permission group group add (groupName) (groupName)\n"
+                                         "/permission group group remove (groupName) (groupName)")

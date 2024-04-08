@@ -1,4 +1,4 @@
-from satori import Event, Image
+from satori import Event
 from satori.client import Account
 
 from src.base.logger import logger

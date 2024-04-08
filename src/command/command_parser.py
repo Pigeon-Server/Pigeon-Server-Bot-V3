@@ -3,6 +3,7 @@ from typing import List, Optional
 from src.bot.tools import per
 from src.module.message import Message
 from src.module.result import Result
+from src.module.tree import BinaryTree
 
 
 class CommandParser:
@@ -13,5 +14,5 @@ class CommandParser:
         return Result.of_failure("Method not implemented")
 
     @staticmethod
-    def check_player(user_id: str, permission: str) -> bool:
+    def check_player(user_id: str, permission: BinaryTree) -> bool:
         return per.check_player_permission(user_id, permission).is_success

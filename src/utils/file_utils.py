@@ -1,7 +1,8 @@
 from os import makedirs
 from os.path import exists
 from pathlib import Path
-from typing import Any, Union
+from tempfile import TemporaryFile
+from typing import Any, Optional, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -27,8 +28,12 @@ def check_file(file: Union[str, Path], create_if_not_exist: bool = False, file_c
     return False
 
 
-def text_to_image(draw_content: Any, save_path: str = "image.png", font_family: str = "msyh.ttc",
+def text_to_image(draw_content: Any, save_path: Optional[str] = None, font_family: str = "msyh.ttc",
                   font_size: int = 50, text_color: str = 'black', bg_color: str = 'white') -> str:
+    if save_path is None:
+        file = TemporaryFile("rb", dir="temp", suffix=".png")
+        save_path = file.name
+        file.close()
     text = str(draw_content)
 
     text = text.replace("\t", " " * 4)

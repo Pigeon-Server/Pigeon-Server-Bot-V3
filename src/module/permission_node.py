@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from src.base.config import ConfigSet
 from src.module.json_database import DataType, JsonDataBase
@@ -57,12 +57,11 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure("重载权限组失败")
 
-    def get_group_permission(self, group_name: str, raw_content: bool = False) -> list:
+    def get_group_permission(self, group_name: str) -> list:
         """
         获取权限组的所有权限（包括继承的权限组）\n
         Args:
             group_name: 要查询的组名，可以单个也可以用列表
-            raw_content
         Returns:
             返回权限节点列表
         """
@@ -72,22 +71,17 @@ class PermissionManager(JsonDataBase):
             result: list = []
             if "parent" in self._group_permission._stored_data[group_name].keys():
                 result += self._get_group_permission(self._group_permission._stored_data[group_name]["parent"])
-                if not raw_content:
-                    result = self._permission_del(result)
             if "permission" in self._group_permission._stored_data[group_name].keys():
                 result += self._group_permission._stored_data[group_name]["permission"]
-                if not raw_content:
-                    result = self._permission_del(result)
             return result
         except:
             return []
 
-    def get_player_permission(self, user_id: str, raw_content: bool = False) -> list:
+    def get_player_permission(self, user_id: str) -> list:
         """
         获取某个玩家的全部权限\n
         Args:
             user_id: 玩家id
-            raw_content
         Returns:
             返回权限节点列表
         """
@@ -97,12 +91,8 @@ class PermissionManager(JsonDataBase):
             result: list = []
             if "group" in self._stored_data[user_id].keys():
                 result += self._get_group_permission(self._stored_data[user_id]["group"])
-                if not raw_content:
-                    result = self._permission_del(result)
             if "permission" in self._stored_data[user_id].keys():
                 result += self._stored_data[user_id]["permission"]
-                if not raw_content:
-                    result = self._permission_del(result)
             return result
         except:
             return []
@@ -160,7 +150,7 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"移除「{user_id}」的权限「{permission}」失败")
 
-    def check_player_permission(self, user_id: Union[str, int], permission: str) -> Result:
+    def check_player_permission(self, user_id: Union[str, int], permission: BinaryTree) -> Result:
         """
         检查玩家是否拥有某一权限节点\n
         Args:
@@ -172,8 +162,6 @@ class PermissionManager(JsonDataBase):
         user_id = str(user_id)
         try:
             if user_id not in self._stored_data.keys():
-                return Result.of_failure()
-            if f"-{permission}" in self._stored_data[user_id]["permission"]:
                 return Result.of_failure()
             data: list = self.get_player_permission(user_id)
             return Result(self._check_permission(data, permission))
@@ -304,7 +292,7 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"移除权限组「{group_name}」的权限「{permission}」失败")
 
-    def check_group_permission(self, group_name: str, permission: str) -> Result:
+    def check_group_permission(self, group_name: str, permission: BinaryTree) -> Result:
         """
         检查某一权限组是否拥有某一权限\n
         Args:
@@ -515,44 +503,15 @@ class PermissionManager(JsonDataBase):
         return Result.of_success(f"用户「{user_id}」添加成功")
 
     @staticmethod
-    def _permission_del(data: list, remove_all: bool = False) -> list:
-        need_del: set = set({})
-        for raw in data:
-            if raw in need_del:
-                continue
-            if raw == "-*.*":
-                return []
-            if raw.startswith("-"):
-                origin = len(need_del)
-                permission = raw[1:].split(".")
-                length = len(permission)
-                if permission[length - 1] == "*":
-                    permission_prefix = f"{'.'.join(permission[:-1])}."
-                    for i in data:
-                        if i in need_del:
-                            continue
-                        if i.startswith(permission_prefix):
-                            need_del.add(i)
-                elif raw[1:] in data:
-                    need_del.add(raw[1:])
-                if remove_all or origin != len(need_del):
-                    need_del.add(raw)
-        return list(filter(lambda x: x not in need_del, data))
-
-    @staticmethod
-    def _check_permission(data: list, permission: str) -> bool:
-        if "*.*" in data:
-            return True
-        if permission == "*.*":
-            return permission in data
-        temp = permission.split(".")
-        length = len(temp)
-        if length <= 1 or "*" in temp[:-1] or permission == ".".join("*" * length):
-            raise ValueError(permission)
-        for i in range(1, length):
-            if f"{'.'.join(temp[:i])}.*" in data:
+    def _check_permission(data: list, permission: BinaryTree) -> bool:
+        check_list: List[BinaryTree] = []
+        Root.instance.search(permission, check_list)
+        check_list.reverse()
+        for i in check_list:
+            if f"-{i.root}" in data:
+                return False
+            if i.root in data:
                 return True
-        return permission in data
 
     def _get_group_permission(self, group_name: Union[list, str]) -> list:
         """

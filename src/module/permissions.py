@@ -1,25 +1,35 @@
+from src.module.tree import BinaryTree
+
+
 class Mcsm:
     """
     关于mcsm面板的权限节点
     """
 
     class Update:
-        Common: str = "Mcsm.Update.Common"
-        Force: str = "Mcsm.Update.Force"
+        Common: BinaryTree = BinaryTree("Mcsm.Update.Common")
+        Force: BinaryTree = BinaryTree("Mcsm.Update.Force")
+        instance: BinaryTree = BinaryTree("Mcsm.Update.*").insert(Common).insert(Force)
 
-    Check: str = "Mcsm.Check"
-    List: str = "Mcsm.List"
-    Rename: str = "Mcsm.Rename"
-    Stop: str = "Mcsm.Stop"
-    Kill: str = "Mcsm.Kill"
-    Start: str = "Mcsm.Start"
-    Restart: str = "Mcsm.Restart"
-    Command: str = "Mcsm.Command"
+    Check: BinaryTree = BinaryTree("Mcsm.Check")
+    List: BinaryTree = BinaryTree("Mcsm.List")
+    Rename: BinaryTree = BinaryTree("Mcsm.Rename")
+    Stop: BinaryTree = BinaryTree("Mcsm.Stop")
+    Kill: BinaryTree = BinaryTree("Mcsm.Kill")
+    Start: BinaryTree = BinaryTree("Mcsm.Start")
+    Restart: BinaryTree = BinaryTree("Mcsm.Restart")
+    Command: BinaryTree = BinaryTree("Mcsm.Command")
 
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Mcsm.Command, Mcsm.Kill, Mcsm.Start, Mcsm.Stop, Mcsm.Restart,
-                Mcsm.Check, Mcsm.List, Mcsm.Rename, Mcsm.Update.Force, Mcsm.Update.Common]
+    instance: BinaryTree = (BinaryTree("Mcsm.*")
+                            .insert(Update.instance)
+                            .insert(Check)
+                            .insert(List)
+                            .insert(Rename)
+                            .insert(Stop)
+                            .insert(Kill)
+                            .insert(Start)
+                            .insert(Restart)
+                            .insert(Command))
 
 
 class Permission:
@@ -28,107 +38,79 @@ class Permission:
     """
 
     class Player:
-        Give: str = "Permission.Player.Give"
-        Remove: str = "Permission.Player.Remove"
-        Check: str = "Permission.Player.Check"
-        List: str = "Permission.Player.List"
-        Clone: str = "Permission.Player.Clone"
-        Del: str = "Permission.Player.Del"
-        Info: str = "Permission.Player.Info"
-        Create: str = "Permission.Player.Create"
-
         class Parent:
-            Add: str = "Permission.Player.Inherit.Add"
-            Del: str = "Permission.Player.Inherit.Del"
-            Set: str = "Permission.Player.Inherit.Set"
+            Add: BinaryTree = BinaryTree("Permission.Player.Parent.Add")
+            Del: BinaryTree = BinaryTree("Permission.Player.Parent.Del")
+            Set: BinaryTree = BinaryTree("Permission.Player.Parent.Set")
+            instance: BinaryTree = (BinaryTree("Permission.Player.Parent.*")
+                                    .insert(Add)
+                                    .insert(Del)
+                                    .insert(Set))
+
+        Give: BinaryTree = BinaryTree("Permission.Player.Give")
+        Remove: BinaryTree = BinaryTree("Permission.Player.Remove")
+        Check: BinaryTree = BinaryTree("Permission.Player.Check")
+        List: BinaryTree = BinaryTree("Permission.Player.List")
+        Clone: BinaryTree = BinaryTree("Permission.Player.Clone")
+        Del: BinaryTree = BinaryTree("Permission.Player.Del")
+        Info: BinaryTree = BinaryTree("Permission.Player.Info")
+        Create: BinaryTree = BinaryTree("Permission.Player.Create")
+        instance: BinaryTree = (BinaryTree("Permission.Player.*")
+                                .insert(Parent.instance)
+                                .insert(Give)
+                                .insert(Remove)
+                                .insert(Check)
+                                .insert(List)
+                                .insert(Clone)
+                                .insert(Del)
+                                .insert(Info)
+                                .insert(Create))
 
     class Group:
-        Give: str = "Permission.Group.Give"
-        Remove: str = "Permission.Group.Remove"
-        List: str = "Permission.Group.List"
-        Clone: str = "Permission.Group.Clone"
-        Del: str = "Permission.Group.Del"
-        Info: str = "Permission.Group.Info"
-        Check: str = "Permission.Group.Check"
-        Create: str = "Permission.Group.Create"
-
         class Parent:
-            Add: str = "Permission.Group.Inherit.Add"
-            Del: str = "Permission.Group.Inherit.Del"
+            Add: BinaryTree = BinaryTree("Permission.Group.Parent.Add")
+            Del: BinaryTree = BinaryTree("Permission.Group.Parent.Del")
+            instance: BinaryTree = (BinaryTree("Permission.Group.Parent.*")
+                                    .insert(Add)
+                                    .insert(Del))
 
-    class Reload:
-        Common: str = "Permission.Group.Reload.Common"
-        Force: str = "Permission.Group.Reload.Force"
+        class Reload:
+            Common: BinaryTree = BinaryTree("Permission.Group.Reload.Common")
+            Force: BinaryTree = BinaryTree("Permission.Group.Reload.Force")
+            instance: BinaryTree = (BinaryTree("Permission.Group.Reload.*")
+                                    .insert(Common)
+                                    .insert(Force))
 
-    ShowList: str = "Permission.List"
+        Give: BinaryTree = BinaryTree("Permission.Group.Give")
+        Remove: BinaryTree = BinaryTree("Permission.Group.Remove")
+        List: BinaryTree = BinaryTree("Permission.Group.List")
+        Clone: BinaryTree = BinaryTree("Permission.Group.Clone")
+        Del: BinaryTree = BinaryTree("Permission.Group.Del")
+        Info: BinaryTree = BinaryTree("Permission.Group.Info")
+        Check: BinaryTree = BinaryTree("Permission.Group.Check")
+        Create: BinaryTree = BinaryTree("Permission.Group.Create")
 
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Permission.Player.Check, Permission.Player.Clone, Permission.Player.Give, Permission.Player.Remove,
-                Permission.Player.List, Permission.Player.Parent.Del, Permission.Player.Parent.Add,
-                Permission.Player.Del, Permission.Player.Info,
-                Permission.Player.Create, Permission.Player.Parent.Set,
-                Permission.Group.List, Permission.Group.Clone, Permission.Group.Remove, Permission.Group.Give,
-                Permission.Group.Info,
-                Permission.Group.Del, Permission.Group.Parent.Add, Permission.Group.Parent.Del,
-                Permission.Group.Check,
-                Permission.Reload.Common, Permission.Reload.Force, Permission.Group.Create,
-                Permission.ShowList]
+        instance: BinaryTree = (BinaryTree("Permission.Group.*")
+                                .insert(Parent.instance)
+                                .insert(Reload.instance)
+                                .insert(Give)
+                                .insert(Remove)
+                                .insert(List)
+                                .insert(Clone)
+                                .insert(Del)
+                                .insert(Info)
+                                .insert(Check)
+                                .insert(Create))
 
+    ShowList: BinaryTree = BinaryTree("Permission.List")
 
-class Whitelist:
-    """
-    白名单权限节点
-    """
-    Apply: str = "Whitelist.Apply"
-    Change: str = "Whitelist.Change"
-    Agree: str = "Whitelist.Agree"
-    AgreeALL: str = "Whitelist.AgreeALL"
-    Refuse: str = "Whitelist.Refuse"
-
-    class List:
-        Wait: str = "Whitelist.List.Wait"
-
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Whitelist.Apply, Whitelist.Agree, Whitelist.AgreeALL, Whitelist.Change, Whitelist.Refuse,
-                Whitelist.List.Wait]
-
-
-class Blacklist:
-    """
-    黑名单权限节点
-    """
-    List: str = "Blacklist.List"
-    Check: str = "Blacklist.Check"
-    Add: str = "Blacklist.Add"
-    Remove: str = "Blacklist.Remove"
-
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Blacklist.List, Blacklist.Check, Blacklist.Add, Blacklist.Remove]
+    instance: BinaryTree = (BinaryTree("Permission.*")
+                            .insert(Player.instance)
+                            .insert(Group.instance)
+                            .insert(ShowList))
 
 
-class Token:
-    """
-    秘钥权限节点
-    """
-    Lock: str = "Token.Lock"
-    Unlock: str = "Token.Unlock"
-    Check: str = "Token.Check"
-
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Token.Lock, Token.Unlock, Token.Check]
-
-
-class Question:
-    """
-    问答权限节点
-    """
-    Shutup: str = "Question.Shutup"
-    GetAnswer: str = "Question.GetAnswer"
-
-    @staticmethod
-    def get_all_permission_node() -> list:
-        return [Question.GetAnswer, Question.Shutup]
+class Root:
+    instance: BinaryTree = (BinaryTree("*.*")
+                            .insert(Mcsm.instance)
+                            .insert(Permission.instance))

@@ -19,9 +19,9 @@ class PermissionManager(JsonDataBase):
         if self._group_permission._stored_data == {}:
             self._group_permission._stored_data = ConfigSet.load_config("permission.json5")
             self._group_permission.write_data()
-        self._permission_node_list = (Mcsm.get_all_permission_node() + Permission.get_all_permission_node()
-                                      + Blacklist.get_all_permission_node() + Whitelist.get_all_permission_node()
-                                      + Token.get_all_permission_node() + Question.get_all_permission_node())
+        # self._permission_node_list = (Mcsm.get_all_permission_node() + Permission.get_all_permission_node()
+        #                               + Blacklist.get_all_permission_node() + Whitelist.get_all_permission_node()
+        #                               + Token.get_all_permission_node() + Question.get_all_permission_node())
 
     def reload_group_permission(self, over_write: bool = False) -> Result:
         """
@@ -59,11 +59,12 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure("重载权限组失败")
 
-    def get_group_permission(self, group_name: str) -> list:
+    def get_group_permission(self, group_name: str, raw_content: bool = False) -> list:
         """
         获取权限组的所有权限（包括继承的权限组）\n
         Args:
             group_name: 要查询的组名，可以单个也可以用列表
+            raw_content
         Returns:
             返回权限节点列表
         """
@@ -73,19 +74,22 @@ class PermissionManager(JsonDataBase):
             result: list = []
             if "parent" in self._group_permission._stored_data[group_name].keys():
                 result += self._get_group_permission(self._group_permission._stored_data[group_name]["parent"])
-                result = self._permission_del(result)
+                if not raw_content:
+                    result = self._permission_del(result)
             if "permission" in self._group_permission._stored_data[group_name].keys():
                 result += self._group_permission._stored_data[group_name]["permission"]
-                result = self._permission_del(result)
+                if not raw_content:
+                    result = self._permission_del(result)
             return result
         except:
             return []
 
-    def get_player_permission(self, user_id: str) -> list:
+    def get_player_permission(self, user_id: str, raw_content: bool = False) -> list:
         """
         获取某个玩家的全部权限\n
         Args:
             user_id: 玩家id
+            raw_content
         Returns:
             返回权限节点列表
         """
@@ -95,10 +99,12 @@ class PermissionManager(JsonDataBase):
             result: list = []
             if "group" in self._stored_data[user_id].keys():
                 result += self._get_group_permission(self._stored_data[user_id]["group"])
-                result = self._permission_del(result)
+                if not raw_content:
+                    result = self._permission_del(result)
             if "permission" in self._stored_data[user_id].keys():
                 result += self._stored_data[user_id]["permission"]
-                result = self._permission_del(result)
+                if not raw_content:
+                    result = self._permission_del(result)
             return result
         except:
             return []
@@ -511,7 +517,7 @@ class PermissionManager(JsonDataBase):
         return Result.of_success(f"用户「{user_id}」添加成功")
 
     @staticmethod
-    def _permission_del(data: list) -> list:
+    def _permission_del(data: list, remove_all: bool = False) -> list:
         need_del: set = set({})
         for raw in data:
             if raw in need_del:
@@ -519,6 +525,7 @@ class PermissionManager(JsonDataBase):
             if raw == "-*.*":
                 return []
             if raw.startswith("-"):
+                origin = len(need_del)
                 permission = raw[1:].split(".")
                 length = len(permission)
                 if permission[length - 1] == "*":
@@ -530,7 +537,8 @@ class PermissionManager(JsonDataBase):
                             need_del.add(i)
                 elif raw[1:] in data:
                     need_del.add(raw[1:])
-                need_del.add(raw)
+                if remove_all or origin != len(need_del):
+                    need_del.add(raw)
         return list(filter(lambda x: x not in need_del, data))
 
     @staticmethod

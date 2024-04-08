@@ -8,7 +8,7 @@ from src.module.result import Result
 
 class PermissionManager(JsonDataBase):
     _group_permission: JsonDataBase
-    _permission_node_list: list
+    _permission_node_list: str
 
     def __init__(self) -> None:
         """
@@ -19,9 +19,7 @@ class PermissionManager(JsonDataBase):
         if self._group_permission._stored_data == {}:
             self._group_permission._stored_data = ConfigSet.load_config("permission.json5")
             self._group_permission.write_data()
-        # self._permission_node_list = (Mcsm.get_all_permission_node() + Permission.get_all_permission_node()
-        #                               + Blacklist.get_all_permission_node() + Whitelist.get_all_permission_node()
-        #                               + Token.get_all_permission_node() + Question.get_all_permission_node())
+        self._permission_node_list = str(Root.instance)
 
     def reload_group_permission(self, over_write: bool = False) -> Result:
         """
@@ -243,7 +241,7 @@ class PermissionManager(JsonDataBase):
             return Result.of_failure("克隆权限时出现错误")
 
     @property
-    def permission_node(self) -> list:
+    def permission_node(self) -> str:
         """
         获得所有的权限节点列表\n
         Returns:

@@ -36,8 +36,9 @@ class BinaryTree:
     def __str__(self) -> str:
         return self.get_tree(self)
 
-    def search(self, value: Any, res: List['BinaryTree']) -> bool:
-        res.append(self)
+    def search(self, value: Any, res: Optional[List['BinaryTree']] = None) -> bool:
+        if res is not None:
+            res.append(self)
         if isinstance(value, BinaryTree):
             if self == value:
                 return True
@@ -47,7 +48,8 @@ class BinaryTree:
         for child in self._child:
             if child.search(value, res):
                 return True
-        res.remove(self)
+        if res is not None:
+            res.remove(self)
         return False
 
     @staticmethod

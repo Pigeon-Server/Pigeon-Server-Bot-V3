@@ -1,6 +1,8 @@
 from re import Pattern, compile, search
 from typing import Awaitable, Callable, Dict, List, Optional
 
+from satori import Image
+
 from src.bot.app import message_sender, reply_manager
 from src.bot.tools import per
 from src.command.command_parser import CommandParser
@@ -70,11 +72,11 @@ class PermissionCommand(CommandParser):
         if command_length < 2:
             return
         match command[1]:
-            case "list", "l":
+            case "list" | "l":
                 return await self._parse_list_command(command, command_length)
-            case "reload", "r":
+            case "reload" | "r":
                 return await self._parse_reload_command(command, command_length)
-            case "help", "h":
+            case "help" | "h":
                 return self._command_helper
 
     async def _parse_player_command(self, command: List[str]) -> Optional[Result]:
@@ -167,10 +169,12 @@ class PermissionCommand(CommandParser):
         return Result.of_success(msg.removesuffix("\n"))
 
     async def _parse_list_command(self, command: List[str], command_length: int) -> Result:
-        if self._check_permission(Permission.ShowList):
-            return self._permission_reject
+        # if self._check_permission(Permission.ShowList):
+        #     return self._permission_reject
         if command_length == 2:
-            return Result.of_success(f"所有权限节点: \n{'\n'.join(per.permission_node)}")
+            await message_sender.send_message(self._message.group_id, [])
+            return Result.of_success()
+            # return Result.of_success(f"所有权限节点: \n{per.permission_node}")
         if command_length == 3:
             return Result.of_success(
                 f"{command[2]}权限节点: \n{'\n'.join(list(filter(lambda x: command[2] in x, per.permission_node)))}")

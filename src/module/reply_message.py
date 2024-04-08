@@ -1,6 +1,5 @@
 from asyncio import AbstractEventLoop, get_event_loop, run_coroutine_threadsafe
 from asyncio import Event as AsyncEvent
-from enum import Enum
 from threading import Timer
 from typing import Awaitable, Callable, Optional
 
@@ -9,12 +8,7 @@ from satori.client import Account, App
 from typing_extensions import Any
 
 from src.element.message import Message
-
-
-class ReplyType(Enum):
-    ACCEPT = 0
-    REJECT = 1
-    TIMEOUT = 2
+from src.type.Types import ReplyType
 
 
 class Reply:

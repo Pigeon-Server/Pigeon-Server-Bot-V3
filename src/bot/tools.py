@@ -1,5 +1,5 @@
 from src.base.config import config
-from src.module.permission_node import PermissionManager
+from src.module.permission_manager import PermissionManager
 from src.module.server_status import ServerStatus
 
 per = PermissionManager()

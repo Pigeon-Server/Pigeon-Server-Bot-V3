@@ -1,19 +1,19 @@
 from typing import Any, List, Optional, Set
 
 
-class BinaryTree:
+class Tree:
     _root: Any
-    _child: List['BinaryTree']
+    _child: List['Tree']
 
     def __init__(self, root: Any):
         self._root = root
         self._child = []
 
-    def insert(self, value: Any) -> 'BinaryTree':
-        if isinstance(value, BinaryTree):
+    def insert(self, value: Any) -> 'Tree':
+        if isinstance(value, Tree):
             self._child.append(value)
         else:
-            self._child.append(BinaryTree(value))
+            self._child.append(Tree(value))
         return self
 
     @property
@@ -21,7 +21,7 @@ class BinaryTree:
         return len(self._child) == 0
 
     @property
-    def children(self) -> List['BinaryTree']:
+    def children(self) -> List['Tree']:
         return self._child
 
     @property
@@ -36,10 +36,10 @@ class BinaryTree:
     def __str__(self) -> str:
         return self.get_tree(self)
 
-    def search(self, value: Any, res: Optional[List['BinaryTree']] = None) -> bool:
+    def search(self, value: Any, res: Optional[List['Tree']] = None) -> bool:
         if res is not None:
             res.append(self)
-        if isinstance(value, BinaryTree):
+        if isinstance(value, Tree):
             if self == value:
                 return True
         else:
@@ -53,7 +53,7 @@ class BinaryTree:
         return False
 
     @staticmethod
-    def get_tree(node: 'BinaryTree', prefix: List[str] = (), depth: int = 0, hide: Optional[Set[int]] = None) -> str:
+    def get_tree(node: 'Tree', prefix: List[str] = (), depth: int = 0, hide: Optional[Set[int]] = None) -> str:
         if hide is None:
             hide = set()
         res = f"{''.join(prefix)}{node._root}\n"

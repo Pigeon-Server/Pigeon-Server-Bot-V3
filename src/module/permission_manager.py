@@ -150,7 +150,7 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"移除「{user_id}」的权限「{permission}」失败")
 
-    def check_player_permission(self, user_id: Union[str, int], permission: BinaryTree) -> Result:
+    def check_player_permission(self, user_id: Union[str, int], permission: Tree | str) -> Result:
         """
         检查玩家是否拥有某一权限节点\n
         Args:
@@ -292,7 +292,7 @@ class PermissionManager(JsonDataBase):
         except:
             return Result.of_failure(f"移除权限组「{group_name}」的权限「{permission}」失败")
 
-    def check_group_permission(self, group_name: str, permission: BinaryTree) -> Result:
+    def check_group_permission(self, group_name: str, permission: Tree | str) -> Result:
         """
         检查某一权限组是否拥有某一权限\n
         Args:
@@ -503,8 +503,8 @@ class PermissionManager(JsonDataBase):
         return Result.of_success(f"用户「{user_id}」添加成功")
 
     @staticmethod
-    def _check_permission(data: list, permission: BinaryTree) -> bool:
-        check_list: List[BinaryTree] = []
+    def _check_permission(data: list, permission: Tree | str) -> bool:
+        check_list: List[Tree] = []
         Root.instance.search(permission, check_list)
         check_list.reverse()
         for i in check_list:

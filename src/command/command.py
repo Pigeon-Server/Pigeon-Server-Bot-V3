@@ -1,19 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
 from satori import Event
 from satori.client import Account
 
 from src.bot.app import message_sender
-from src.bot.tools import per
-from src.command.command_parser import CommandParser
-from src.command.permission_command import PermissionCommand
-from src.command.server_status_command import ServerStatusCommand
+from src.bot.tools import ps_manager, cp_manager
 from src.element.message import Message
-
-command_parsers: List[CommandParser] = [
-    ServerStatusCommand(),
-    PermissionCommand()
-]
 
 
 class Command:
@@ -31,9 +23,9 @@ class Command:
         if command is None:
             return
 
-        per.create_player(str(event.user.id))
+        ps_manager.create_player(str(event.user.id))
 
-        for parser in command_parsers:
+        for parser in list(cp_manager.command_parsers):
             result = await parser.parse(message, command)
             if result is not None:
                 if result.has_message:

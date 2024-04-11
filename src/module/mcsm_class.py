@@ -1,4 +1,5 @@
 from bidict import bidict
+from re import sub
 from sys import exit
 from time import strftime, localtime
 from typing import Dict, Optional, Tuple, Union
@@ -13,7 +14,7 @@ from src.type.response_body import RemoteServices, InstanceInfo
 from src.type.types import HttpCode
 
 
-class MCSMClass(JsonDataBase):
+class McsmManager(JsonDataBase):
     _api_url: str = None
     _api_key: str = None
     _enable_SSL: bool = True
@@ -115,6 +116,7 @@ class MCSMClass(JsonDataBase):
                     # 更新daemon名称
                     service.remarks = self._daemon_uuid.inverse[service.uuid]
                 else:
+                    service.remarks = service.remarks.replace(" ", "")
                     # 如果没有那么就新增字段
                     daemon_uuid[service.remarks] = service.uuid
                     self._daemon_uuid[service.remarks] = service.uuid
@@ -140,6 +142,7 @@ class MCSMClass(JsonDataBase):
                         # 更新server的名称
                         instance.config.nickname = server.inverse[instance.instanceUuid]
                     else:
+                        instance.config.nickname = instance.config.nickname.replace(" ", "")
                         # 如果没有记录,则创建一条记录
                         self._server[service.uuid][instance.config.nickname] = instance.instanceUuid
                     daemon_list[service.remarks]["instances"][instance.instanceUuid] = instance.status
@@ -356,7 +359,9 @@ class MCSMClass(JsonDataBase):
         for raw in temp_list:
             if raw.find("]: ") != -1:
                 res += f"{raw[raw.find(']: ') + 3:]}\n"
-        return Result.of_success(res.removesuffix("\n"))
+        res = res.removesuffix("\n")
+        res = sub(r"(\033\[(\d+|\d+;\d+|\d+;\d+;\d+)?m)?", "", res)
+        return Result.of_success(res)
 
     # 第二次封装
     def check_instance_status(self, instance_name: str, remote_name: str = None) -> Result:
@@ -374,18 +379,16 @@ class MCSMClass(JsonDataBase):
         self.update_instance_status(remote_uuid, instance_uuid)
         return Result.of_success(f"守护进程名称: {remote_name}\n"
                                  f"实例名称: {instance_name}\n"
-                                 f"实例运行状态: {self.status(self.get_server_status(remote_name, instance_uuid))}")
+                                 f"实例状态: {self.status(self.get_server_status(remote_name, instance_uuid))}")
 
-    async def run_command(self, instance_name: str, remote_name: str, command: str) -> Result:
-        daemon, server = self.check_name(remote_name, instance_name)
-        if daemon.is_fail:
-            return daemon
+    async def run_command(self, instance_name: str, command: str) -> Result:
+        _, server = self.check_name(instance_name=instance_name)
         if server.is_fail:
             return server
+        remote_uuid = self.get_server_remote_uuid_by_name(instance_name).message
         instance_uuid = server.message
-        remote_uuid = daemon.message
         self.update_instance_status(remote_uuid, instance_uuid)
-        status = self.get_server_status(remote_name, instance_uuid)
+        status = self.get_server_status(self.is_daemon_uuid(remote_uuid).message, instance_uuid)
         if status != 3:
             return Result.of_failure(f"实例当前状态是:{self.status(status)},无法执行命令")
         time_stamp = self._command(instance_uuid, remote_uuid, command)
@@ -426,11 +429,13 @@ class MCSMClass(JsonDataBase):
         if daemon.is_success:
             self._stored_data["daemon_list"][new_name] = self._stored_data["daemon_list"].pop(original_name)
             self._stored_data["daemon_uuid"][new_name] = self._stored_data["daemon_uuid"].pop(original_name)
+            self._daemon_uuid[new_name] = self._daemon_uuid.pop(original_name)
             self.write_data()
             return Result.of_success(f"修改守护进程名称[{original_name}] -> [{new_name}]")
         daemon_uuid = self.get_server_remote_uuid_by_name(original_name).message
         server_list = self._stored_data["servers"][daemon_uuid]
         server_list[new_name] = server_list.pop(original_name)
+        self._server[daemon_uuid][new_name] = self._server[daemon_uuid].pop(original_name)
         self.write_data()
         return Result.of_success(f"修改实例名称[{original_name}] -> [{new_name}]")
 

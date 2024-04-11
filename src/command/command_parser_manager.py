@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from src.command.command_parser import CommandParser
 

@@ -4,7 +4,8 @@ from satori import Event
 from satori.client import Account
 
 from src.bot.app import message_sender
-from src.bot.tools import ps_manager, cp_manager
+from src.bot.command import cp_manager
+from src.bot.permission import ps_manager
 from src.element.message import Message
 
 

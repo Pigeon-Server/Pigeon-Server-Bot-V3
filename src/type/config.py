@@ -28,13 +28,24 @@ class Config:
         def __init__(self, data: dict):
             self.__dict__ = data
 
+    class McsmConfig:
+        api_key: str
+        api_url: str
+        update_time: int
+
+        def __init__(self, data: dict):
+            self.__dict__ = data
+
+    config_version: str
     database: DatabaseConfig | dict
     group_config: GroupConfig | dict
     login_config: LoginConfig | dict
     server_list: Dict[str, str]
+    mcsm_config: McsmConfig | dict
 
     def __init__(self, data: dict):
         self.__dict__ = data
         self.database = self.DatabaseConfig(self.database)
         self.group_config = self.GroupConfig(self.group_config)
         self.login_config = self.LoginConfig(self.login_config)
+        self.mcsm_config = self.McsmConfig(self.mcsm_config)

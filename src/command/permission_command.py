@@ -4,7 +4,7 @@ from typing import Awaitable, Callable, Dict, List, Optional
 from satori import Image
 
 from src.bot.app import message_sender, permission_image_dir, reply_manager
-from src.bot.tools import ps_manager
+from src.bot.permission import ps_manager
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Permission
@@ -16,7 +16,6 @@ from src.element.tree import Tree
 class PermissionCommand(CommandParser):
     _match_user_id: Pattern = compile(r"\(\d*?\)")
     _message: Message
-    _permission_reject: Result = Result.of_failure("你无权这么做")
     _command_helper: Result = Result.of_failure(f"Permission模块帮助: \n"
                                                 f"/permission player add (At | id) (permission)\n"
                                                 f"/permission player remove (At | id) (permission)\n"
@@ -161,11 +160,6 @@ class PermissionCommand(CommandParser):
         if res is None:
             return None
         return res.group()[1:-1]
-
-    def _check_permission(self, permission: Tree) -> bool:
-        if self.check_player(self._message.sender_id, permission):
-            return False
-        return True
 
     @staticmethod
     def _parse_permission_data(msg: str, data: Dict[str, str]) -> Result:

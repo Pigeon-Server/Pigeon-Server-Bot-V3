@@ -43,10 +43,10 @@ class MessageSender:
         log_message = Message.parse(message)
         if isinstance(channel_id, str):
             channel: Guild = await self._account.guild_get(guild_id=channel_id)
-            logger.debug(f'[消息]->{channel.name}({channel.id}): {log_message}')
+            logger.info(f'[消息]->{channel.name}({channel.id}): {log_message}')
             return await self._account.send_message(channel_id, message)
         if isinstance(channel_id, Event):
-            logger.debug(f'[消息]->{channel_id.guild.name}({channel_id.guild.id}): {log_message}')
+            logger.info(f'[消息]->{channel_id.guild.name}({channel_id.guild.id}): {log_message}')
             return await self._account.send(channel_id, message)
 
     async def send_quote_message(self, channel_id: str, replay_id: Union[str, MessageObject], msg: str,

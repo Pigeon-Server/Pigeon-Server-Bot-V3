@@ -3,7 +3,7 @@ from typing import List, TypeVar
 
 class ResponseHeader:
     status: int
-    data: dict
+    data: dict | str
     time: int
 
     def __init__(self, data: dict):

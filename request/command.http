@@ -1,0 +1,1 @@
+GET {{url}}/api/protected_instance/command?apikey={{apikey}}&remote_uuid=df473f5da63640b9b4617e4cde3f0a8e&uuid=335ffbbafad1426a84774c9659b3b77b&command=forge%20tps

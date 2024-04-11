@@ -90,3 +90,25 @@ class Message:
     @property
     def message_id(self) -> str:
         return self._event.message.id
+
+    @staticmethod
+    def parse(elements: Union[List[Union[str, Element]], str]) -> str:
+        if isinstance(elements, str):
+            return elements.replace("\n", "|")
+        res = ""
+        for element in elements:
+            if isinstance(element, str):
+                res += element
+            if isinstance(element, Element):
+                if isinstance(element, At):
+                    res += f"@{element.id}"
+                    continue
+                if isinstance(element, Text):
+                    res += element.text
+                    continue
+                if isinstance(element, Image):
+                    res += "[图片]"
+                    continue
+                if isinstance(element, Quote):
+                    res += f"[回复({element.id})]"
+        return res.replace("\n", "|")

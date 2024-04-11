@@ -1,0 +1,1 @@
+GET {{url}}/api/instance?uuid=0a27f4c306c0491bad88af6d4f20c8e1&remote_uuid=df473f5da63640b9b4617e4cde3f0a8e&apikey={{apikey}}

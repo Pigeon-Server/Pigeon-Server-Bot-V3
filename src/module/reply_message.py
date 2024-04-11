@@ -8,7 +8,7 @@ from satori.client import Account, App
 from typing_extensions import Any
 
 from src.element.message import Message
-from src.type.Types import ReplyType
+from src.type.types import ReplyType
 
 
 class Reply:

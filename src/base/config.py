@@ -6,8 +6,8 @@ from typing import Optional
 from json5.lib import load as js5_load
 
 from src.base.logger import logger
-from src.type.Config import Config
-from src.type.SysConfig import SysConfig
+from src.type.config import Config
+from src.type.sys_config import SysConfig
 from src.utils.file_utils import check_file
 
 

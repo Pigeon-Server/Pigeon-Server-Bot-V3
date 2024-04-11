@@ -1,10 +1,12 @@
 from typing import List, Optional, Union, overload
 
-from satori import At, Element, Event, MessageObject, Quote
+from satori import At, Element, Event, Guild, MessageObject, Quote
 from satori.client import Account
 
+from src.base.logger import logger
 from src.base.config import config
-from src.type.Types import message_type
+from src.element.message import Message
+from src.type.types import message_type
 
 
 class MessageSender:
@@ -38,9 +40,13 @@ class MessageSender:
                 message = f"{'-' * 5}Dev{'-' * 5}\n{message}"
             if isinstance(message, list):
                 message = [f"{'-' * 5}Dev{'-' * 5}\n"] + message
+        log_message = Message.parse(message)
         if isinstance(channel_id, str):
+            channel: Guild = await self._account.guild_get(guild_id=channel_id)
+            logger.debug(f'[消息]->{channel.name}({channel.id}): {log_message}')
             return await self._account.send_message(channel_id, message)
         if isinstance(channel_id, Event):
+            logger.debug(f'[消息]->{channel_id.guild.name}({channel_id.guild.id}): {log_message}')
             return await self._account.send(channel_id, message)
 
     async def send_quote_message(self, channel_id: str, replay_id: Union[str, MessageObject], msg: str,
@@ -50,4 +56,4 @@ class MessageSender:
             message.append(At(at_id))
             message.append(" ")
         message.append(msg)
-        return await self._account.send_message(channel_id, message)
+        return await self.send_message(channel_id, message)

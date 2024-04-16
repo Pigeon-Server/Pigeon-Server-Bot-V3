@@ -19,7 +19,6 @@ class Message:
         self._event = event
         self._raw_message = event.message
         self._elements = self._raw_message.message
-        print(event)
         for element in self._elements:
             if isinstance(element, At):
                 self._message += f"@{element.name}({element.id})"

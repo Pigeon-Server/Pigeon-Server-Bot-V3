@@ -47,16 +47,15 @@ class McsmManager(JsonDataBase):
             if not response.success:
                 match response.code:
                     case HttpCode.ERROR_PARAMS:
-                        logger.error("访问参数错误")
+                        logger.critical("访问参数错误")
                     case HttpCode.FORBIDDEN:
-                        logger.error("Apikey错误")
+                        logger.critical("Apikey错误")
                     case HttpCode.SERVER_ERROR:
-                        logger.error("服务器出错")
+                        logger.critical("服务器出错")
                 exit()
         except ConnectionError as err:
-            logger.error("无法访问MCSM，请检查网络和url设置是否出错")
-            logger.error(err)
-            exit()
+            logger.critical("无法访问MCSM，请检查网络和url设置是否出错")
+            logger.critical(err)
 
     def _call_api(self, path: str, params: Optional[dict] = None) -> Response:
         """
@@ -82,10 +81,13 @@ class McsmManager(JsonDataBase):
             if not isinstance(params, dict):
                 raise ValueError("请求参数错误！")
             param.update(params)
-        logger.debug(f"HTTP请求：GET {url}")
-        res = get(url=url, headers={"Content-Type": "application/json; charset=utf-8"},
-                  params=param, timeout=10, verify=self._enable_SSL).json()
-        return Response(res)
+        logger.trace(f"HTTP请求：GET {url}")
+        try:
+            res = get(url=url, headers={"Content-Type": "application/json; charset=utf-8"},
+                      params=param, timeout=2, verify=self._enable_SSL).json()
+            return Response(res)
+        except OSError as e:
+            logger.critical(e)
 
     def get_mcsm_info(self, force_load: bool = False) -> None:
         """

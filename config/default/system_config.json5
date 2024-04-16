@@ -1,4 +1,4 @@
 {
-  "debug": true,
+  "log_level": "debug",
   "dev": true
 }

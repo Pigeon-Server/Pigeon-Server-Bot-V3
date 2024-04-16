@@ -9,6 +9,7 @@ class Config:
         database_name: str
         port: int
         auto_commit: bool
+        ping_delay: int
 
         def __init__(self, data: dict):
             self.__dict__ = data

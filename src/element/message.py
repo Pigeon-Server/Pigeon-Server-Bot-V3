@@ -12,11 +12,14 @@ class Message:
     _raw_message: MessageObject
     _elements: List[Element]
     _message: str = ""
+    _has_quote: bool = False
+    _quote_id: str = ""
 
     def __init__(self, event: Event):
         self._event = event
         self._raw_message = event.message
         self._elements = self._raw_message.message
+        print(event)
         for element in self._elements:
             if isinstance(element, At):
                 self._message += f"@{element.name}({element.id})"
@@ -37,6 +40,7 @@ class Message:
                 self._message += "[文件]"
                 continue
             if isinstance(element, Quote):
+                self._has_quote = True
                 self._message += f"[回复({element._children[0]._attrs['id']})]"
                 continue
             if isinstance(element, Custom):

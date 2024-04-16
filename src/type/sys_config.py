@@ -1,5 +1,5 @@
 class SysConfig:
-    debug: bool
+    log_level: str
     dev: bool
 
     def __init__(self, data: dict):

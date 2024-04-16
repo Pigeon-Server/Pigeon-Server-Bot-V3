@@ -1,12 +1,13 @@
 {
-  config_version: "1.0.0",
+  config_version: "1.0.1",
   database: {
     host: "127.0.0.1",
     password: "123456",
     username: "root",
     database_name: "bot",
     port: 3306,
-    auto_commit: true
+    auto_commit: true,
+    ping_delay: 30
   },
   group_config: {
     admin_group: "12345678"

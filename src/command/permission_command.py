@@ -10,7 +10,6 @@ from src.element.message import Message
 from src.element.permissions import Permission
 from src.type.types import ReplyType
 from src.element.result import Result
-from src.element.tree import Tree
 
 
 class PermissionCommand(CommandParser):

@@ -20,7 +20,7 @@ class Command:
         msg = message.message[1:]
         temp = ""
         for i in msg:
-            if i == '"' or i == "'":
+            if i in ['"', "'"]:
                 if stack == [] or stack[-1] != i:
                     stack.append(i)
                 else:

@@ -21,3 +21,9 @@ class HttpCode(Enum):
     ERROR_PARAMS = 400
     FORBIDDEN = 403
     SERVER_ERROR = 500
+
+
+class ReturnType(Enum):
+    NONE = 0
+    ONE = 1
+    ALL = 2

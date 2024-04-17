@@ -12,7 +12,7 @@ from src.element.message import Message
 class Command:
     @staticmethod
     def command_split(message: Message) -> Optional[list[str]]:
-        if message.message.startswith('/') or message.message.startswith('!'):
+        if message.is_command:
             return message.message[1:].removesuffix(" ").split(" ")
         return None
 

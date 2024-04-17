@@ -1,7 +1,8 @@
+from datetime import datetime
+
 from bidict import bidict
 from re import sub
 from sys import exit
-from time import strftime, localtime
 from typing import Dict, Optional, Tuple, Union
 from requests import get
 from asyncio.tasks import sleep
@@ -352,7 +353,7 @@ class McsmManager(JsonDataBase):
         if not data.success:
             return Result.of_failure(f"命令执行失败, apiCode: {data.code}")
         temp_list: list = []
-        time = strftime("[%H:%M:%S]", localtime(time_stamp))
+        time = datetime.fromtimestamp(time_stamp).strftime("[%H:%M:%S]")
         data = data.body.data.split('\n')
         for item in data:
             if time in item and "[Server thread/INFO]" in item:

@@ -1,8 +1,11 @@
+from datetime import datetime
 from typing import List
 from typing import Type, Union
 
 from satori import Element, Event, MessageObject
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
+
+from src.model.message_model import MessageModel
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
@@ -14,9 +17,11 @@ class Message:
     _message: str = ""
     _has_quote: bool = False
     _quote_id: str = ""
+    _send_time: str
 
     def __init__(self, event: Event):
         self._event = event
+        self._send_time = event.timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         self._raw_message = event.message
         self._elements = self._raw_message.message
         for element in self._elements:
@@ -115,3 +120,17 @@ class Message:
                 if isinstance(element, Quote):
                     res += f"[回复({element.id})]"
         return res.replace("\n", "|")
+
+    @property
+    def model(self) -> MessageModel:
+        return MessageModel(self._event.message.id,
+                            self._event.user.id,
+                            self.sender_name,
+                            self._event.guild.id,
+                            self._event.guild.name,
+                            self._message,
+                            self._send_time)
+
+    @property
+    def is_command(self) -> bool:
+        return self._message.startswith("/") or self._message.startswith("!")

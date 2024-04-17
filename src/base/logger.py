@@ -24,7 +24,11 @@ logger.remove()
 logger.add(stdout,
            format=log_format,
            level=config.sys_config.log_level.upper())
-logger.add(lambda _: exit(-1), level="CRITICAL")
 logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}.log"),
-           format=log_format, rotation="00:00",
+           format=log_format, rotation="00:00", compression="zip",
            level=config.sys_config.log_level.upper())
+if config.sys_config.log_level.upper() != "TRACE":
+    logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}-full.log"),
+               format=log_format, rotation="00:00", compression="zip",
+               level="TRACE")
+logger.add(lambda _: exit(-1), level="CRITICAL")

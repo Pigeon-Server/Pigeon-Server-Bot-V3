@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from satori import Event
@@ -12,9 +13,27 @@ from src.element.message import Message
 class Command:
     @staticmethod
     def command_split(message: Message) -> Optional[list[str]]:
-        if message.is_command:
-            return message.message[1:].removesuffix(" ").split(" ")
-        return None
+        if not message.is_command:
+            return None
+        res = []
+        stack = []
+        msg = message.message[1:]
+        temp = ""
+        for i in msg:
+            if i == '"' or i == "'":
+                if stack == [] or stack[-1] != i:
+                    stack.append(i)
+                else:
+                    stack.pop()
+                continue
+            if stack == [] and i.isspace():
+                res.append(temp)
+                temp = ""
+                continue
+            temp += i
+        if temp != "":
+            res.append(temp)
+        return res
 
     @staticmethod
     async def command_parsing(message: Message, _: Account, event: Event) -> None:

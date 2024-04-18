@@ -85,10 +85,10 @@ class McsmManager(JsonDataBase):
         logger.trace(f"HTTP请求：GET {url}")
         try:
             res = get(url=url, headers={"Content-Type": "application/json; charset=utf-8"},
-                      params=param, timeout=2, verify=self._enable_SSL).json()
+                      params=param, timeout=10, verify=self._enable_SSL).json()
             return Response(res)
         except OSError as e:
-            logger.critical(e)
+            logger.error(e)
 
     def get_mcsm_info(self, force_load: bool = False) -> None:
         """

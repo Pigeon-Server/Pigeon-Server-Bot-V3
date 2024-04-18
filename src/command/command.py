@@ -27,8 +27,9 @@ class Command:
                     stack.pop()
                 continue
             if stack == [] and i.isspace():
-                res.append(temp)
-                temp = ""
+                if len(temp) != 0:
+                    res.append(temp)
+                    temp = ""
                 continue
             temp += i
         if temp != "":

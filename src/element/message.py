@@ -128,6 +128,7 @@ class Message:
                             self.sender_name,
                             self._event.guild.id,
                             self._event.guild.name,
+                            self.is_command,
                             self._message,
                             self._send_time)
 

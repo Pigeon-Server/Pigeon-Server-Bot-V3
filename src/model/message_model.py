@@ -11,22 +11,24 @@ class MessageModel(Model):
     _group_name: str
     _message: str
     _send_time: str
+    _is_command: bool
 
     def __init__(self, message_id: str, sender_id: str, sender_name: str, group_id: str,
-                 group_name: str, message: str, send_time: str):
+                 group_name: str, is_command: bool, message: str, send_time: str):
         self._message_id = message_id
         self._sender_id = sender_id
         self._sender_name = sender_name
         self._group_id = group_id
         self._group_name = group_name
+        self._is_command = is_command
         self._message = message
         self._send_time = send_time
 
     def insert(self) -> tuple[str, list[str]]:
         return (("INSERT INTO `message` (message_id, sender_id, sender_name, "
-                 "group_id, group_name, message, send_time) VALUES (%s, %s, %s, %s, %s, %s, %s)"),
-                [self._message_id, self._sender_id, self._sender_name,
-                 self._group_id, self._group_name, self._message, self._send_time])
+                 "group_id, group_name, is_command, message, send_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"),
+                [self._message_id, self._sender_id, self._sender_name, self._group_id,
+                 self._group_name, self._is_command, self._message, self._send_time])
 
     def select(self) -> tuple[str, list[str]]:
         pass

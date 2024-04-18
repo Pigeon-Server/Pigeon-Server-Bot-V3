@@ -10,7 +10,7 @@ database.run_command("""CREATE TABLE IF NOT EXISTS `message`  (
                       `sender_name` varchar(255) NOT NULL,
                       `group_id` char(16) NOT NULL,
                       `group_name` varchar(255) NOT NULL,
-                      `is_command` tinyint NOT NULL DEFAULT 0,
+                      `is_command` tinyint(1) NOT NULL DEFAULT 0,
                       `message` text NULL,
                       `send_time` datetime NOT NULL,
                       PRIMARY KEY (`id`, `message_id`),

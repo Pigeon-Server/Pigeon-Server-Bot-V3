@@ -23,6 +23,8 @@ class OtherCommand(CommandParser):
                                             FROM
                                                 message
                                             WHERE
+                                                message.is_command = FALSE
+                                                AND
                                                 message.group_id = %s 
                                                 AND
                                                 DATE(message.send_time) = %s

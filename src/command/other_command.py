@@ -44,7 +44,7 @@ class OtherCommand(CommandParser):
                             .replace("[文件]", ""))
                 tmp = sub(pattern, "", tmp)
                 if tmp == "":
-                    return
+                    continue
                 temp.append(tmp)
             message = "".join(temp)
             wordcloud_path = join(getcwd(), "image/wordcloud.png")

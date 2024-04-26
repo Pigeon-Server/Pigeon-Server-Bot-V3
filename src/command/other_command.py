@@ -2,6 +2,7 @@ from os import getcwd
 from os.path import join
 from typing import List, Optional
 from datetime import datetime
+from re import Pattern, compile, sub
 
 from satori import Image
 
@@ -13,11 +14,13 @@ from src.element.result import Result
 from src.module.message_wordcloud import MessageWordCloud
 from src.type.types import ReturnType
 
+pattern: Pattern = compile(r"(\[回复\([\s\S]+\)])?@[\s\S]+\(\d+\)( )?")
+
 
 class OtherCommand(CommandParser):
     async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
         await super().parse(message, command)
-        if command[0] == "词云":
+        if command[0] == "word":
             res = database.run_command("""SELECT
                                                 message.message
                                             FROM
@@ -34,7 +37,13 @@ class OtherCommand(CommandParser):
                                        ReturnType.ALL)
             temp = []
             for message in res:
-                temp.append(message[0])
+                tmp: str = (message[0]
+                            .replace("[图片]", "")
+                            .replace("[语音]", "")
+                            .replace("[视频]", "")
+                            .replace("[文件]", ""))
+                tmp = sub(pattern, "", tmp)
+                temp.append(tmp)
             message = "".join(temp)
             wordcloud_path = join(getcwd(), "image/wordcloud.png")
             MessageWordCloud.wordcloud(message, wordcloud_path)

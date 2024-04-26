@@ -66,7 +66,7 @@ class Database:
 
     @logger.catch()
     def insert_message(self, message: MessageModel) -> None:
-        sql, args = message.insert()
+        sql, args = MessageModel.insert(message)
         self.run_command(sql, args, ReturnType.ONE)
 
     @logger.catch()

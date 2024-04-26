@@ -45,6 +45,8 @@ class McsmManager(JsonDataBase):
         """
         try:
             response = self._call_api("overview")
+            if response is None:
+                raise ConnectionError("Connect timed out")
             if not response.success:
                 match response.code:
                     case HttpCode.ERROR_PARAMS:
@@ -55,8 +57,8 @@ class McsmManager(JsonDataBase):
                         logger.critical("服务器出错")
                 exit()
         except ConnectionError as err:
+            logger.error(err)
             logger.critical("无法访问MCSM，请检查网络和url设置是否出错")
-            logger.critical(err)
 
     def _call_api(self, path: str, params: Optional[dict] = None) -> Response:
         """

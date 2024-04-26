@@ -17,11 +17,11 @@ class Message:
     _message: str = ""
     _has_quote: bool = False
     _quote_id: str = ""
-    _send_time: str
+    _send_time: datetime
 
     def __init__(self, event: Event):
         self._event = event
-        self._send_time = event.timestamp.strftime("%Y-%m-%dT%H:%M:%S")
+        self._send_time = event.timestamp
         self._raw_message = event.message
         self._elements = self._raw_message.message
         for element in self._elements:
@@ -135,3 +135,7 @@ class Message:
     @property
     def is_command(self) -> bool:
         return self._message.startswith("/") or self._message.startswith("!")
+
+    @property
+    def send_time(self) -> datetime:
+        return self._send_time

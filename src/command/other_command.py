@@ -43,6 +43,8 @@ class OtherCommand(CommandParser):
                             .replace("[视频]", "")
                             .replace("[文件]", ""))
                 tmp = sub(pattern, "", tmp)
+                if tmp == "":
+                    return
                 temp.append(tmp)
             message = "".join(temp)
             wordcloud_path = join(getcwd(), "image/wordcloud.png")

@@ -110,7 +110,14 @@ class Permission:
                       .insert(ShowList))
 
 
+class Other:
+    Reboot: Tree = Tree("Reboot")
+    Word: Tree = Tree("Word")
+    instance: Tree = Tree("Other.*").insert(Reboot).insert(Word)
+
+
 class Root:
     instance: Tree = (Tree("*.*")
                       .insert(Mcsm.instance)
-                      .insert(Permission.instance))
+                      .insert(Permission.instance)
+                      .insert(Other.instance))

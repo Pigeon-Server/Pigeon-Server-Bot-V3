@@ -8,8 +8,8 @@ from src.bot.permission import ps_manager
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Permission
-from src.type.types import ReplyType
 from src.element.result import Result
+from src.type.types import ReplyType
 
 
 class PermissionCommand(CommandParser):
@@ -67,8 +67,7 @@ class PermissionCommand(CommandParser):
         super().__init__()
 
     async def _parse_other_command(self, command: List[str]) -> Optional[Result]:
-        command_length = len(command)
-        if command_length < 2:
+        if (command_length := len(command)) < 2:
             return None
         match command[1]:
             case "list" | "l":
@@ -79,8 +78,7 @@ class PermissionCommand(CommandParser):
                 return self._command_helper
 
     async def _parse_player_command(self, command: List[str]) -> Optional[Result]:
-        command_length = len(command)
-        if command_length <= 1 or command[1] not in ["player", "p"]:
+        if (command_length := len(command)) <= 1 or command[1] not in ["player", "p"]:
             return None
         if command_length < 4:
             return self._player_command_helper
@@ -107,8 +105,7 @@ class PermissionCommand(CommandParser):
                 return self._player_command_helper
 
     async def _parse_group_command(self, command: List[str]) -> Optional[Result]:
-        command_length = len(command)
-        if command_length <= 1 or command[1] not in ["group", "g"]:
+        if (command_length := len(command)) <= 1 or command[1] not in ["group", "g"]:
             return None
         if command_length < 4:
             return self._group_command_helper

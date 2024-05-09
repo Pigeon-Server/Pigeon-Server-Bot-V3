@@ -1,6 +1,5 @@
 from src.base.config import config
 from src.module.database import Database
-from src.type.types import ReturnType
 
 database = Database(config.config.database)
 

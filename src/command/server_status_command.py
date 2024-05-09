@@ -13,9 +13,9 @@ class ServerStatusCommand(CommandParser):
         await super().parse(message, command)
         if command[0] in ["info", "status"]:
             return Result.of_success(await server.get_online_player())
-        if command[0] in ["tps"] and len(command) >= 2:
+        if command[0] in ["tps"] and (command_length := len(command)) >= 2:
             res = await mcsm.run_command(command[1], "forge tps")
-            if len(command) == 3 and command[2] == "full":
+            if command_length == 3 and command[2] == "full":
                 return res
             tps = res.message.split("\n")
             return Result.of_success(tps[-1])

@@ -12,6 +12,8 @@ from src.element.message import Message
 @app.register
 async def on_message(account: Account, event: Event):
     message = Message(event)
+    if event.self_id == message.sender_id:
+        return
     if not config.sys_config.dev:
         database.insert_message(message.model)
     logger.info(

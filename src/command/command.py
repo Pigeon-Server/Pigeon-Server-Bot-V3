@@ -1,4 +1,3 @@
-import datetime
 from typing import Optional
 
 from satori import Event

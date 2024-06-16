@@ -110,14 +110,22 @@ class Permission:
                       .insert(ShowList))
 
 
+class Whitelist:
+    Add: Tree = Tree("Add")
+    Del: Tree = Tree("Del")
+    instance: Tree = Tree("Whitelist.*").insert(Add).insert(Del)
+
+
 class Other:
     Reboot: Tree = Tree("Reboot")
     Word: Tree = Tree("Word")
-    instance: Tree = Tree("Other.*").insert(Reboot).insert(Word)
+    Status: Tree = Tree("Status")
+    instance: Tree = Tree("Other.*").insert(Reboot).insert(Word).insert(Status)
 
 
 class Root:
     instance: Tree = (Tree("*.*")
                       .insert(Mcsm.instance)
                       .insert(Permission.instance)
+                      .insert(Whitelist.instance)
                       .insert(Other.instance))

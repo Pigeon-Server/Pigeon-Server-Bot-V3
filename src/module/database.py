@@ -1,8 +1,8 @@
-from re import sub, Pattern, compile
-from typing import Callable, Optional, Tuple
+from re import Pattern, compile
+from typing import List, Optional, Tuple, Union, overload
 
 import pymysql
-from pymysql import Connection, connect
+from pymysql import Connection
 from pymysql.cursors import Cursor
 from dbutils.pooled_db import PooledDB
 
@@ -39,15 +39,34 @@ class Database:
         connection = self._pool.connection()
         return connection, connection.cursor()
 
+    @overload
     def run_command(self, query: str,
                     args: Optional[list] = None,
                     return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
+        ...
+
+    @overload
+    def run_command(self, query: list,
+                    args: Optional[List[list]] = None,
+                    return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
+        ...
+
+    def run_command(self, query: Union[str, list],
+                    args: Optional[Union[list, List[list]]] = None,
+                    return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
         connection, cursor = self.get_connection()
         try:
-            # sub(remove_space_pattern, "", query)
-            query = " ".join(list(filter(lambda x: x != '', query.replace('\n', '').split(" "))))
-            logger.trace(f"Executing SQL query: {query}")
-            cursor.execute(query, args)
+            if isinstance(query, str):
+                query = " ".join(list(filter(lambda x: x != '', query.replace('\n', '').split(" "))))
+            else:
+                query = map(lambda i: " ".join(list(filter(lambda x: x != '', i.replace('\n', '').split(" ")))), query)
+            if isinstance(query, str):
+                logger.trace(f"Executing SQL query: {query}")
+                cursor.execute(query, args)
+            else:
+                for item, arg in zip(query, args):
+                    logger.trace(f"Executing SQL query: {item}")
+                    cursor.execute(item, arg)
             connection.commit()
             match return_type:
                 case ReturnType.ALL:
@@ -67,7 +86,7 @@ class Database:
     @logger.catch()
     def insert_message(self, message: MessageModel) -> None:
         sql, args = MessageModel.insert(message)
-        self.run_command(sql, args, ReturnType.ONE)
+        self.run_command(sql, args, ReturnType.NONE)
 
     @logger.catch()
     def select_message(self, message_id: int) -> Message:

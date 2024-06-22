@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from satori import Image
 
+from src.base.logger import logger
 from src.base.config import config
 from src.bot.app import message_sender
 from src.bot.database import database
@@ -22,6 +23,7 @@ wordcloud_path = join(getcwd(), "image/wordcloud.png")
 
 
 class OtherCommand(CommandParser):
+    @logger.catch(level='ERROR')
     async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
         await super().parse(message, command)
         if (command_length := len(command)) == 1:
@@ -88,13 +90,13 @@ class OtherCommand(CommandParser):
             if command[1] == "add":
                 if ps_manager.check_player_permission(self._message.sender_id, Whitelist.Add).is_fail:
                     return self._permission_reject
-                await database.run_command("""INSERT INTO `whitelist` (`user`) VALUES (?)""", [command[2]])
+                database.run_command("""INSERT INTO `whitelist` (`user`) VALUES (%s)""", [command[2]])
                 await message_sender.send_message(self._message.group_id, f"成功为{command[2]}添加白名单")
                 return Result.of_success()
             if command[1] == "del":
                 if ps_manager.check_player_permission(self._message.sender_id, Whitelist.Del).is_fail:
                     return self._permission_reject
-                await database.run_command("""DELETE FROM `whitelist` WHERE `user` = ?""", [command[2]])
-                await message_sender.send_message(self._message.group_id, f"成功为{command[2]}添加白名单")
+                database.run_command("""DELETE FROM `whitelist` WHERE `user` = %s""", [command[2]])
+                await message_sender.send_message(self._message.group_id, f"成功为{command[2]}移除白名单")
             return Result.of_success()
         return None

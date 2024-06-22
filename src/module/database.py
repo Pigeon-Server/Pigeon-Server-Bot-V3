@@ -78,7 +78,6 @@ class Database:
         except Exception as e:
             logger.error(e)
             connection.rollback()
-            raise e
         finally:
             cursor.close()
             connection.close()

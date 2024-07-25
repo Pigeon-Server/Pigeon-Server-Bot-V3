@@ -121,7 +121,6 @@ class McsmManager(JsonDataBase):
                     # 更新daemon名称
                     service.remarks = self._daemon_uuid.inverse[service.uuid]
                 else:
-                    service.remarks = service.remarks
                     # 如果没有那么就新增字段
                     daemon_uuid[service.remarks] = service.uuid
                     self._daemon_uuid[service.remarks] = service.uuid
@@ -147,7 +146,6 @@ class McsmManager(JsonDataBase):
                         # 更新server的名称
                         instance.config.nickname = server.inverse[instance.instanceUuid]
                     else:
-                        instance.config.nickname = instance.config.nickname
                         # 如果没有记录,则创建一条记录
                         self._server[service.uuid][instance.config.nickname] = instance.instanceUuid
                     daemon_list[service.remarks]["instances"][instance.instanceUuid] = instance.status

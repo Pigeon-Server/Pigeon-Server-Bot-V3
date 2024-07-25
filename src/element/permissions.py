@@ -111,15 +111,24 @@ class Permission:
 
 
 class Whitelist:
-    Add: Tree = Tree("Add")
-    Del: Tree = Tree("Del")
+    Add: Tree = Tree("Whitelist.Add")
+    Del: Tree = Tree("Whitelist.Del")
     instance: Tree = Tree("Whitelist.*").insert(Add).insert(Del)
 
 
+class ServerList:
+    Add: Tree = Tree("ServerList.Add")
+    Del: Tree = Tree("ServerList.Del")
+    Enable: Tree = Tree("ServerList.Enable")
+    Disable: Tree = Tree("ServerList.Disable")
+    List: Tree = Tree("ServerList.List")
+    instance: Tree = Tree("ServerList.*").insert(Add).insert(Del).insert(Enable).insert(Disable).insert(List)
+
+
 class Other:
-    Reboot: Tree = Tree("Reboot")
-    Word: Tree = Tree("Word")
-    Status: Tree = Tree("Status")
+    Reboot: Tree = Tree("Other.Reboot")
+    Word: Tree = Tree("Other.Word")
+    Status: Tree = Tree("Other.Status")
     instance: Tree = Tree("Other.*").insert(Reboot).insert(Word).insert(Status)
 
 
@@ -128,4 +137,5 @@ class Root:
                       .insert(Mcsm.instance)
                       .insert(Permission.instance)
                       .insert(Whitelist.instance)
+                      .insert(ServerList.instance)
                       .insert(Other.instance))

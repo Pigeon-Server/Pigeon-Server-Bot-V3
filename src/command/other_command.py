@@ -10,7 +10,6 @@ from src.base.logger import logger
 from src.base.config import config
 from src.bot.app import message_sender
 from src.bot.database import database
-from src.bot.permission import ps_manager
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Other, Whitelist
@@ -20,7 +19,6 @@ from src.type.types import ReturnType
 
 pattern: Pattern = compile(r"(\[回复\([\s\S]+\)])?@[\s\S]+\(\d+\)( )?")
 wordcloud_path = join(getcwd(), "image/wordcloud.png")
-
 
 class OtherCommand(CommandParser):
     @logger.catch(level='ERROR')
@@ -37,7 +35,7 @@ class OtherCommand(CommandParser):
                     case 3:
                         time = (datetime.now() - timedelta(days=int(command[2]))).strftime("%Y-%m-%d") \
                             if command[1] == "last" else command[1]
-                if ps_manager.check_player_permission(self._message.sender_id, Other.Word).is_fail:
+                if self._check_permission(Other.Word):
                     return self._permission_reject
                 res = database.run_command("""SELECT
                                                     message.message
@@ -72,29 +70,28 @@ class OtherCommand(CommandParser):
                                                       [Image.of(raw=f.read(), mime="image/png")])
                 return Result.of_success()
             if command[0] == "reboot":
-                if ps_manager.check_player_permission(self._message.sender_id, Other.Reboot).is_fail:
+                if self._check_permission(Other.Reboot):
                     return self._permission_reject
                 if not config.sys_config.dev:
                     await message_sender.send_message(config.config.group_config.admin_group, f"plugin offline")
                 exit(0)
             if command[0] == "bot_status":
-                if ps_manager.check_player_permission(self._message.sender_id, Other.Status).is_fail:
+                if self._check_permission(Other.Status):
                     return self._permission_reject
                 await message_sender.send_message(self._message.group_id, f"插件状态:\n"
                                                                           f"运行状态: 正常\n"
                                                                           f"Mcsm模块: 正常\n"
                                                                           f"MySQL状态: 正常")
                 return Result.of_success()
-
         if command_length > 2 and command[0] == "whitelist":
             if command[1] == "add":
-                if ps_manager.check_player_permission(self._message.sender_id, Whitelist.Add).is_fail:
+                if self._check_permission(Whitelist.Add):
                     return self._permission_reject
                 database.run_command("""INSERT INTO `whitelist` (`user`) VALUES (%s)""", [command[2]])
                 await message_sender.send_message(self._message.group_id, f"成功为{command[2]}添加白名单")
                 return Result.of_success()
             if command[1] == "del":
-                if ps_manager.check_player_permission(self._message.sender_id, Whitelist.Del).is_fail:
+                if self._check_permission(Whitelist.Del):
                     return self._permission_reject
                 database.run_command("""DELETE FROM `whitelist` WHERE `user` = %s""", [command[2]])
                 await message_sender.send_message(self._message.group_id, f"成功为{command[2]}移除白名单")

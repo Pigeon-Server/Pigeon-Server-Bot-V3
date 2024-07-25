@@ -6,7 +6,6 @@ from typing import List, Optional
 
 from satori import Image
 
-from src.base.logger import logger
 from src.base.config import config
 from src.bot.app import message_sender
 from src.bot.database import database

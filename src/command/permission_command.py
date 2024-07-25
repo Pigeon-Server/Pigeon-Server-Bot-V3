@@ -3,8 +3,9 @@ from typing import Awaitable, Callable, Dict, List, Optional
 
 from satori import Image
 
-from src.bot.app import message_sender, permission_image_dir, reply_manager
+from src.bot.app import message_sender, reply_manager
 from src.bot.permission import ps_manager
+from src.bot.thread import permission_image_dir
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Permission

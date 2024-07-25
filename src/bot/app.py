@@ -1,6 +1,4 @@
 from os import getcwd, getpid
-from os.path import join
-from threading import Thread
 
 from satori import LoginStatus, WebsocketsInfo
 from satori.client import Account, App
@@ -9,9 +7,7 @@ from src.base.config import config
 from src.base.logger import logger
 from src.bot.message import MessageSender
 from src.bot.thread import update_mcsm_info_thread
-from src.element.permissions import Root
 from src.module.reply_message import ReplyManager
-from src.utils.file_utils import check_directory, text_to_image
 
 app = App(WebsocketsInfo(host=config.config.login_config.host, port=config.config.login_config.port,
                          token=config.config.login_config.token))
@@ -19,19 +15,6 @@ app = App(WebsocketsInfo(host=config.config.login_config.host, port=config.confi
 reply_manager = ReplyManager(app)
 
 message_sender = MessageSender()
-
-image_dir = join(getcwd(), "image")
-permission_image_dir = join(image_dir, "permissions.png")
-
-
-def permission_node_image():
-    logger.debug(f"Generating thread started")
-    check_directory(image_dir, True)
-    text_to_image(Root.instance, permission_image_dir)
-    logger.debug(f"Generating thread stop")
-
-
-Thread(target=permission_node_image, daemon=True).start()
 
 
 @app.lifecycle

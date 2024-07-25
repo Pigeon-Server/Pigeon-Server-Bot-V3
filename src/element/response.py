@@ -1,6 +1,5 @@
 from datetime import datetime
 from time import localtime, strftime
-from typing import Union
 
 from src.type.response_body import ResponseHeader
 from src.type.types import HttpCode

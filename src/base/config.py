@@ -8,11 +8,13 @@ from loguru import logger
 
 from src.type.config import Config
 from src.type.sys_config import SysConfig
+from src.type.types import VersionType
 from src.utils.file_utils import check_file
+from src.utils.version import Version
 
 
 class ConfigSet:
-    _config_version: str = "1.0.1"
+    _config_version: Version = Version([1, 0, 2])
     _config: Config
     _sys_config: SysConfig
 
@@ -50,10 +52,15 @@ class ConfigSet:
     def reload_config(self):
         self._config = Config(self.load_config("config.json5"))
         logger.debug(f"Config version: {self._config.config_version}")
-        if self._config.config_version != self._config_version:
+        version = Version(self._config.config_version)
+        res = self._config_version.check_version(version)
+        if res == VersionType.MAJOR_UNMATCH or res == VersionType.MINOR_UNMATCH:
             logger.critical(
-                f"Config version error! Require {self._config_version} but got {self._config.config_version}")
+                f"Config version error! Require {self._config_version} but got {version}")
             exit(-1)
+        if res == VersionType.PATCH_UNMATCH:
+            logger.warning(
+                f"Config version not match! Require {self._config_version} but got {version}")
         self._sys_config = SysConfig(self.load_config("system_config.json5"))
 
     @property

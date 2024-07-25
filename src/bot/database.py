@@ -9,7 +9,7 @@ try:
     logger.debug("Database is initializing...")
     database = Database(config.config.database)
     logger.debug("Database connection established.")
-    database.run_command("""CREATE TABLE IF NOT EXISTS `message`  (
+    database.run_command("""CREATE TABLE IF NOT EXISTS `message` (
                           `id` int NOT NULL AUTO_INCREMENT,
                           `message_id` char(128) NOT NULL,
                           `sender_id` char(16) NOT NULL,
@@ -23,6 +23,12 @@ try:
                           UNIQUE INDEX `index`(`id`, `message_id`) USING BTREE,
                           INDEX `sender`(`sender_id`, `sender_name`) USING HASH,
                           INDEX `group`(`group_id`, `group_name`) USING HASH);""")
+    database.run_command("""CREATE TABLE  IF NOT EXISTS `server_list` (
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `server_name` varchar(80) NOT NULL,
+                          `server_ip` varchar(80) NOT NULL,
+                          `enable` tinyint NOT NULL DEFAULT 1,
+                          PRIMARY KEY (`id`));""")
     logger.trace("Checking event scheduler...")
     res = database.run_command("""SHOW VARIABLES LIKE 'event_scheduler';""", [], ReturnType.ONE)
     if res[1] == "OFF":

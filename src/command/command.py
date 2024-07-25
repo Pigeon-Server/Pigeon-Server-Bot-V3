@@ -3,6 +3,7 @@ from typing import Optional
 from satori import Event
 from satori.client import Account
 
+from src.base.logger import logger
 from src.bot.app import message_sender
 from src.bot.command import cp_manager
 from src.bot.permission import ps_manager
@@ -45,9 +46,13 @@ class Command:
 
         ps_manager.create_player(str(event.user.id))
 
-        for parser in list(cp_manager.command_parsers):
-            result = await parser.parse(message, command)
-            if result is not None:
-                if result.has_message:
-                    await message_sender.send_message(event, result.message)
-                break
+        try:
+            for parser in list(cp_manager.command_parsers):
+                result = await parser.parse(message, command)
+                if result is not None:
+                    if result.has_message:
+                        await message_sender.send_message(event, result.message)
+                    break
+        except Exception as e:
+            logger.error(e)
+            await message_sender.send_message(event, "命令解析过程发生致命错误,请查看日志")

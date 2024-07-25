@@ -122,7 +122,18 @@ class ServerList:
     Enable: Tree = Tree("ServerList.Enable")
     Disable: Tree = Tree("ServerList.Disable")
     List: Tree = Tree("ServerList.List")
-    instance: Tree = Tree("ServerList.*").insert(Add).insert(Del).insert(Enable).insert(Disable).insert(List)
+    Rename: Tree = Tree("ServerList.Rename")
+    Modify: Tree = Tree("ServerList.Modify")
+    Reload: Tree = Tree("ServerList.Reload")
+    instance: Tree = (Tree("ServerList.*")
+                      .insert(Add)
+                      .insert(Del)
+                      .insert(Enable)
+                      .insert(Disable)
+                      .insert(List)
+                      .insert(Rename)
+                      .insert(Modify)
+                      .insert(Reload))
 
 
 class Other:

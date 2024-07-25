@@ -28,7 +28,8 @@ try:
                           `server_name` varchar(80) NOT NULL,
                           `server_ip` varchar(80) NOT NULL,
                           `enable` tinyint NOT NULL DEFAULT 1,
-                          PRIMARY KEY (`id`));""")
+                          PRIMARY KEY (`id`),
+                          UNIQUE INDEX `index`(`id`, `server_name`) USING HASH);""")
     logger.trace("Checking event scheduler...")
     res = database.run_command("""SHOW VARIABLES LIKE 'event_scheduler';""", return_type=ReturnType.ONE)
     if res[1] == "OFF":

@@ -30,7 +30,7 @@ class McsmCommand(CommandParser):
         if command_length < 2:
             return self._command_helper
         match command[1]:
-            case "check":
+            case "check" | "c":
                 if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm check (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Check):
@@ -38,7 +38,7 @@ class McsmCommand(CommandParser):
                 if command_length == 3:
                     return mcsm.check_instance_status(command[2])
                 return mcsm.check_instance_status(command[2], command[3])
-            case "list":
+            case "list" | "l":
                 if command_length > 3:
                     return Result.of_failure("/mcsm list [ServerName]")
                 if self._check_permission(Mcsm.List):
@@ -46,13 +46,13 @@ class McsmCommand(CommandParser):
                 if command_length == 2:
                     return mcsm.list_instance()
                 return mcsm.list_instance(command[2])
-            case "rename":
+            case "rename" | "r":
                 if command_length != 4:
                     return Result.of_failure("/mcsm rename (OriginalName) (NewName)")
                 if self._check_permission(Mcsm.Rename):
                     return self._permission_reject
                 return mcsm.rename(command[2], command[3])
-            case "update":
+            case "update" | "u":
                 if command_length > 3:
                     return Result.of_failure("/mcsm update [true]")
                 if self._check_permission(Mcsm.Rename):
@@ -81,7 +81,7 @@ class McsmCommand(CommandParser):
                             return Result.of_failure()
                     return Result.of_failure()
                 return Result.of_failure("/mcsm update [true]")
-            case "stop":
+            case "stop" | "s":
                 if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm stop (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Stop):
@@ -89,7 +89,7 @@ class McsmCommand(CommandParser):
                 if command_length == 3:
                     return mcsm.stop(command[2])
                 return mcsm.stop(command[2], command[3])
-            case "kill":
+            case "kill" | "k":
                 if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm kill (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Kill):
@@ -97,7 +97,7 @@ class McsmCommand(CommandParser):
                 if command_length == 3:
                     return mcsm.stop(command[2], force_kill=True)
                 return mcsm.stop(command[2], command[3], True)
-            case "start":
+            case "start" | "S":
                 if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm start (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Start):
@@ -105,7 +105,7 @@ class McsmCommand(CommandParser):
                 if command_length == 3:
                     return mcsm.start(command[2])
                 return mcsm.start(command[2], command[3])
-            case "restart":
+            case "restart" | "R":
                 if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm restart (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Restart):
@@ -113,7 +113,7 @@ class McsmCommand(CommandParser):
                 if command_length == 3:
                     return mcsm.restart(command[2])
                 return mcsm.restart(command[2], command[3])
-            case "command":
+            case "command" | "C":
                 if command_length < 4:
                     return Result.of_failure("/mcsm command (InstanceName) (command)")
                 if self._check_permission(Mcsm.Rename):

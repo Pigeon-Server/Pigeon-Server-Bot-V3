@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from src.base.logger import logger
 from src.bot.permission import ps_manager
 from src.element.message import Message
 from src.element.result import Result

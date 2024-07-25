@@ -20,8 +20,8 @@ from src.type.types import ReturnType
 pattern: Pattern = compile(r"(\[回复\([\s\S]+\)])?@[\s\S]+\(\d+\)( )?")
 wordcloud_path = join(getcwd(), "image/wordcloud.png")
 
+
 class OtherCommand(CommandParser):
-    @logger.catch(level='ERROR')
     async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
         await super().parse(message, command)
         if (command_length := len(command)) == 1:

@@ -1,4 +1,4 @@
 from src.base.config import config
 from src.module.server_status import ServerStatus
 
-server = ServerStatus(config.config.server_list)
+server = ServerStatus()

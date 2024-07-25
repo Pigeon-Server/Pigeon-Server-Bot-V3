@@ -30,7 +30,7 @@ try:
                           `enable` tinyint NOT NULL DEFAULT 1,
                           PRIMARY KEY (`id`));""")
     logger.trace("Checking event scheduler...")
-    res = database.run_command("""SHOW VARIABLES LIKE 'event_scheduler';""", [], ReturnType.ONE)
+    res = database.run_command("""SHOW VARIABLES LIKE 'event_scheduler';""", return_type=ReturnType.ONE)
     if res[1] == "OFF":
         logger.warning("Event scheduler disable, try to enable it.")
         try:

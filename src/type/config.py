@@ -1,6 +1,3 @@
-from typing import Dict
-
-
 class Config:
     class DatabaseConfig:
         host: str
@@ -41,7 +38,6 @@ class Config:
     database: DatabaseConfig | dict
     group_config: GroupConfig | dict
     login_config: LoginConfig | dict
-    server_list: Dict[str, str]
     mcsm_config: McsmConfig | dict
 
     def __init__(self, data: dict):

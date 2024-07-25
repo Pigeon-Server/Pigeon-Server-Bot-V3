@@ -18,8 +18,6 @@
     port: 5500,
     token: ""
   },
-  server_list: {
-  },
   mcsm_config: {
     api_key: "",
     api_url: "http://127.0.0.1:23333",

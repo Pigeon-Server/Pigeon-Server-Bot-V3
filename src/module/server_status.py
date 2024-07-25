@@ -1,7 +1,9 @@
 from mcstatus import JavaServer
 
 from src.base.logger import logger
+from src.bot.database import database
 from src.exception.exception import IncomingParametersError, NoParametersError
+from src.type.types import ReturnType
 
 
 class ServerStatus:
@@ -10,13 +12,20 @@ class ServerStatus:
     _player_online: int = 0
     _player_max: int = 0
 
-    def __init__(self, server_list: dict = None) -> None:
-        if server_list is None:
-            raise NoParametersError("serverList参数不能是None")
-        elif not isinstance(server_list, dict):
-            raise IncomingParametersError("serveList必须是dict类型")
-        else:
-            self._server = server_list
+    def __init__(self) -> None:
+        self.reload_server_list()
+
+    def reload_server_list(self) -> None:
+        self._server = self.get_server_list()
+
+    @staticmethod
+    def get_server_list() -> dict:
+        res = database.run_command("""SELECT `server_name`, `server_ip` FROM server_list WHERE `enable` = 1;""",
+                                   return_type=ReturnType.ALL)
+        server_list = {}
+        for server in res:
+            server_list[server[0]] = server[1]
+        return server_list
 
     async def _check_server(self, full: bool = False) -> None:
         self._output_message = "[服务器状态]\n在线人数: {online}/{max}\n在线玩家列表: \n"

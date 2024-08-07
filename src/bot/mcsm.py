@@ -1,6 +1,6 @@
 from src.base.config import config
-from src.module.mcsm_class import McsmManager
 from src.bot.database import database
+from src.module.mcsm.mcsm_class import McsmManager
 
 mcsm: McsmManager
 

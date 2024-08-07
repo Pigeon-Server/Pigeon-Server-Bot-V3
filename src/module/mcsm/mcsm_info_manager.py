@@ -28,6 +28,14 @@ class McsmInfoManager:
         return self.is_daemon_uuid(remote_uuid), self.is_server_uuid(instance_uuid)
 
     @abstractmethod
+    def get_number(self) -> tuple[int, int]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def test(self) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
     def update_mcsm_info(self, mcsm_info: RemoteServices, force_load: bool = False) -> None:
         raise NotImplementedError
 

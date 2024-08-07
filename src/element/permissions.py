@@ -12,6 +12,7 @@ class Mcsm:
         instance: Tree = Tree("Mcsm.Update.*").insert(Common).insert(Force)
 
     Check: Tree = Tree("Mcsm.Check")
+    Status: Tree = Tree("Mcsm.Status")
     List: Tree = Tree("Mcsm.List")
     Rename: Tree = Tree("Mcsm.Rename")
     Stop: Tree = Tree("Mcsm.Stop")
@@ -23,6 +24,7 @@ class Mcsm:
     instance: Tree = (Tree("Mcsm.*")
                       .insert(Update.instance)
                       .insert(Check)
+                      .insert(Status)
                       .insert(List)
                       .insert(Rename)
                       .insert(Stop)

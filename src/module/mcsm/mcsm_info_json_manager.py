@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Union
 
 from bidict import bidict
 
@@ -16,6 +16,19 @@ class McsmInfoJsonManager(McsmInfoManager, JsonDataBase):
     def __init__(self):
         McsmInfoManager.__init__(self)
         JsonDataBase.__init__(self, "mcsm.json", DataType.DICT)
+
+    def test(self) -> bool:
+        try:
+            self.write_data()
+            return True
+        except Exception as _:
+            return False
+
+    def get_number(self) -> tuple[int, int]:
+        instance_number = 0
+        for server in self._stored_data["servers"].keys():
+            instance_number += len(self._stored_data["servers"][server].keys())
+        return len(self._stored_data["daemon_list"].keys()), instance_number
 
     def update_mcsm_info(self, mcsm_info: RemoteServices, force_load: bool = False) -> None:
         backup = self._stored_data

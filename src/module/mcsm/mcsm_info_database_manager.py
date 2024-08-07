@@ -14,6 +14,19 @@ class McsmInfoDatabaseManager(McsmInfoManager):
         McsmInfoManager.__init__(self)
         self._database = database_instance
 
+    def test(self) -> bool:
+        try:
+            self._database.run_command("""SELECT VERSION();""")
+            return True
+        except Exception as _:
+            return False
+
+    def get_number(self) -> tuple[int, int]:
+        res = self._database.run_command(
+            """SELECT COUNT(*) FROM mcsm_daemon UNION SELECT COUNT(*) FROM mcsm_instance;""",
+            return_type=ReturnType.ALL)
+        return res[0][0], res[1][1]
+
     def get_daemon_id(self, remote_uuid: str) -> Result:
         result = self._database.run_command("""SELECT id FROM mcsm_daemon WHERE uuid = %s""",
                                             [remote_uuid], ReturnType.ALL)

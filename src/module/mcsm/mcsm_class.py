@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from bidict import bidict
 from re import sub
 from sys import exit
-from typing import Dict, Optional, Union
+from typing import Optional
 from requests import get
 from asyncio.tasks import sleep
+
+from src.base.config import config
 from src.base.logger import logger
 from src.element.response import Response
 from src.element.result import Result
@@ -25,7 +26,7 @@ class McsmManager(JsonDataBase):
     _enable_SSL: bool = True
     _status_code: list[str] = ["状态未知", "已停止", "停止中", "启动中", "运行中"]
     _info_manager: McsmInfoManager
-    
+
     def __init__(self, apikey: str, url: str = "http://127.0.0.1:23333", enable_ssl: bool = False,
                  use_database: bool = False, database_instance: Optional[Database] = None) -> None:
         """
@@ -47,7 +48,7 @@ class McsmManager(JsonDataBase):
         self.test_connect()
         self.get_mcsm_info()
 
-    def test_connect(self) -> None:
+    def test_connect(self) -> bool:
         """
         测试到MCSM的连接\n
         """
@@ -64,9 +65,11 @@ class McsmManager(JsonDataBase):
                     case HttpCode.SERVER_ERROR:
                         logger.critical("服务器出错")
                 exit()
+            return True
         except ConnectionError as err:
             logger.error(err)
             logger.critical("无法访问MCSM，请检查网络和url设置是否出错")
+            return False
 
     def _call_api(self, path: str, params: Optional[dict] = None) -> Response:
         """
@@ -344,3 +347,14 @@ class McsmManager(JsonDataBase):
         else:
             remote_uuid = self._info_manager.get_remote_uuid_by_instance_name(instance_name).message
         return self.restart_instance(remote_uuid, instance_uuid)
+
+    def status(self) -> Result:
+        daemon, instance = self._info_manager.get_number()
+        return Result.of_success((f"Mcsm:\n "
+                                  f"\t状态：{'已启用' if config.sys_config.mcsm.enable else '未启用'}\n"
+                                  f"\t数据引擎: {'Mysql' if config.sys_config.mcsm.use_database else 'Json'}\n"
+                                  f"\tAPI状态: {'正常' if self.test_connect() else '异常'}\n"
+                                  f"\t数据引擎状态: {'正常' if self._info_manager.test() else '异常'}\n"
+                                  f"\t守护进程数量: {daemon}\n"
+                                  f"\t实例数量: {instance}\n"))
+

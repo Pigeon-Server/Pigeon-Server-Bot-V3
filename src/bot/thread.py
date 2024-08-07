@@ -18,8 +18,8 @@ permission_image_dir = join(image_dir, "permissions.png")
 def update_mcsm_info_thread_handler():
     while True:
         logger.trace("Update MCSM info")
-        mcsm.update_instance_status()
         sleep(config.config.mcsm_config.update_time)
+        mcsm.update_instance_status()
 
 
 def permission_node_image():

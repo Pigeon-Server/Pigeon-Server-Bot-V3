@@ -14,7 +14,7 @@ from src.utils.version import Version
 
 
 class ConfigSet:
-    _config_version: Version = Version([1, 0, 2])
+    _config_version: Version = Version([1, 1, 0])
     _config: Config
     _sys_config: SysConfig
 
@@ -62,6 +62,8 @@ class ConfigSet:
             logger.warning(
                 f"Config version not match! Require {self._config_version} but got {version}")
         self._sys_config = SysConfig(self.load_config("system_config.json5"))
+        if self._sys_config.mcsm.use_database and self._config.mcsm_config.update_time < 600:
+            self._config.mcsm_config.update_time = 600
 
     @property
     def config(self) -> Config:

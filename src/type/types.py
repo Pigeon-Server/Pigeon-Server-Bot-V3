@@ -27,6 +27,7 @@ class ReturnType(Enum):
     NONE = 0
     ONE = 1
     ALL = 2
+    CURSOR_ID = 3
 
 
 class VersionType(Enum):

@@ -25,7 +25,7 @@ class JsonDataBase:
     _data_type: DataType
     _stored_data: list | dict = None
 
-    def __init__(self, file_name: str, data_type: int | DataType) -> None:
+    def __init__(self, file_name: str, data_type: DataType) -> None:
         """
         类构造函数\n
         Args:

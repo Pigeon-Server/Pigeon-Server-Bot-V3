@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple, Union, overload
 
 import pymysql
 from pymysql import Connection
+from pymysql.constants import CLIENT
 from pymysql.cursors import Cursor
 from dbutils.pooled_db import PooledDB
 
@@ -17,8 +18,9 @@ remove_space_pattern: Pattern = compile(r"\s{2,}")
 
 class Database:
     _pool: PooledDB
+    _query_log_limit: int
 
-    def __init__(self, db_config: Config.DatabaseConfig):
+    def __init__(self, db_config: Config.DatabaseConfig, query_log_limit: int = 2):
         self._pool = PooledDB(
             creator=pymysql,
             mincached=10,
@@ -32,28 +34,19 @@ class Database:
             autocommit=db_config.auto_commit,
             connect_timeout=5,
             write_timeout=5,
-            read_timeout=5
+            read_timeout=5,
+            client_flag=CLIENT.MULTI_STATEMENTS
         )
+        self._query_log_limit = query_log_limit
 
     def get_connection(self) -> Tuple[Connection, Cursor]:
         connection = self._pool.connection()
         return connection, connection.cursor()
 
-    @overload
-    def run_command(self, query: str,
-                    args: Optional[list] = None,
-                    return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
-        ...
-
-    @overload
-    def run_command(self, query: list,
-                    args: Optional[List[list]] = None,
-                    return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
-        ...
-
     def run_command(self, query: Union[str, list],
                     args: Optional[Union[list, List[list]]] = None,
-                    return_type: ReturnType = ReturnType.NONE) -> Optional[tuple]:
+                    return_type: ReturnType = ReturnType.NONE,
+                    ignore_query_limit: bool = False) -> Optional[Union[tuple, int]]:
         connection, cursor = self.get_connection()
         try:
             if isinstance(query, str):
@@ -64,8 +57,10 @@ class Database:
                 logger.trace(f"Executing SQL query: {query}")
                 cursor.execute(query, args)
             else:
+                arg_len = len(args)
                 for item, arg in zip(query, args):
-                    logger.trace(f"Executing SQL query: {item}")
+                    if ignore_query_limit or arg_len < self._query_log_limit:
+                        logger.trace(f"Executing SQL query: {item}")
                     cursor.execute(item, arg)
             connection.commit()
             match return_type:
@@ -73,6 +68,8 @@ class Database:
                     return cursor.fetchall()
                 case ReturnType.ONE:
                     return cursor.fetchone()
+                case ReturnType.CURSOR_ID:
+                    return cursor.lastrowid
                 case ReturnType.NONE:
                     return None
         except Exception as e:

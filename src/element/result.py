@@ -36,3 +36,6 @@ class Result:
     @classmethod
     def of_failure(cls, message: Optional[str] = None) -> 'Result':
         return cls(False, message)
+
+    def __repr__(self):
+        return f'Result({self.status}, {self.message})'

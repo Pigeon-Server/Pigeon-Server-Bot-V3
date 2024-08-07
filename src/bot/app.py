@@ -9,12 +9,19 @@ from src.bot.message import MessageSender
 from src.bot.thread import update_mcsm_info_thread
 from src.module.reply_message import ReplyManager
 
+logger.debug("Initializing Bot...")
+
+logger.debug("Initializing App...")
 app = App(WebsocketsInfo(host=config.config.login_config.host, port=config.config.login_config.port,
                          token=config.config.login_config.token))
 
+logger.debug("Initializing ReplyManager...")
 reply_manager = ReplyManager(app)
 
+logger.debug("Initializing MessageSender...")
 message_sender = MessageSender()
+
+logger.debug("Adding lifecycle handler...")
 
 
 @app.lifecycle
@@ -42,3 +49,6 @@ async def on_startup(account: Account, status: LoginStatus):
                 logger.success(f"{account.self_id} Offline")
                 if not config.sys_config.dev:
                     await account.send_message(config.config.group_config.admin_group, f"plugin offline")
+
+
+logger.debug("Bot initialized, ready to start.")

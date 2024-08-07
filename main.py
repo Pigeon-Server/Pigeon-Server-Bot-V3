@@ -8,6 +8,8 @@ from src.bot.database import database
 from src.command.command import Command
 from src.element.message import Message
 
+logger.debug("Initializing message handler...")
+
 
 @app.register
 async def on_message(account: Account, event: Event):
@@ -20,5 +22,5 @@ async def on_message(account: Account, event: Event):
         f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
     await Command.command_parsing(message, account, event)
 
-
+logger.debug("Bot starting...")
 app.run()

@@ -9,6 +9,8 @@ from src.bot.mcsm import mcsm
 from src.element.permissions import Root
 from src.utils.file_utils import check_directory, text_to_image
 
+logger.debug("Initializing thread handlers...")
+
 image_dir = join(getcwd(), "image")
 permission_image_dir = join(image_dir, "permissions.png")
 
@@ -30,3 +32,5 @@ def permission_node_image():
 Thread(target=permission_node_image, daemon=True).start()
 
 update_mcsm_info_thread = Thread(target=update_mcsm_info_thread_handler, daemon=True)
+
+logger.debug("Daemon thread initialized")

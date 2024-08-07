@@ -25,7 +25,7 @@ class McsmInfoDatabaseManager(McsmInfoManager):
         res = self._database.run_command(
             """SELECT COUNT(*) FROM mcsm_daemon UNION SELECT COUNT(*) FROM mcsm_instance;""",
             return_type=ReturnType.ALL)
-        return res[0][0], res[1][1]
+        return res[0][0], res[1][0]
 
     def get_daemon_id(self, remote_uuid: str) -> Result:
         result = self._database.run_command("""SELECT id FROM mcsm_daemon WHERE uuid = %s""",

@@ -32,7 +32,7 @@ class McsmCommand(CommandParser):
             return self._command_helper
         match command[1]:
             case "check" | "c":
-                if command_length != 4:
+                if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm check (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Check):
                     return self._permission_reject
@@ -89,7 +89,7 @@ class McsmCommand(CommandParser):
                     return Result.of_failure()
                 return Result.of_failure("/mcsm update [true]")
             case "stop" | "s":
-                if command_length != 4:
+                if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm stop (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Stop):
                     return self._permission_reject
@@ -97,7 +97,7 @@ class McsmCommand(CommandParser):
                     return mcsm.stop(command[2])
                 return mcsm.stop(command[2], command[3])
             case "kill" | "k":
-                if command_length != 4:
+                if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm kill (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Kill):
                     return self._permission_reject
@@ -105,7 +105,7 @@ class McsmCommand(CommandParser):
                     return mcsm.stop(command[2], force_kill=True)
                 return mcsm.stop(command[2], command[3], True)
             case "start" | "S":
-                if command_length != 4:
+                if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm start (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Start):
                     return self._permission_reject
@@ -113,7 +113,7 @@ class McsmCommand(CommandParser):
                     return mcsm.start(command[2])
                 return mcsm.start(command[2], command[3])
             case "restart" | "R":
-                if command_length != 4:
+                if command_length < 3 or command_length > 4:
                     return Result.of_failure("/mcsm restart (InstanceName) [ServerName]")
                 if self._check_permission(Mcsm.Restart):
                     return self._permission_reject

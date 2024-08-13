@@ -27,6 +27,7 @@ try:
                               `id` int NOT NULL AUTO_INCREMENT,
                               `server_name` varchar(80) NOT NULL,
                               `server_ip` varchar(80) NOT NULL,
+                              `priority` int NOT NULL DEFAULT 0,
                               `enable` tinyint NOT NULL DEFAULT 1,
                               PRIMARY KEY (`id`),
                               UNIQUE INDEX `index`(`id`, `server_name`) USING HASH);""")

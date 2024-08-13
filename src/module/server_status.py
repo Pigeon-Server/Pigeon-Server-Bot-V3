@@ -20,8 +20,9 @@ class ServerStatus:
 
     @staticmethod
     def get_server_list() -> dict:
-        res = database.run_command("""SELECT `server_name`, `server_ip` FROM server_list WHERE `enable` = 1;""",
-                                   return_type=ReturnType.ALL)
+        res = database.run_command("""SELECT `server_name`, `server_ip` FROM server_list 
+                                        WHERE `enable` = 1 
+                                        ORDER BY priority DESC;""", return_type=ReturnType.ALL)
         server_list = {}
         for server in res:
             server_list[server[0]] = server[1]

@@ -127,6 +127,7 @@ class ServerList:
     Rename: Tree = Tree("ServerList.Rename")
     Modify: Tree = Tree("ServerList.Modify")
     Reload: Tree = Tree("ServerList.Reload")
+    Weight: Tree = Tree("ServerList.Weight")
     instance: Tree = (Tree("ServerList.*")
                       .insert(Add)
                       .insert(Del)
@@ -135,7 +136,8 @@ class ServerList:
                       .insert(List)
                       .insert(Rename)
                       .insert(Modify)
-                      .insert(Reload))
+                      .insert(Reload)
+                      .insert(Weight))
 
 
 class Other:

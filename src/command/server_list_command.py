@@ -11,12 +11,13 @@ from src.type.types import ReturnType
 
 class ServerListCommand(CommandParser):
     _command_helper: Result = Result.of_failure("服务器状态：\n"
-                                                "/serverlist add (ServerName) (ServerIp) 添加一个服务器\n"
+                                                "/serverlist add (ServerName) (ServerIp) [weight]添加一个服务器\n"
                                                 "/serverlist del (ServerName) 删除某个服务器\n"
                                                 "/serverlist enable (ServerName) 开启某个服务器的状态查询\n"
                                                 "/serverlist disable (ServerName) 关闭某个服务器的状态查询\n"
                                                 "/serverlist rename (ServerName) (NewName) 修改某个服务器名称\n"
                                                 "/serverlist modify (ServerName) (NewServerIp) 修改某个服务器ip\n"
+                                                "/serverlist weight (ServerName) (weight) 修改服务器权重"
                                                 "/serverlist reload 重载服务器列表\n"
                                                 "/serverlist list 列出所有服务器")
 
@@ -45,22 +46,28 @@ class ServerListCommand(CommandParser):
             case "list" | "l":
                 if self._check_permission(ServerList.List):
                     return self._permission_reject
-                data = database.run_command("""SELECT `server_name`, `server_ip`, `enable` FROM server_list;""",
-                                            return_type=ReturnType.ALL)
+                data = database.run_command("""SELECT `server_name`, `server_ip`, `priority`, `enable` 
+                                                FROM server_list;""", return_type=ReturnType.ALL)
                 res = []
                 for item in data:
-                    res.append(f"{item[0]}({item[1]}): {'已启用' if item[2] else '未启用'}")
+                    res.append(f"{item[0]}({item[1]}): {'已启用' if item[3] else '未启用'} | {item[2]}")
                 return Result.of_success("\n".join(res))
             case "add" | "a":
-                if command_length < 4:
+                if command_length < 4 or command_length > 5:
                     return Result.of_failure()
                 if self._check_permission(ServerList.Add):
                     return self._permission_reject
                 if self.check_server_exists(command[2]):
                     return Result.of_failure(f"服务器「{command[2]}」已存在")
-                database.run_command(
-                    """INSERT INTO server_list (`server_name`, `server_ip`) VALUES (%s, %s)""",
-                    [command[2], command[3]])
+                match command_length:
+                    case 4:
+                        database.run_command(
+                            """INSERT INTO server_list (`server_name`, `server_ip`) VALUES (%s, %s)""",
+                            [command[2], command[3]])
+                    case 5:
+                        database.run_command(
+                            """INSERT INTO server_list (`server_name`, `server_ip`, `priority`) VALUES (%s, %s, %s)""",
+                            [command[2], command[3], int(command[4])])
                 return Result.of_success(f"成功添加服务器「{command[2]}」，服务器IP：{command[3]}")
             case "del" | "d":
                 if command_length < 3:
@@ -117,6 +124,17 @@ class ServerListCommand(CommandParser):
                     """UPDATE server_list SET `server_ip` = %s WHERE `server_name` = %s""",
                     [command[3], command[2]])
                 return Result.of_success(f"成功将服务器「{command[2]}」的地址修改为「{command[3]}」")
+            case "weight" | "w":
+                if command_length < 4:
+                    return Result.of_failure()
+                if self._check_permission(ServerList.Weight):
+                    return self._permission_reject
+                if not self.check_server_exists(command[2]):
+                    return Result.of_failure(f"不存在服务器「{command[2]}」")
+                database.run_command(
+                    """UPDATE server_list SET `priority` = %s WHERE `server_name` = %s""",
+                    [command[3], command[2]])
+                return Result.of_success(f"成功将服务器「{command[2]}」的权重修改为「{command[3]}」")
             case "reload" | "R":
                 if self._check_permission(ServerList.Reload):
                     return self._permission_reject

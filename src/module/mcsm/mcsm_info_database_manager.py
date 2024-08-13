@@ -58,7 +58,7 @@ class McsmInfoDatabaseManager(McsmInfoManager):
         if instances:
             # 删除没有被访问到的instance列表
             sqls += """DELETE FROM mcsm_instance WHERE uuid IN %s;"""
-            args.extend(tuple(instances))
+            args.append(tuple(instances))
         self._database.run_command(sqls, args)
 
     def update_mcsm_info(self, mcsm_info: RemoteServices, force_load: bool = False) -> None:

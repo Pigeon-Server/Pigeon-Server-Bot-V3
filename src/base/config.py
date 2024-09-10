@@ -14,7 +14,7 @@ from src.utils.version import Version
 
 
 class ConfigSet:
-    _config_version: Version = Version([1, 1, 0])
+    _config_version: Version = Version([1, 2, 0])
     _config: Config
     _sys_config: SysConfig
 

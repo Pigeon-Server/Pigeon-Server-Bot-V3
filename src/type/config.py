@@ -1,5 +1,6 @@
 class Config:
     class DatabaseConfig:
+        type: str
         host: str
         password: str
         username: str

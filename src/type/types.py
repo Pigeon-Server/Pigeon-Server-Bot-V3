@@ -1,13 +1,19 @@
+from sqlite3 import Connection as SqliteConnection, Cursor as SqliteCursor
 from enum import Enum
 from typing import Awaitable, Callable, List, Optional, Type, Union
 
 from satori import Element
+from psycopg2.extensions import connection as PostgreSQLConnection, cursor as PostgreSQLCursor
+from pymysql import Connection as MySQLConnection
+from pymysql.cursors import Cursor as MySQLCursor
 
 from src.element.message import Message
 from src.element.result import Result
 
 message_type: Type = Union[str, list[str | Element]]
 parser_type: Type = Callable[[Message, List[str]], Awaitable[Optional[Result]]]
+Connection: Type = Union[SqliteConnection, MySQLConnection, PostgreSQLConnection]
+Cursor: Type = Union[SqliteCursor, MySQLCursor, PostgreSQLCursor]
 
 
 class ReplyType(Enum):
@@ -35,3 +41,10 @@ class VersionType(Enum):
     PATCH_UNMATCH = 1
     MINOR_UNMATCH = 2
     MAJOR_UNMATCH = 3
+
+
+class DataEngineType(Enum):
+    SQLITE = "sqlite"
+    MYSQL = "mysql"
+    POSTGRESQL = "postgresql"
+    JSON = "json"

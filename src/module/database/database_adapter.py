@@ -1,47 +1,27 @@
-from re import Pattern, compile
-from typing import List, Optional, Tuple, Union, overload
-
-import pymysql
-from pymysql import Connection
-from pymysql.constants import CLIENT
-from pymysql.cursors import Cursor
-from dbutils.pooled_db import PooledDB
+from abc import ABC, abstractmethod
+from typing import List, Optional, Tuple, Union
 
 from src.base.logger import logger
-from src.element.message import Message
-from src.model.message_model import MessageModel
-from src.type.config import Config
-from src.type.types import ReturnType
-
-remove_space_pattern: Pattern = compile(r"\s{2,}")
+from src.type.types import Connection, Cursor, DataEngineType, ReturnType
 
 
-class Database:
-    _pool: PooledDB
+class DatabaseAdapter(ABC):
     _query_log_limit: int
 
-    def __init__(self, db_config: Config.DatabaseConfig, query_log_limit: int = 2):
-        self._pool = PooledDB(
-            creator=pymysql,
-            mincached=10,
-            maxconnections=200,
-            blocking=False,
-            host=db_config.host,
-            port=db_config.port,
-            user=db_config.username,
-            password=db_config.password,
-            database=db_config.database_name,
-            autocommit=db_config.auto_commit,
-            connect_timeout=5,
-            write_timeout=5,
-            read_timeout=5,
-            client_flag=CLIENT.MULTI_STATEMENTS
-        )
+    def __init__(self, query_log_limit: int = 2) -> None:
         self._query_log_limit = query_log_limit
 
+    @abstractmethod
     def get_connection(self) -> Tuple[Connection, Cursor]:
-        connection = self._pool.connection()
-        return connection, connection.cursor()
+        raise NotImplementedError
+
+    @abstractmethod
+    def database_init(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_database_type(self) -> DataEngineType:
+        raise NotImplementedError
 
     def run_command(self, query: Union[str, list],
                     args: Optional[Union[list, List[list]]] = None,
@@ -78,20 +58,3 @@ class Database:
         finally:
             cursor.close()
             connection.close()
-
-    @logger.catch()
-    def insert_message(self, message: MessageModel) -> None:
-        sql, args = MessageModel.insert(message)
-        self.run_command(sql, args, ReturnType.NONE)
-
-    @logger.catch()
-    def select_message(self, message_id: int) -> Message:
-        pass
-
-    @logger.catch()
-    def delete_message(self, message_id: int) -> None:
-        pass
-
-    @logger.catch()
-    def update_message(self, message_id: int, message: Message) -> None:
-        pass

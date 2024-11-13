@@ -3,7 +3,6 @@ from typing import Awaitable, Callable, Dict, List, Optional
 
 from satori import Image
 
-from src.bot.app import message_sender, reply_manager
 from src.bot.plugin import ps_manager
 from src.bot.thread import permission_image_dir
 from src.command.command_parser import CommandParser
@@ -11,6 +10,8 @@ from src.element.message import Message
 from src.element.permissions import Permission
 from src.element.result import Result
 from src.type.types import ReplyType
+from src.utils.message_sender import MessageSender
+from src.utils.reply_message import ReplyMessageSender
 
 
 class PermissionCommand(CommandParser):
@@ -175,7 +176,7 @@ class PermissionCommand(CommandParser):
             return self._permission_reject
         if command_length == 2:
             with open(permission_image_dir, "rb") as f:
-                await message_sender.send_message(self._message.group_id, [Image.of(raw=f.read(), mime="image/png")])
+                await MessageSender.send_message(self._message.group_id, [Image.of(raw=f.read(), mime="image/png")])
             return Result.of_success()
         return Result.of_failure(f"Usage：\n/permission list")
 
@@ -223,27 +224,27 @@ class PermissionCommand(CommandParser):
         if user_id is None:
             return Result.of_failure(f"Usage：\n/permission player del (At | id) ")
         msg = f"是否删除「{user_id}」用户的权限信息(是/否)？"
-        target = (await message_sender.send_message(self._message.group_id, msg))[0]
-        result = await reply_manager.wait_reply_async(self._message, 60)
+        target = (await MessageSender.send_message(self._message.group_id, msg))[0]
+        result = await ReplyMessageSender.wait_reply_async(self._message, 60)
         match result:
             case ReplyType.REJECT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                       self._message.sender_id)
                 return Result.of_success()
             case ReplyType.ACCEPT:
                 res = ps_manager.del_player(user_id)
                 if res.is_success:
-                    await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                            f"操作成功, {res.message}",
-                                                            self._message.sender_id)
+                    await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                           f"操作成功, {res.message}",
+                                                           self._message.sender_id)
                     return Result.of_success()
-                await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                        f"操作失败, {res.message}",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                       f"操作失败, {res.message}",
+                                                       self._message.sender_id)
                 return Result.of_failure()
             case ReplyType.TIMEOUT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                       self._message.sender_id)
                 return Result.of_failure()
         return Result.of_failure()
 
@@ -295,27 +296,27 @@ class PermissionCommand(CommandParser):
         if clone_src is None or clone_dest is None:
             return Result.of_failure(f"Usage：\n/permission player clone (At | id) (At | id)")
         msg = f"确认克隆「{clone_src}」用户的`所有权限`到「{clone_dest}」(是/否)？"
-        target = (await message_sender.send_message(self._message.group_id, msg))[0]
-        result = await reply_manager.wait_reply_async(self._message, 60)
+        target = (await MessageSender.send_message(self._message.group_id, msg))[0]
+        result = await ReplyMessageSender.wait_reply_async(self._message, 60)
         match result:
             case ReplyType.REJECT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                       self._message.sender_id)
                 return Result.of_success()
             case ReplyType.ACCEPT:
                 res = ps_manager.clone_player_permission(clone_src, clone_dest)
                 if res.is_success:
-                    await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                            f"操作成功, {res.message}",
-                                                            self._message.sender_id)
+                    await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                           f"操作成功, {res.message}",
+                                                           self._message.sender_id)
                     return Result.of_success()
-                await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                        f"操作失败, {res.message}",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                       f"操作失败, {res.message}",
+                                                       self._message.sender_id)
                 return Result.of_failure()
             case ReplyType.TIMEOUT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                       self._message.sender_id)
                 return Result.of_failure()
         return Result.of_failure()
 
@@ -402,27 +403,27 @@ class PermissionCommand(CommandParser):
         if self._check_permission(Permission.Group.Del):
             return self._permission_reject
         msg = f"是否删除权限组「{command[3]}」(是/否)？"
-        target = (await message_sender.send_message(self._message.group_id, msg))[0]
-        result = await reply_manager.wait_reply_async(self._message, 60)
+        target = (await MessageSender.send_message(self._message.group_id, msg))[0]
+        result = await ReplyMessageSender.wait_reply_async(self._message, 60)
         match result:
             case ReplyType.REJECT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                       self._message.sender_id)
                 return Result.of_success()
             case ReplyType.ACCEPT:
                 res = ps_manager.del_group(command[3])
                 if res.is_success:
-                    await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                            f"操作成功, {res.message}",
-                                                            self._message.sender_id)
+                    await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                           f"操作成功, {res.message}",
+                                                           self._message.sender_id)
                     return Result.of_success()
-                await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                        f"操作失败, {res.message}",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                       f"操作失败, {res.message}",
+                                                       self._message.sender_id)
                 return Result.of_failure()
             case ReplyType.TIMEOUT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                       self._message.sender_id)
                 return Result.of_failure()
         return Result.of_failure()
 
@@ -461,27 +462,27 @@ class PermissionCommand(CommandParser):
         if self._check_permission(Permission.Group.Clone):
             return self._permission_reject
         msg = f"确认克隆权限组「{command[3]}」的`所有权限`到权限组「{command[4]}」(是/否)？"
-        target = (await message_sender.send_message(self._message.group_id, msg))[0]
-        result = await reply_manager.wait_reply_async(self._message, 60)
+        target = (await MessageSender.send_message(self._message.group_id, msg))[0]
+        result = await ReplyMessageSender.wait_reply_async(self._message, 60)
         match result:
             case ReplyType.REJECT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                       self._message.sender_id)
                 return Result.of_success()
             case ReplyType.ACCEPT:
                 res = ps_manager.clone_group_permission(command[3], command[4])
                 if res.is_success:
-                    await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                            f"操作成功, {res.message}",
-                                                            self._message.sender_id)
+                    await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                           f"操作成功, {res.message}",
+                                                           self._message.sender_id)
                     return Result.of_success()
-                await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                        f"操作失败, {res.message}",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                       f"操作失败, {res.message}",
+                                                       self._message.sender_id)
                 return Result.of_failure()
             case ReplyType.TIMEOUT:
-                await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
-                                                        self._message.sender_id)
+                await MessageSender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                       self._message.sender_id)
                 return Result.of_failure()
         return Result.of_failure()
 

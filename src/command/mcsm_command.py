@@ -1,12 +1,13 @@
 from typing import List, Optional
 
-from src.bot.app import message_sender, reply_manager
 from src.bot.plugin import mcsm
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Mcsm
 from src.element.result import Result
 from src.type.types import ReplyType
+from src.utils.message_sender import MessageSender
+from src.utils.reply_message import ReplyMessageSender
 
 
 class McsmCommand(CommandParser):
@@ -69,22 +70,22 @@ class McsmCommand(CommandParser):
                     return Result.of_success("操作成功")
                 if command[2].lower() == "true":
                     msg = f"确认强制更新mcsm信息\n这将会清空所有自定义设置！\n是否继续(是/否)？"
-                    target = (await message_sender.send_message(self._message.group_id, msg))[0]
-                    result = await reply_manager.wait_reply_async(self._message, 60)
+                    target = (await MessageSender.send_message(self._message.group_id, msg))[0]
+                    result = await ReplyMessageSender.wait_reply_async(self._message, 60)
                     match result:
                         case ReplyType.REJECT:
-                            await message_sender.send_quote_message(self._message.group_id, target.id, "操作已取消",
-                                                                    self._message.sender_id)
+                            await MessageSender.send_quote_message(self._message.group_id, target.id, "操作已取消",
+                                                                   self._message.sender_id)
                             return Result.of_success()
                         case ReplyType.ACCEPT:
                             mcsm.get_mcsm_info(True)
-                            await message_sender.send_quote_message(self._message.group_id, target.id,
-                                                                    "操作成功",
-                                                                    self._message.sender_id)
+                            await MessageSender.send_quote_message(self._message.group_id, target.id,
+                                                                   "操作成功",
+                                                                   self._message.sender_id)
                             return Result.of_failure()
                         case ReplyType.TIMEOUT:
-                            await message_sender.send_quote_message(self._message.group_id, target.id, "操作超时",
-                                                                    self._message.sender_id)
+                            await MessageSender.send_quote_message(self._message.group_id, target.id, "操作超时",
+                                                                   self._message.sender_id)
                             return Result.of_failure()
                     return Result.of_failure()
                 return Result.of_failure("/mcsm update [true]")

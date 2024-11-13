@@ -12,28 +12,34 @@ from src.type.types import message_type
 class MessageSender:
     _account: Optional[Account] = None
 
-    def set_account(self, account: Account) -> None:
-        self._account = account
+    @staticmethod
+    def set_account(account: Account) -> None:
+        MessageSender._account = account
 
+    @staticmethod
     @overload
-    async def send_message(self, channel_id: str, message: str) -> List[MessageObject]:
+    async def send_message(channel_id: str, message: str) -> List[MessageObject]:
         ...
 
+    @staticmethod
     @overload
-    async def send_message(self, channel_id: str, message: list[str | Element]) -> List[MessageObject]:
+    async def send_message(channel_id: str, message: list[str | Element]) -> List[MessageObject]:
         ...
 
+    @staticmethod
     @overload
-    async def send_message(self, channel_id: Event, message: str) -> List[MessageObject]:
+    async def send_message(channel_id: Event, message: str) -> List[MessageObject]:
         ...
 
+    @staticmethod
     @overload
-    async def send_message(self, channel_id: Event, message: list[str | Element]) -> List[MessageObject]:
+    async def send_message(channel_id: Event, message: list[str | Element]) -> List[MessageObject]:
         ...
 
-    async def send_message(self, channel_id: Union[str, Event],
+    @staticmethod
+    async def send_message(channel_id: Union[str, Event],
                            message: message_type) -> List[MessageObject]:
-        if self._account is None:
+        if MessageSender._account is None:
             raise ValueError("Account is not set")
         if config.sys_config.dev:
             if isinstance(message, str):
@@ -42,18 +48,21 @@ class MessageSender:
                 message = [f"{'-' * 5}Dev{'-' * 5}\n"] + message
         log_message = Message.parse(message)
         if isinstance(channel_id, str):
-            channel: Guild = await self._account.guild_get(guild_id=channel_id)
+            channel: Guild = await MessageSender._account.guild_get(guild_id=channel_id)
             logger.info(f'[消息]->{channel.name}({channel.id}): {log_message}')
-            return await self._account.send_message(channel_id, message)
+            return await MessageSender._account.send_message(channel_id, message)
         if isinstance(channel_id, Event):
             logger.info(f'[消息]->{channel_id.guild.name}({channel_id.guild.id}): {log_message}')
-            return await self._account.send(channel_id, message)
+            return await MessageSender._account.send(channel_id, message)
 
-    async def send_quote_message(self, channel_id: str, replay_id: Union[str, MessageObject], msg: str,
+    @staticmethod
+    async def send_quote_message(channel_id: str, replay_id: Union[str, MessageObject], msg: str,
                                  at_id: Optional[str] = None) -> List[MessageObject]:
+        if MessageSender._account is None:
+            raise ValueError("Account is not set")
         message: List[Union[str, Element]] = [Quote(replay_id, False)]
         if at_id:
             message.append(At(at_id))
             message.append(" ")
         message.append(msg)
-        return await self.send_message(channel_id, message)
+        return await MessageSender.send_message(channel_id, message)

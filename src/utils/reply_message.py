@@ -64,19 +64,22 @@ class Reply:
         return
 
 
-class ReplyManager:
+class ReplyMessageSender:
     _app: App
 
-    def __init__(self, app: App):
-        self._app = app
+    @staticmethod
+    def set_app(app: App):
+        ReplyMessageSender._app = app
 
-    def create_reply(self, target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
+    @staticmethod
+    def create_reply(target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
                      timeout: int, accept_checker: Optional[Callable[[str], bool]] = None,
                      reject_checker: Optional[Callable[[str], bool]] = None) -> Reply:
-        return Reply(self._app, target_message, callback, timeout,
+        return Reply(ReplyMessageSender._app, target_message, callback, timeout,
                      accept_checker, reject_checker)
 
-    async def wait_reply_async(self, target_message: Message, timeout: int,
+    @staticmethod
+    async def wait_reply_async(target_message: Message, timeout: int,
                                accept_checker: Optional[Callable[[str], bool]] = None,
                                reject_checker: Optional[Callable[[str], bool]] = None) -> ReplyType:
         res_event = AsyncEvent()
@@ -87,7 +90,7 @@ class ReplyManager:
             res_event.set()
             res = reply_type
 
-        Reply(self._app, target_message, callback, timeout,
+        Reply(ReplyMessageSender._app, target_message, callback, timeout,
               accept_checker, reject_checker).start()
 
         await res_event.wait()

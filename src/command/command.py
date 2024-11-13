@@ -4,9 +4,9 @@ from satori import Event
 from satori.client import Account
 
 from src.base.logger import logger
-from src.bot.app import message_sender
 from src.bot.plugin import cp_manager, ps_manager
 from src.element.message import Message
+from src.utils.message_sender import MessageSender
 
 
 class Command:
@@ -50,8 +50,8 @@ class Command:
                 result = await parser.parse(message, command)
                 if result is not None:
                     if result.has_message:
-                        await message_sender.send_message(event, result.message)
+                        await MessageSender.send_message(event, result.message)
                     break
         except Exception as e:
             logger.error(e)
-            await message_sender.send_message(event, "命令解析过程发生致命错误,请查看日志")
+            await MessageSender.send_message(event, "命令解析过程发生致命错误,请查看日志")

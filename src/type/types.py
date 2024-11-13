@@ -29,22 +29,8 @@ class HttpCode(Enum):
     SERVER_ERROR = 500
 
 
-class ReturnType(Enum):
-    NONE = 0
-    ONE = 1
-    ALL = 2
-    CURSOR_ID = 3
-
-
 class VersionType(Enum):
     ALL_MATCH = 0
     PATCH_UNMATCH = 1
     MINOR_UNMATCH = 2
     MAJOR_UNMATCH = 3
-
-
-class DataEngineType(Enum):
-    SQLITE = "sqlite"
-    MYSQL = "mysql"
-    POSTGRESQL = "postgresql"
-    JSON = "json"

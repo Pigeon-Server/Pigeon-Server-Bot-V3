@@ -1,4 +1,4 @@
-from typing import List, TypeVar
+from typing import List
 
 
 class ResponseHeader:

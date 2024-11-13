@@ -4,17 +4,18 @@ from os.path import join
 from re import Pattern, compile, sub
 from typing import List, Optional
 
+from peewee import fn
 from satori import Image
 
 from src.base.config import config
 from src.bot.app import message_sender
-from src.bot.database import database
+from src.database.server_model import Whitelist as WhitelistModel
+from src.database.message_model import Message as MessageModel
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Other, Whitelist
 from src.element.result import Result
 from src.module.message_wordcloud import MessageWordCloud
-from src.type.types import ReturnType
 
 pattern: Pattern = compile(r"(\[回复\([\s\S]+\)])?@[\s\S]+\(\d+\)( )?")
 wordcloud_path = join(getcwd(), "image/wordcloud.png")
@@ -36,23 +37,13 @@ class OtherCommand(CommandParser):
                             if command[1] == "last" else command[1]
                 if self._check_permission(Other.Word):
                     return self._permission_reject
-                res = database.run_command("""SELECT
-                                                    message.message
-                                                FROM
-                                                    message
-                                                WHERE
-                                                    message.is_command = FALSE
-                                                    AND
-                                                    message.group_id = %s 
-                                                    AND
-                                                    DATE(message.send_time) = %s
-                                                GROUP BY
-                                                    message.message""",
-                                           [message.group_id, time],
-                                           ReturnType.ALL)
+                res: list[MessageModel] = (MessageModel.select(MessageModel.message)
+                                           .where((MessageModel.is_command == 0) &
+                                                  (MessageModel.group_id == message.group_id) &
+                                                  (fn.DATE(MessageModel.send_time) == time)))
                 temp = []
                 for message in res:
-                    tmp: str = (message[0]
+                    tmp: str = (message.message
                                 .replace("[图片]", "")
                                 .replace("[语音]", "")
                                 .replace("[视频]", "")
@@ -86,13 +77,13 @@ class OtherCommand(CommandParser):
             if command[1] == "add":
                 if self._check_permission(Whitelist.Add):
                     return self._permission_reject
-                database.run_command("""INSERT INTO `whitelist` (`user`) VALUES (%s)""", [command[2]])
+                WhitelistModel.create(user=command[2])
                 await message_sender.send_message(self._message.group_id, f"成功为{command[2]}添加白名单")
                 return Result.of_success()
             if command[1] == "del":
                 if self._check_permission(Whitelist.Del):
                     return self._permission_reject
-                database.run_command("""DELETE FROM `whitelist` WHERE `user` = %s""", [command[2]])
+                WhitelistModel.get(WhitelistModel.user == command[2]).delete_instance()
                 await message_sender.send_message(self._message.group_id, f"成功为{command[2]}移除白名单")
             return Result.of_success()
         return None

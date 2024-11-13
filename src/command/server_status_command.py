@@ -12,7 +12,13 @@ class ServerStatusCommand(CommandParser):
     async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
         await super().parse(message, command)
         if command[0] in ["info", "status"]:
-            return Result.of_success(await server.get_online_player())
+            return Result.of_success(server.get_online_player())
+        if command[0] in ["ping"]:
+            match len(command):
+                case 2:
+                    return Result.of_success(server.check_ip(command[1]))
+                case 3:
+                    return Result.of_success(server.check_ip(f"{command[1]}:{command[2]}"))
         if command[0] in ["tps"] and (command_length := len(command)) >= 2:
             res = await mcsm.run_command(command[1], "forge tps")
             if command_length == 3 and command[2] == "full":

@@ -1,24 +1,22 @@
+from asyncio.tasks import sleep
 from datetime import datetime
-
 from re import sub
 from sys import exit
 from typing import Optional
+
 from requests import get
-from asyncio.tasks import sleep
 
 from src.base.config import config
 from src.base.logger import logger
 from src.element.response import Response
 from src.element.result import Result
 from src.exception.exception import IncomingParametersError
-from src.module.database.database_adapter import DatabaseAdapter
 from src.module.json_database import DataType, JsonDataBase
-from src.module.mcsm.mcsm_info_mysql_manager import McsmInfoMySQLManager
+from src.module.mcsm.mcsm_info_database_manager import McsmInfoDatabaseManager
 from src.module.mcsm.mcsm_info_json_manager import McsmInfoJsonManager
 from src.module.mcsm.mcsm_info_manager import McsmInfoManager
-from src.module.mcsm.mcsm_info_sqlite_manager import McsmInfoSqliteManager
-from src.type.response_body import RemoteServices, InstanceInfo
-from src.type.types import DataEngineType, HttpCode
+from src.type.response_body import InstanceInfo, RemoteServices
+from src.type.types import HttpCode
 
 
 class McsmManager(JsonDataBase):
@@ -29,7 +27,7 @@ class McsmManager(JsonDataBase):
     _info_manager: McsmInfoManager
 
     def __init__(self, apikey: str, url: str = "http://127.0.0.1:23333", enable_ssl: bool = False,
-                 use_database: bool = False, database_instance: Optional[DatabaseAdapter] = None) -> None:
+                 use_database: bool = False) -> None:
         """
         Args:
             apikey: API 接口密钥
@@ -42,14 +40,8 @@ class McsmManager(JsonDataBase):
         self._enable_SSL = False if url.startswith("http://") else enable_ssl
         self._api_url = url if "/api" in url else f"{url}/api"
         self._api_key = apikey
-        if config.sys_config.mcsm.use_database:
-            match database_instance.get_database_type():
-                case DataEngineType.MYSQL:
-                    self._info_manager = McsmInfoMySQLManager(database_instance)
-                case DataEngineType.SQLITE:
-                    self._info_manager = McsmInfoSqliteManager(database_instance)
-                case DataEngineType.JSON:
-                    self._info_manager = McsmInfoJsonManager()
+        if use_database:
+            self._info_manager = McsmInfoDatabaseManager()
         else:
             self._info_manager = McsmInfoJsonManager()
         self.test_connect()
@@ -359,7 +351,7 @@ class McsmManager(JsonDataBase):
         daemon, instance = self._info_manager.get_number()
         return Result.of_success((f"Mcsm:\n "
                                   f"\t状态：{'已启用' if config.sys_config.mcsm.enable else '未启用'}\n"
-                                  f"\t数据引擎: {self._info_manager.data_engine.value}\n"
+                                  f"\t数据引擎: {config.config.database.database_name}\n"
                                   f"\tAPI状态: {'正常' if self.test_connect() else '异常'}\n"
                                   f"\t数据引擎状态: {'正常' if self._info_manager.test() else '异常'}\n"
                                   f"\t守护进程数量: {daemon}\n"

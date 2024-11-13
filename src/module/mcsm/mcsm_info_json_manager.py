@@ -14,7 +14,6 @@ class McsmInfoJsonManager(McsmInfoManager, JsonDataBase):
     _server: Dict[str, Union[bidict, dict]]
 
     def __init__(self):
-        McsmInfoManager.__init__(self)
         JsonDataBase.__init__(self, "mcsm.json", DataType.DICT)
 
     def test(self) -> bool:

@@ -3,22 +3,16 @@ from typing import Optional, Tuple
 
 from src.element.result import Result
 from src.type.response_body import InstanceInfo, RemoteServices
-from src.type.types import DataEngineType
 
 
 class McsmInfoManager:
     _status_code: list[str] = ["状态未知", "已停止", "停止中", "启动中", "运行中"]
-    _data_engine: DataEngineType
-
-    def __init__(self, data_engine: DataEngineType):
-        self._data_engine = data_engine
-
-    @property
-    def data_engine(self) -> DataEngineType:
-        return self._data_engine
 
     def status(self, code: int) -> str:
-        return self._status_code[code + 1]
+        try:
+            return self._status_code[code + 1]
+        except IndexError:
+            return str(code)
 
     def check_name(self, remote_name: Optional[str] = None,
                    instance_name: Optional[str] = None) -> Tuple[Optional[Result], Optional[Result]]:

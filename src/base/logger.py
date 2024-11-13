@@ -1,4 +1,5 @@
 # 日志模块
+import logging
 from datetime import datetime
 from os import getcwd
 from os.path import join
@@ -32,3 +33,14 @@ if config.sys_config.log_level.upper() != "TRACE":
                format=log_format, rotation="00:00", compression="zip",
                level="TRACE")
 logger.add(lambda _: exit(-1), level="CRITICAL")
+
+
+class LogHandler(logging.Handler):
+    def emit(self, record):
+        logger.log(record.levelname, record.getMessage())
+
+
+logging.basicConfig(
+    level=logging.DEBUG if config.sys_config.log_level.upper() == "TRACE" else config.sys_config.log_level.upper(),
+    handlers=[])
+logging.getLogger().addHandler(LogHandler())

@@ -1,7 +1,4 @@
-from src.element.message import Message
-
 from asyncio import AbstractEventLoop, get_event_loop, run_coroutine_threadsafe
-from asyncio import Event as AsyncEvent
 from threading import Timer
 from typing import Awaitable, Callable, Optional
 

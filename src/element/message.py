@@ -5,7 +5,7 @@ from typing import Type, Union
 from satori import Element, Event, MessageObject
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
 
-from src.model.message_model import MessageModel
+from src.database.message_model import Message as MessageModel
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
@@ -56,7 +56,7 @@ class Message:
     def find(self, obj_type: type) -> List[event_type]:
         return list(filter(lambda x: isinstance(x, obj_type), self._elements))
 
-    def find_first(self, obj_type: type) -> List[event_type]:
+    def find_first(self, obj_type: type) -> event_type:
         for i in self._elements:
             if isinstance(i, obj_type):
                 return i
@@ -122,20 +122,20 @@ class Message:
         return res.replace("\n", "|")
 
     @property
-    def model(self) -> MessageModel:
-        return MessageModel(self._event.message.id,
-                            self._event.user.id,
-                            self.sender_name,
-                            self._event.guild.id,
-                            self._event.guild.name,
-                            self.is_command,
-                            self._message,
-                            self._send_time)
-
-    @property
     def is_command(self) -> bool:
         return self._message.startswith("/") or self._message.startswith("!")
 
     @property
     def send_time(self) -> datetime:
         return self._send_time
+
+    def to_model(self) -> MessageModel:
+        return MessageModel(
+            group_id=self.group_id,
+            group_name=self.group_name,
+            is_command=self.is_command,
+            message=self.message,
+            message_id=self.message_id,
+            send_time=self.send_time,
+            sender_id=self.sender_id,
+            sender_name=self.sender_name)

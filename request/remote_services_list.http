@@ -1,1 +1,0 @@
-GET {{url}}/api/service/remote_services_list?apikey={{apikey}}

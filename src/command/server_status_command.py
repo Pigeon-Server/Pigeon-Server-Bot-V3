@@ -1,7 +1,6 @@
 from typing import List, Optional
 
-from src.bot.mcsm import mcsm
-from src.bot.server_status import server
+from src.bot.plugin import mcsm, server
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.result import Result

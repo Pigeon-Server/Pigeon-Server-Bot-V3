@@ -5,7 +5,7 @@ from threading import Thread
 
 from src.base.config import config
 from src.base.logger import logger
-from src.bot.mcsm import mcsm
+from src.bot.plugin import mcsm
 from src.element.permissions import Root
 from src.utils.file_utils import check_directory, text_to_image
 

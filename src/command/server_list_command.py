@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from peewee import DoesNotExist
 
-from src.bot.server_status import server
+from src.bot.plugin import server
 from src.database.server_model import ServerList as ServerListModel
 from src.command.command_parser import CommandParser
 from src.element.message import Message

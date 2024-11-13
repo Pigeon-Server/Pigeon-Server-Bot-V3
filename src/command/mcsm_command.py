@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from src.bot.app import message_sender, reply_manager
-from src.bot.mcsm import mcsm
+from src.bot.plugin import mcsm
 from src.command.command_parser import CommandParser
 from src.element.message import Message
 from src.element.permissions import Mcsm

@@ -5,7 +5,7 @@ from satori.client import Account, App
 
 from src.base.config import config
 from src.base.logger import logger
-from src.bot.message import MessageSender
+from src.utils.message_sender import MessageSender
 from src.bot.thread import update_mcsm_info_thread
 from src.module.reply_message import ReplyManager
 

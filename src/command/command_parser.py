@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from src.bot.permission import ps_manager
+from src.bot.plugin import ps_manager
 from src.element.message import Message
 from src.element.result import Result
 from src.element.tree import Tree

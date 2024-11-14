@@ -30,7 +30,7 @@ async def on_startup(account: Account, status: LoginStatus):
                 MessageSender.set_account(account)
                 update_mcsm_info_thread.start()
                 if not sys_config.dev:
-                    await account.send_message(main_config.group_config.admin_group, f"plugin online")
+                    await MessageSender.send_message(main_config.group_config.admin_group, f"plugin online")
                 logger.info("\n  _____  _                               _____                               \n"
                             " |  __ \\(_)                             / ____|                              \n"
                             " | |__) |_   __ _   ___   ___   _ __   | (___    ___  _ __ __   __ ___  _ __ \n"

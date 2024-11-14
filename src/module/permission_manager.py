@@ -17,7 +17,7 @@ class PermissionManager(JsonDataBase):
         super().__init__("permission.json", DataType.DICT)
         self._group_permission = JsonDataBase("permissionGroup.json", DataType.DICT)
         if self._group_permission._stored_data == {}:
-            self._group_permission._stored_data = Config.load_config("permission.json5")
+            self._group_permission._stored_data = read_json("permission.json5")
             self._group_permission.write_data()
         self._permission_node_list = str(Root.instance)
 

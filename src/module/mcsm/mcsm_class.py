@@ -7,7 +7,7 @@ from typing import Optional
 from requests import get
 
 import src.bot.plugin
-from src.base.config import main_config
+from src.base.config import main_config, sys_config
 from src.base.logger import logger
 from src.element.response import Response
 from src.element.result import Result
@@ -351,8 +351,8 @@ class McsmManager(JsonDataBase):
     def status(self) -> Result:
         daemon, instance = self._info_manager.get_number()
         return Result.of_success((f"Mcsm:\n "
-                                  f"\t状态：{'已启用' if src.bot.plugin.mcsm.enable else '未启用'}\n"
-                                  f"\t数据引擎: {main_config.database.database_name}\n"
+                                  f"\t状态：{'已启用' if sys_config.mcsm.enable else '未启用'}\n"
+                                  f"\t数据引擎: {main_config.database.type}\n"
                                   f"\tAPI状态: {'正常' if self.test_connect() else '异常'}\n"
                                   f"\t数据引擎状态: {'正常' if self._info_manager.test() else '异常'}\n"
                                   f"\t守护进程数量: {daemon}\n"

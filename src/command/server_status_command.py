@@ -2,14 +2,17 @@ from typing import List, Optional
 
 from src.bot.plugin import mcsm, server
 from src.command.command_parser import CommandParser
+from src.command.command_parser_manager import CommandParserManager
 from src.element.message import Message
 from src.element.result import Result
 
 
 class ServerStatusCommand(CommandParser):
 
-    async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
-        await super().parse(message, command)
+    @staticmethod
+    @CommandParserManager.add_command_parser("server_status_command")
+    async def parse(message: Message, command: List[str]) -> Optional[Result]:
+        await CommandParser.parse(message, command)
         if command[0] in ["info", "status"]:
             return Result.of_success(server.get_online_player())
         if command[0] in ["ping"]:

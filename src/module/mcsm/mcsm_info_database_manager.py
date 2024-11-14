@@ -12,8 +12,12 @@ from src.type.response_body import InstanceInfo, RemoteServices
 class McsmInfoDatabaseManager(McsmInfoManager):
 
     def get_number(self) -> tuple[int, int]:
-        res = McsmDaemon.select(fn.COUNT(McsmDaemon.id)).union(McsmInstance.select(fn.COUNT(McsmInstance.id))).execute()
-        return res[0][0], res[1][0]
+        res = (McsmDaemon
+               .select(fn.COUNT(McsmDaemon.id))
+               .union(McsmInstance.select(fn.COUNT(McsmInstance.id)))
+               .dicts()
+               .execute())
+        return res[0]["id"], res[1]["id"]
 
     @database_transaction
     def update_remote_status(self, remote_uuid: str, remote_data: RemoteServices) -> None:

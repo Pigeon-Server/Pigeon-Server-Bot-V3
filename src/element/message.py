@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import List
-from typing import Type, Union
+from typing import List, Optional, Type, Union
 
 from satori import Element, Event, MessageObject
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
+
+from src.exception.exception import QuotationUnmatchedError
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
@@ -119,6 +120,38 @@ class Message:
                     res += f"[回复({element.id})]"
         return res.replace("\n", "|")
 
+    def command_split(self) -> Optional[list[str]]:
+        if not self.is_command or not self.message:
+            return None
+        res = []
+        msg = self.message[1:]
+        temp = ""
+        is_quoted = False
+        quote_char = None
+        for i in msg:
+            if i in ['"', "'"]:
+                if not is_quoted:
+                    is_quoted = True
+                    quote_char = i
+                elif quote_char == i:
+                    is_quoted = False
+                    quote_char = None
+                continue
+            if is_quoted:
+                temp += i
+            else:
+                if i.isspace():
+                    if len(temp) != 0:
+                        res.append(temp)
+                        temp = ""
+                else:
+                    temp += i
+        if is_quoted:
+            raise QuotationUnmatchedError
+        if temp != "":
+            res.append(temp)
+        return res
+
     @property
     def is_command(self) -> bool:
         return self._message.startswith("/") or self._message.startswith("!")
@@ -126,3 +159,6 @@ class Message:
     @property
     def send_time(self) -> datetime:
         return self._send_time
+
+    def __str__(self) -> str:
+        return self.message

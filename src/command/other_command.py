@@ -9,6 +9,7 @@ from satori import Image
 
 from src.base.config import main_config, sys_config
 from src.command.command_parser import CommandParser
+from src.command.command_parser_manager import CommandParserManager
 from src.database.message_model import Message as MessageModel
 from src.database.server_model import Whitelist as WhitelistModel
 from src.element.message import Message
@@ -22,8 +23,11 @@ wordcloud_path = join(getcwd(), "image/wordcloud.png")
 
 
 class OtherCommand(CommandParser):
-    async def parse(self, message: Message, command: List[str]) -> Optional[Result]:
-        await super().parse(message, command)
+
+    @staticmethod
+    @CommandParserManager.add_command_parser("other_command")
+    async def parse(message: Message, command: List[str]) -> Optional[Result]:
+        await CommandParser.parse(message, command)
         if (command_length := len(command)) == 1:
             if command[0] == "word":
                 match len(command):
@@ -35,8 +39,8 @@ class OtherCommand(CommandParser):
                     case 3:
                         time = (datetime.now() - timedelta(days=int(command[2]))).strftime("%Y-%m-%d") \
                             if command[1] == "last" else command[1]
-                if self._check_permission(Other.Word):
-                    return self._permission_reject
+                if OtherCommand._check_permission(Other.Word):
+                    return OtherCommand._permission_reject
                 res: list[MessageModel] = (MessageModel.select(MessageModel.message)
                                            .where((MessageModel.is_command == 0) &
                                                   (MessageModel.group_id == message.group_id) &
@@ -54,36 +58,36 @@ class OtherCommand(CommandParser):
                     temp.append(tmp)
                 message = "".join(temp)
                 MessageWordCloud.wordcloud(message, wordcloud_path)
-                await MessageSender.send_message(self._message.group_id, f"以下为日期{time}的图云")
+                await MessageSender.send_message(OtherCommand._message.group_id, f"以下为日期{time}的图云")
                 with open(wordcloud_path, "rb") as f:
-                    await MessageSender.send_message(self._message.group_id,
+                    await MessageSender.send_message(OtherCommand._message.group_id,
                                                      [Image.of(raw=f.read(), mime="image/png")])
                 return Result.of_success()
             if command[0] == "reboot":
-                if self._check_permission(Other.Reboot):
-                    return self._permission_reject
+                if OtherCommand._check_permission(Other.Reboot):
+                    return OtherCommand._permission_reject
                 if not sys_config.dev:
                     await MessageSender.send_message(main_config.group_config.admin_group, f"plugin offline")
                 exit(0)
             if command[0] == "bot_status":
-                if self._check_permission(Other.Status):
-                    return self._permission_reject
-                await MessageSender.send_message(self._message.group_id, f"插件状态:\n"
-                                                                         f"运行状态: 正常\n"
-                                                                         f"Mcsm模块: 正常\n"
-                                                                         f"MySQL状态: 正常")
+                if OtherCommand._check_permission(Other.Status):
+                    return OtherCommand._permission_reject
+                await MessageSender.send_message(OtherCommand._message.group_id, f"插件状态:\n"
+                                                                                 f"运行状态: 正常\n"
+                                                                                 f"Mcsm模块: 正常\n"
+                                                                                 f"MySQL状态: 正常")
                 return Result.of_success()
         if command_length > 2 and command[0] == "whitelist":
             if command[1] == "add":
-                if self._check_permission(Whitelist.Add):
-                    return self._permission_reject
+                if OtherCommand._check_permission(Whitelist.Add):
+                    return OtherCommand._permission_reject
                 WhitelistModel.create(user=command[2])
-                await MessageSender.send_message(self._message.group_id, f"成功为{command[2]}添加白名单")
+                await MessageSender.send_message(OtherCommand._message.group_id, f"成功为{command[2]}添加白名单")
                 return Result.of_success()
             if command[1] == "del":
-                if self._check_permission(Whitelist.Del):
-                    return self._permission_reject
+                if OtherCommand._check_permission(Whitelist.Del):
+                    return OtherCommand._permission_reject
                 WhitelistModel.get(WhitelistModel.user == command[2]).delete_instance()
-                await MessageSender.send_message(self._message.group_id, f"成功为{command[2]}移除白名单")
+                await MessageSender.send_message(OtherCommand._message.group_id, f"成功为{command[2]}移除白名单")
             return Result.of_success()
         return None

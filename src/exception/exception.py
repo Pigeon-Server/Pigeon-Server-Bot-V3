@@ -9,6 +9,12 @@ class CustomError(Exception):
         return self.info
 
 
+class QuotationUnmatchedError(CustomError):
+    def __init__(self, info: str = "命令中的引号不匹配"):
+        super().__init__()
+        self.info = info
+
+
 class JsonFileNotFoundError(CustomError):
 
     def __init__(self, info: str = "无法找到JSON文件"):

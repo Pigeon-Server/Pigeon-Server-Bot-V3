@@ -7,7 +7,7 @@ from src.element.message import Message
 from src.element.result import Result
 
 message_type: Type = Union[str, list[str | Element]]
-parser_type: Type = Callable[[Message, List[str]], Awaitable[Optional[Result]]]
+parser_function: Type = Callable[[Message, List[str]], Awaitable[Optional[Result]]]
 
 
 class ReplyType(Enum):

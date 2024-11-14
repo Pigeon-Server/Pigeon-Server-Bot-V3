@@ -4,10 +4,10 @@ from os import getcwd
 from os.path import join
 from typing import Optional, Union
 
-from src.base.config import Config
 from src.base.logger import logger
 from src.exception.exception import NoKeyError
 from src.utils.file_utils import check_directory, check_file
+from src.utils.json_utils import read_json, write_json
 
 
 class DataType(Enum):
@@ -33,16 +33,18 @@ class JsonDataBase:
             data_type: 文件内存储的格式 1:str 2:int 3: float 4: list: 5: dict 除了dict外，其他类型均为list存储
         """
         self._data_type = DataType(data_type)
-        check_directory(self._data_path, True)
+        check_directory(self._data_path, create_if_not_exist=True)
         self._data_file_path = join(self._data_path, file_name)
         if check_file(self._data_file_path):
-            self._stored_data = Config.load_config(self._data_file_path)
+            self._stored_data = read_json(self._data_file_path, skip_file_check=True)
+            if self._stored_data is None:
+                self._stored_data = {}
             return
         if DataType(data_type) == DataType.DICT:
-            check_file(self._data_file_path, True, "{}")
+            write_json(self._data_file_path, {})
             self._stored_data = {}
             return
-        check_file(self._data_file_path, True, "[]")
+        write_json(self._data_file_path, [])
         self._stored_data = []
 
     def edit_data(self, data: Union[str, int, float, list, dict], target: Optional[str] = None,
@@ -106,15 +108,14 @@ class JsonDataBase:
         重新从文件加载数据\n
         """
         logger.trace(f"Reload file {self._data_file_path}")
-        self._stored_data = load(open(self._data_file_path, "r", encoding="UTF-8", errors="ignore"))
+        self._stored_data = read_json(self._data_file_path)
 
     def write_data(self) -> None:
         """
         将本地缓存的内容写入文件\n
         """
         logger.trace(f"Save file {self._data_file_path}")
-        with open(self._data_file_path, 'w', encoding="UTF-8") as file:
-            file.write(dumps(self._stored_data, indent=4, ensure_ascii=False))
+        write_json(self._data_file_path, self._stored_data)
 
     def query_data(self, data: Union[str, int, float, list, dict], target: Optional[str] = None) -> bool:
         """

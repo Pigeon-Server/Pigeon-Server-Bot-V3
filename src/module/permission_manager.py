@@ -1,9 +1,9 @@
 from typing import List, Optional, Union
 
-from src.base.config import Config
 from src.module.json_database import DataType, JsonDataBase
 from src.element.permissions import *
 from src.element.result import Result
+from src.utils.json_utils import read_json
 
 
 class PermissionManager(JsonDataBase):
@@ -31,11 +31,13 @@ class PermissionManager(JsonDataBase):
         """
         try:
             if over_write:
-                self._group_permission._stored_data = Config.load_config("permission.json5")
+                self._group_permission._stored_data = read_json("permission.json5")
                 self._group_permission.write_data()
                 return Result.of_success("重载权限组成功")
             raw: str
-            data: dict = Config.load_config("permission.json5")
+            data: dict = read_json("permission.json5")
+            if data is None:
+                data = {}
             for raw in data:
                 if raw in self._group_permission._stored_data.keys():
                     temp = data[raw]["permission"]

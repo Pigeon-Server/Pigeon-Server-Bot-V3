@@ -11,7 +11,7 @@ from src.base.config import sys_config
 from src.utils.file_utils import check_directory
 
 # 检查是否存在logs文件夹
-check_directory(join(getcwd(), "logs"), True)
+check_directory(join(getcwd(), "logs"), create_if_not_exist=True)
 
 log_format = ("<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> <light-red>|</> "
               "<yellow>{thread:<5}</> <light-red>|</> "

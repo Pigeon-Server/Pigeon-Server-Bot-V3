@@ -7,7 +7,8 @@ from src.base.config import main_config
 from src.base.logger import logger
 from src.bot.plugin import mcsm
 from src.element.permissions import Root
-from src.utils.file_utils import check_directory, text_to_image
+from src.utils.file_utils import check_directory
+from src.utils.image_utils import text_to_image
 
 logger.debug("Initializing thread handlers...")
 
@@ -24,7 +25,7 @@ def update_mcsm_info_thread_handler():
 
 def permission_node_image():
     logger.debug(f"Generating thread started")
-    check_directory(image_dir, True)
+    check_directory(image_dir, create_if_not_exist=True)
     text_to_image(Root.instance, permission_image_dir)
     logger.debug(f"Generating thread stop")
 

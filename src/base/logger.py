@@ -7,7 +7,7 @@ from sys import stdout
 
 from loguru import logger
 
-from src.base.config import config
+from src.base.config import sys_config
 from src.utils.file_utils import check_directory
 
 # 检查是否存在logs文件夹
@@ -19,16 +19,15 @@ log_format = ("<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> <light-red>|</> "
               "<level>{level:8}</> <light-red>|</> "
               "<cyan>{name}<light-red>:</>{function}<light-red>:</>{line}</> "
               "<light-red>-</> <level>{message}</>")
-
-logger.debug(f"Change logger level to {config.sys_config.log_level.upper()}")
+logger.debug(f"Change logger level to {sys_config.log_level.upper()}")
 logger.remove()
 logger.add(stdout,
            format=log_format,
-           level=config.sys_config.log_level.upper())
+           level=sys_config.log_level.upper())
 logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}.log"),
            format=log_format, rotation="00:00", compression="zip",
-           level=config.sys_config.log_level.upper())
-if config.sys_config.log_level.upper() != "TRACE":
+           level=sys_config.log_level.upper())
+if sys_config.log_level.upper() != "TRACE":
     logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}-full.log"),
                format=log_format, rotation="00:00", compression="zip",
                level="TRACE")
@@ -41,6 +40,6 @@ class LogHandler(logging.Handler):
 
 
 logging.basicConfig(
-    level=logging.DEBUG if config.sys_config.log_level.upper() == "TRACE" else config.sys_config.log_level.upper(),
+    level=logging.DEBUG if sys_config.log_level.upper() == "TRACE" else sys_config.log_level.upper(),
     handlers=[])
 logging.getLogger().addHandler(LogHandler())

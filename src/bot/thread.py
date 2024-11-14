@@ -3,7 +3,7 @@ from os.path import join
 from time import sleep
 from threading import Thread
 
-from src.base.config import config
+from src.base.config import main_config
 from src.base.logger import logger
 from src.bot.plugin import mcsm
 from src.element.permissions import Root
@@ -18,7 +18,7 @@ permission_image_dir = join(image_dir, "permissions.png")
 def update_mcsm_info_thread_handler():
     while True:
         logger.trace("Update MCSM info")
-        sleep(config.config.mcsm_config.update_time)
+        sleep(main_config.mcsm_config.update_time)
         mcsm.update_instance_status()
 
 

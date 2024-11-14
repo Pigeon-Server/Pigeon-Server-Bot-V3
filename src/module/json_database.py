@@ -4,7 +4,7 @@ from os import getcwd
 from os.path import join
 from typing import Optional, Union
 
-from src.base.config import ConfigSet
+from src.base.config import Config
 from src.base.logger import logger
 from src.exception.exception import NoKeyError
 from src.utils.file_utils import check_directory, check_file
@@ -36,7 +36,7 @@ class JsonDataBase:
         check_directory(self._data_path, True)
         self._data_file_path = join(self._data_path, file_name)
         if check_file(self._data_file_path):
-            self._stored_data = ConfigSet.load_config(self._data_file_path)
+            self._stored_data = Config.load_config(self._data_file_path)
             return
         if DataType(data_type) == DataType.DICT:
             check_file(self._data_file_path, True, "{}")

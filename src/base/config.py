@@ -6,17 +6,17 @@ from typing import Optional
 from json5.lib import load as js5_load
 from loguru import logger
 
-from src.type.config import Config
+from src.type.config import Config as MainConfig
 from src.type.sys_config import SysConfig
 from src.type.types import VersionType
 from src.utils.file_utils import check_file
 from src.utils.version import Version
 
 
-class ConfigSet:
+class Config:
     _config_version: Version = Version([1, 2, 0])
-    _config: Config
-    _sys_config: SysConfig
+    _main_config: Optional[MainConfig] = None
+    _sys_config: Optional[SysConfig] = None
 
     @staticmethod
     def load_config(filename: str) -> Optional[dict]:
@@ -43,35 +43,35 @@ class ConfigSet:
         logger.error(f"{default_file}文件不存在,请前往Github下载")
         return None
 
-    def __init__(self):
-        self.reload_config()
-
-    def __repr__(self):
-        return f"ConfigSet({self._config}, {self._sys_config})"
-
-    def reload_config(self):
-        self._config = Config(self.load_config("config.json5"))
-        logger.debug(f"Config version: {self._config.config_version}")
-        version = Version(self._config.config_version)
-        res = self._config_version.check_version(version)
+    @staticmethod
+    def reload_config():
+        Config._main_config = MainConfig(Config.load_config("config.json5"))
+        logger.debug(f"Config version: {Config._main_config.config_version}")
+        version = Version(Config._main_config.config_version)
+        res = Config._config_version.check_version(version)
         if res == VersionType.MAJOR_UNMATCH or res == VersionType.MINOR_UNMATCH:
             logger.critical(
-                f"Config version error! Require {self._config_version} but got {version}")
+                f"Config version error! Require {Config._config_version} but got {version}")
             exit(-1)
         if res == VersionType.PATCH_UNMATCH:
             logger.warning(
-                f"Config version not match! Require {self._config_version} but got {version}")
-        self._sys_config = SysConfig(self.load_config("system_config.json5"))
-        if self._sys_config.mcsm.use_database and self._config.mcsm_config.update_time < 600:
-            self._config.mcsm_config.update_time = 600
+                f"Config version not match! Require {Config._config_version} but got {version}")
+        Config._sys_config = SysConfig(Config.load_config("system_config.json5"))
+        if Config._sys_config.mcsm.use_database and Config._main_config.mcsm_config.update_time < 600:
+            Config._main_config.mcsm_config.update_time = 600
 
-    @property
-    def config(self) -> Config:
-        return self._config
+    @staticmethod
+    def main_config() -> MainConfig:
+        if Config._main_config is None:
+            Config.reload_config()
+        return Config._main_config
 
-    @property
-    def sys_config(self) -> SysConfig:
-        return self._sys_config
+    @staticmethod
+    def sys_config() -> SysConfig:
+        if Config._sys_config is None:
+            Config.reload_config()
+        return Config._sys_config
 
 
-config = ConfigSet()
+main_config = Config.main_config()
+sys_config = Config.sys_config()

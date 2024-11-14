@@ -3,23 +3,26 @@ from contextlib import contextmanager
 from peewee import Database, Model, MySQLDatabase, PostgresqlDatabase, SqliteDatabase
 
 from src.base.logger import logger
-from src.base.config import config
+from src.base.config import main_config
+from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
 
 database: Database
 
-match config.config.database.type.lower():
+match main_config.database.type.lower():
     case 'mysql':
-        database = MySQLDatabase(database=config.config.database.database_name, host=config.config.database.host,
-                                 port=config.config.database.port, user=config.config.database.username,
-                                 password=config.config.database.password)
+        database = MySQLDatabase(database=main_config.database.database_name, host=main_config.database.host,
+                                 port=main_config.database.port, user=main_config.database.username,
+                                 password=main_config.database.password)
     case 'sqlite':
-        database = SqliteDatabase(database=config.config.database.database_name)
+        database = SqliteDatabase(database=main_config.database.database_name)
     case 'postgresql':
-        database = PostgresqlDatabase(database=config.config.database.database_name, host=config.config.database.host,
-                                      port=config.config.database.port, user=config.config.database.username,
-                                      password=config.config.database.password)
+        database = PostgresqlDatabase(database=main_config.database.database_name, host=main_config.database.host,
+                                      port=main_config.database.port, user=main_config.database.username,
+                                      password=main_config.database.password)
     case _:
-        logger.critical(f'Database type {config.config.database.type} not supported')
+        logger.critical(f'Database type {main_config.database.type} not supported')
+
+LifeCycleManager.add_life_cycle_event(LifeCycleEvent.STOPPING, lambda: database.close())
 
 
 class BaseModel(Model):

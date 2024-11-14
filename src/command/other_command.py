@@ -7,7 +7,7 @@ from typing import List, Optional
 from peewee import fn
 from satori import Image
 
-from src.base.config import config
+from src.base.config import main_config, sys_config
 from src.database.server_model import Whitelist as WhitelistModel
 from src.database.message_model import Message as MessageModel
 from src.command.command_parser import CommandParser
@@ -62,8 +62,8 @@ class OtherCommand(CommandParser):
             if command[0] == "reboot":
                 if self._check_permission(Other.Reboot):
                     return self._permission_reject
-                if not config.sys_config.dev:
-                    await MessageSender.send_message(config.config.group_config.admin_group, f"plugin offline")
+                if not sys_config.dev:
+                    await MessageSender.send_message(main_config.group_config.admin_group, f"plugin offline")
                 exit(0)
             if command[0] == "bot_status":
                 if self._check_permission(Other.Status):

@@ -5,7 +5,6 @@ from typing import Type, Union
 from satori import Element, Event, MessageObject
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
 
-from src.database.message_model import Message as MessageModel
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
@@ -128,14 +127,3 @@ class Message:
     @property
     def send_time(self) -> datetime:
         return self._send_time
-
-    def to_model(self) -> MessageModel:
-        return MessageModel(
-            group_id=self.group_id,
-            group_name=self.group_name,
-            is_command=self.is_command,
-            message=self.message,
-            message_id=self.message_id,
-            send_time=self.send_time,
-            sender_id=self.sender_id,
-            sender_name=self.sender_name)

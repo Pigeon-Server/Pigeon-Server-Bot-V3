@@ -6,6 +6,7 @@ from src.base.logger import logger
 from src.bot.app import app
 from src.command.command import Command
 from src.element.message import Message
+from src.utils.model_utils import ModelUtils
 
 logger.debug("Initializing message handler...")
 
@@ -16,8 +17,7 @@ async def on_message(account: Account, event: Event):
     if event.self_id == message.sender_id:
         return
     if not config.sys_config.dev:
-        message_model = message.to_model()
-        message_model.save()
+        ModelUtils.translate_message_to_model(message).save()
     logger.info(
         f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
     await Command.command_parsing(message, account, event)

@@ -1,8 +1,8 @@
 from typing import List, Optional, Union
 
-from src.module.json_database import DataType, JsonDataBase
 from src.element.permissions import *
 from src.element.result import Result
+from src.module.json_database import DataType, JsonDataBase
 from src.utils.json_utils import read_json
 
 

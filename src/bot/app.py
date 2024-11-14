@@ -5,9 +5,9 @@ from satori.client import Account, App
 
 from src.base.config import main_config, sys_config
 from src.base.logger import logger
-from src.utils.life_cycle_manager import LifeCycleManager, LifeCycleEvent
-from src.utils.message_sender import MessageSender
 from src.bot.thread import update_mcsm_info_thread
+from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
+from src.utils.message_sender import MessageSender
 from src.utils.reply_message import ReplyMessageSender
 
 LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.STARTING)

@@ -1,11 +1,11 @@
+from json import dumps as js_dumps, load as js_load
 from logging import getLogger
-from json import load as js_load, dumps as js_dumps
 from typing import Optional, Union
 
-from json5 import load as js5_load, dumps as js5_dumps
+from json5 import dumps as js5_dumps, load as js5_load
 
-from src.utils.file_utils import check_file
 from src.exception.exception import JsonFileNotFoundError
+from src.utils.file_utils import check_file
 
 logger = getLogger()
 

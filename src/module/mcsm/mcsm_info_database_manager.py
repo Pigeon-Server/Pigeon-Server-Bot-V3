@@ -2,11 +2,11 @@ from typing import List, Optional, Tuple
 
 from peewee import Case, Expression, fn
 
+from src.database.base_model import database, database_transaction
 from src.database.mcsm_model import McsmDaemon, McsmInstance
 from src.element.result import Result
 from src.module.mcsm.mcsm_info_manager import McsmInfoManager
 from src.type.response_body import InstanceInfo, RemoteServices
-from src.database.base_model import database, database_transaction
 
 
 class McsmInfoDatabaseManager(McsmInfoManager):

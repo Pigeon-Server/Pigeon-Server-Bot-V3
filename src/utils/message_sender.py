@@ -3,8 +3,8 @@ from typing import List, Optional, Union, overload
 from satori import At, Element, Event, Guild, MessageObject, Quote
 from satori.client import Account
 
+from src.base.config import sys_config
 from src.base.logger import logger
-from src.base.config import config
 from src.element.message import Message
 from src.type.types import message_type
 
@@ -41,7 +41,7 @@ class MessageSender:
                            message: message_type) -> List[MessageObject]:
         if MessageSender._account is None:
             raise ValueError("Account is not set")
-        if config.sys_config.dev:
+        if sys_config.dev:
             if isinstance(message, str):
                 message = f"{'-' * 5}Dev{'-' * 5}\n{message}"
             if isinstance(message, list):

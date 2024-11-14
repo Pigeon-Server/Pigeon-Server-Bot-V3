@@ -8,9 +8,9 @@ from peewee import fn
 from satori import Image
 
 from src.base.config import main_config, sys_config
-from src.database.server_model import Whitelist as WhitelistModel
-from src.database.message_model import Message as MessageModel
 from src.command.command_parser import CommandParser
+from src.database.message_model import Message as MessageModel
+from src.database.server_model import Whitelist as WhitelistModel
 from src.element.message import Message
 from src.element.permissions import Other, Whitelist
 from src.element.result import Result

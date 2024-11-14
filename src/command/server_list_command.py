@@ -3,8 +3,8 @@ from typing import List, Optional
 from peewee import DoesNotExist
 
 from src.bot.plugin import server
-from src.database.server_model import ServerList as ServerListModel
 from src.command.command_parser import CommandParser
+from src.database.server_model import ServerList as ServerListModel
 from src.element.message import Message
 from src.element.permissions import ServerList
 from src.element.result import Result

@@ -8,8 +8,8 @@ from src.type.config import Config as MainConfig
 from src.type.sys_config import SysConfig
 from src.type.types import VersionType
 from src.utils.file_utils import check_file
-from src.utils.version import Version
 from src.utils.json_utils import read_json
+from src.utils.version import Version
 
 
 class Config:

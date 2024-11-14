@@ -1,7 +1,7 @@
 from os import getcwd
 from os.path import join
-from time import sleep
 from threading import Thread
+from time import sleep
 
 from src.base.config import main_config
 from src.base.logger import logger

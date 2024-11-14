@@ -2,8 +2,8 @@ from contextlib import contextmanager
 
 from peewee import Database, Model, MySQLDatabase, PostgresqlDatabase, SqliteDatabase
 
-from src.base.logger import logger
 from src.base.config import main_config
+from src.base.logger import logger
 from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
 
 database: Database

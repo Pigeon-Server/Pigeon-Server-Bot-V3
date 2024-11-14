@@ -1,5 +1,5 @@
-from src.element.message import Message
 from src.database.message_model import Message as MessageModel
+from src.element.message import Message
 
 
 class ModelUtils:

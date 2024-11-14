@@ -5,7 +5,6 @@ from typing import Type, Union
 from satori import Element, Event, MessageObject
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
 
-
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
 

@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 from src.bot.plugin import mcsm
+from src.command.command_manager import CommandManager
 from src.command.command_parser import CommandParser
-from src.command.command_parser_manager import CommandParserManager
 from src.element.message import Message
 from src.element.permissions import Mcsm
 from src.element.result import Result
@@ -26,7 +26,7 @@ class McsmCommand(CommandParser):
         "/mcsm command (InstanceName) (Command) 向某一实例执行命令")
     
     @staticmethod
-    @CommandParserManager.add_command_parser("mcsm_command")
+    @CommandManager.add_command_parser("mcsm_command")
     async def parse(message: Message, command: List[str]) -> Optional[Result]:
         await CommandParser.parse(message, command)
         command_length = len(command)

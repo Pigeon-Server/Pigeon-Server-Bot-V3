@@ -6,7 +6,7 @@ from satori.client import Account
 from src.base.config import sys_config
 from src.base.logger import logger
 from src.element.message import Message
-from src.type.types import message_type
+from src.type.types import MessageType
 
 
 class MessageSender:
@@ -38,7 +38,7 @@ class MessageSender:
 
     @staticmethod
     async def send_message(channel_id: Union[str, Event],
-                           message: message_type) -> List[MessageObject]:
+                           message: MessageType) -> List[MessageObject]:
         if MessageSender._account is None:
             raise ValueError("Account is not set")
         if sys_config.dev:

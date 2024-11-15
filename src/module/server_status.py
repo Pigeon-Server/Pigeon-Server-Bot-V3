@@ -1,4 +1,5 @@
 from re import sub
+from typing import Optional
 
 from mcstatus import JavaServer
 
@@ -7,13 +8,11 @@ from src.database.server_model import ServerList
 
 
 class ServerStatus:
-    _server: dict
+    _server: Optional[dict] = None
 
-    def __init__(self) -> None:
-        self.reload_server_list()
-
-    def reload_server_list(self) -> None:
-        self._server = self.get_server_list()
+    @staticmethod
+    def reload_server_list() -> None:
+        ServerStatus._server = ServerStatus.get_server_list()
 
     @staticmethod
     def get_server_list() -> dict:
@@ -38,13 +37,16 @@ class ServerStatus:
             logger.error(error)
             return f"Can't connect to server: {ip}"
 
-    def get_online_player(self, full: bool = False) -> str:
+    @staticmethod
+    def get_online_player(full: bool = False) -> str:
+        if ServerStatus._server is None:
+            ServerStatus.reload_server_list()
         output_message = ["[服务器状态]", "", "在线玩家列表: "]
         player_max = 0
         player_online = 0
-        for server_name in self._server:
+        for server_name in ServerStatus._server:
             try:
-                server_status = JavaServer.lookup(self._server[server_name]).status()
+                server_status = JavaServer.lookup(ServerStatus._server[server_name]).status()
                 player_max += server_status.players.max
                 player_online += server_status.players.online
                 message = f"{server_name}({server_status.players.online}): "

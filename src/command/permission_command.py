@@ -5,8 +5,8 @@ from satori import Image
 
 from src.bot.plugin import ps_manager
 from src.bot.thread import permission_image_dir
+from src.command.command_manager import CommandManager
 from src.command.command_parser import CommandParser
-from src.command.command_parser_manager import CommandParserManager
 from src.element.message import Message
 from src.element.permissions import Permission
 from src.element.result import Result
@@ -135,7 +135,7 @@ class PermissionCommand(CommandParser):
                 return PermissionCommand._group_command_helper
 
     @staticmethod
-    @CommandParserManager.add_command_parser("permission_command")
+    @CommandManager.add_command_parser("permission_command")
     async def parse(message: Message, command: List[str]) -> Optional[Result]:
         await CommandParser.parse(message, command)
         parsing_methods: List[Callable[[List[str]], Awaitable[Optional[Result]]]] = [

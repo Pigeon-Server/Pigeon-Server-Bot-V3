@@ -8,8 +8,8 @@ from peewee import fn
 from satori import Image
 
 from src.base.config import main_config, sys_config
+from src.command.command_manager import CommandManager
 from src.command.command_parser import CommandParser
-from src.command.command_parser_manager import CommandParserManager
 from src.database.message_model import Message as MessageModel
 from src.database.server_model import Whitelist as WhitelistModel
 from src.element.message import Message
@@ -25,7 +25,7 @@ wordcloud_path = join(getcwd(), "image/wordcloud.png")
 class OtherCommand(CommandParser):
 
     @staticmethod
-    @CommandParserManager.add_command_parser("other_command")
+    @CommandManager.add_command_parser("other_command")
     async def parse(message: Message, command: List[str]) -> Optional[Result]:
         await CommandParser.parse(message, command)
         if (command_length := len(command)) == 1:

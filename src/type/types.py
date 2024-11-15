@@ -1,13 +1,13 @@
 from enum import Enum
-from typing import Awaitable, Callable, List, Optional, Type, Union
+from typing import Awaitable, Callable, List, Type, Union
 
 from satori import Element
 
 from src.element.message import Message
 from src.element.result import Result
 
-message_type: Type = Union[str, list[str | Element]]
-parser_function: Type = Callable[[Message, List[str]], Awaitable[Optional[Result]]]
+MessageType: Type = Union[str, list[str | Element]]
+CommandHandler: Type = Callable[[Message, List[str]], Awaitable[Result]]
 
 
 class ReplyType(Enum):

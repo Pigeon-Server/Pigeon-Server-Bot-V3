@@ -6,13 +6,13 @@ from src.database.message_model import Message
 from src.database.server_model import ServerList, Whitelist
 from src.module.mcsm.mcsm_class import McsmManager
 from src.module.permission_manager import PermissionManager
-from src.module.server_status import ServerStatus
 from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
+from src.utils.permission_helper import PermissionHelper
 
 LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.INITIAL)
 
 logger.debug("Initializing permission manager...")
-ps_manager = PermissionManager()
+PermissionHelper.init_permission_helper(PermissionManager())
 logger.debug("Permission manager initialized.")
 
 try:
@@ -23,10 +23,6 @@ except Exception as e:
     logger.error(e)
     logger.error(f"Database init error")
     exit(1)
-
-logger.debug("Initializing ServerStatus...")
-server = ServerStatus()
-logger.debug("ServerStatus initialized")
 
 mcsm = McsmManager(main_config.mcsm_config.api_key, main_config.mcsm_config.api_url,
                    use_database=sys_config.mcsm.use_database)

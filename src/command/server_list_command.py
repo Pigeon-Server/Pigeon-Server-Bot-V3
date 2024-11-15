@@ -3,8 +3,8 @@ from typing import List, Optional
 from peewee import DoesNotExist
 
 from src.bot.plugin import server
+from src.command.command_manager import CommandManager
 from src.command.command_parser import CommandParser
-from src.command.command_parser_manager import CommandParserManager
 from src.database.server_model import ServerList as ServerListModel
 from src.element.message import Message
 from src.element.permissions import ServerList
@@ -31,7 +31,7 @@ class ServerListCommand(CommandParser):
             return None
 
     @staticmethod
-    @CommandParserManager.add_command_parser("server_list_command")
+    @CommandManager.add_command_parser("server_list_command")
     async def parse(message: Message, command: List[str]) -> Optional[Result]:
         await CommandParser.parse(message, command)
         res = await ServerListCommand.handle(command)

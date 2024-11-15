@@ -1,12 +1,17 @@
 from satori import Event
 from satori.client import Account
 
-from src.base.config import sys_config
 from src.base.logger import logger
 from src.bot.app import app
-from src.command.command_manager import CommandManager
-from src.element.message import Message
 from src.utils.model_utils import ModelUtils
+
+logger.debug("Register command handler...")
+
+from src.command.mcsm_command import *
+from src.command.other_command import *
+from src.command.server_list_command import *
+from src.command.server_status_command import *
+from src.command.permission_command import *
 
 logger.debug("Initializing message handler...")
 

@@ -24,8 +24,8 @@ class Command:
         self._command_name = command_name if command_name else f"{command_handler.__name__}_{random_string(8)}"
         self._command_handler = command_handler
         self._command_require_permission = command_require_permission
-        self._command_docs = command_docs
-        self._command_usage = command_usage
+        self._command_docs = command_docs or "暂无"
+        self._command_usage = command_usage or command
 
     @property
     def handler(self) -> CommandHandler:

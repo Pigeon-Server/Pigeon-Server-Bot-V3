@@ -22,7 +22,7 @@ async def on_message(_: Account, event: Event):
     if event.self_id == message.sender_id:
         return
     if not sys_config.dev:
-        ModelUtils.translate_message_to_model(message).save()
+        ModelUtils.translate_message_to_model(message).save(True)
     logger.info(
         f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
     await CommandManager.message_listener(message, event)

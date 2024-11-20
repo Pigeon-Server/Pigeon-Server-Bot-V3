@@ -68,7 +68,6 @@ class Tree(Generic[T]):
 
     def get_node(self, path_list: list[T], *, match_most: bool = False) -> Optional['Tree']:
         current_node = self
-        length = 0
         for value in path_list:
             child_found = False
             for child in current_node.children:
@@ -78,9 +77,8 @@ class Tree(Generic[T]):
                     break
             if not child_found:
                 if match_most:
-                    return self.get_node(path_list[:length])
+                    return current_node
                 return None
-            length += 1
 
         return current_node
 

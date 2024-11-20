@@ -21,7 +21,7 @@ class CommandManager:
     _command_store: Dict[Tree, Command] = {}
 
     @staticmethod
-    def register_command(command: str, alias_list: list[str]) -> Tree:
+    def register_command_node(command: str, alias_list: list[str]) -> Tree:
         command_parts = command_split(command)
         current_node = CommandManager._command_tree
         alias_lists: list[list[str]] = [command_split(alias) for alias in alias_list]
@@ -44,17 +44,17 @@ class CommandManager:
         return current_node
 
     @staticmethod
-    def add_command(command: Union[str, Command],
-                    command_name: Optional[str] = None,
-                    command_require_permission: Optional[Tree] = None,
-                    command_docs: Optional[str] = None,
-                    command_usage: Optional[str] = None,
-                    *,
-                    alia_list: Optional[list[str]] = None) -> Optional[Callable]:
+    def register_command(command: Union[str, Command],
+                         command_name: Optional[str] = None,
+                         command_require_permission: Optional[Tree] = None,
+                         command_docs: Optional[str] = None,
+                         command_usage: Optional[str] = None,
+                         *,
+                         alia_list: Optional[list[str]] = None) -> Optional[Callable]:
         if alia_list is None:
             alia_list = []
         if isinstance(command, Command):
-            command_node = CommandManager.register_command(command.command, alia_list)
+            command_node = CommandManager.register_command_node(command.command, alia_list)
             CommandManager._command_store[command_node] = command
             logger.debug(f"Register command {command.command}, register name: {command.name}")
             return None
@@ -63,7 +63,7 @@ class CommandManager:
             command_instance = Command(command, func, command_name,
                                        command_require_permission, command_docs,
                                        command_usage)
-            node = CommandManager.register_command(command, alia_list)
+            node = CommandManager.register_command_node(command, alia_list)
             CommandManager._command_store[node] = command_instance
             logger.debug(f"Register command {command}, register name: {command_instance.name}")
 
@@ -131,7 +131,7 @@ class CommandManager:
 
 
 help_command = Command("/help", CommandManager.help_command, command_usage="/help (command)")
-CommandManager.add_command(help_command)
+CommandManager.register_command(help_command)
 
 command_list = Command("/command list", CommandManager.command_list)
-CommandManager.add_command(command_list)
+CommandManager.register_command(command_list)

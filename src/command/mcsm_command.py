@@ -11,7 +11,7 @@ from src.utils.permission_helper import PermissionHelper
 from src.utils.reply_message import ReplyMessageSender
 
 
-@CommandManager.add_command("/mcsm", command_docs="展示mcsm模块的所有命令及其帮助")
+@CommandManager.register_command("/mcsm", command_docs="展示mcsm模块的所有命令及其帮助")
 async def mcsm_help(_: Message, __: list[str]) -> Optional[Result]:
     return Result.of_failure(
         "MCSM模块帮助：\n"
@@ -27,11 +27,11 @@ async def mcsm_help(_: Message, __: list[str]) -> Optional[Result]:
         "/mcsm command (InstanceName) (Command) 向某一实例执行命令")
 
 
-@CommandManager.add_command("/mcsm list",
-                            command_require_permission=Mcsm.List,
-                            command_docs="列出某一守护进程的所有实例名称",
-                            command_usage="/mcsm list [ServerName]",
-                            alia_list=["/mcsm l"])
+@CommandManager.register_command("/mcsm list",
+                                 command_require_permission=Mcsm.List,
+                                 command_docs="列出某一守护进程的所有实例名称",
+                                 command_usage="/mcsm list [ServerName]",
+                                 alia_list=["/mcsm l"])
 async def mcsm_list(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) > 3:
         return None
@@ -40,11 +40,11 @@ async def mcsm_list(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.list_instance(command[2])
 
 
-@CommandManager.add_command("/mcsm check",
-                            command_require_permission=Mcsm.Check,
-                            command_docs="查询指定实例信息",
-                            command_usage="/mcsm check (InstanceName) [ServerName]",
-                            alia_list=["/mcsm c"])
+@CommandManager.register_command("/mcsm check",
+                                 command_require_permission=Mcsm.Check,
+                                 command_docs="查询指定实例信息",
+                                 command_usage="/mcsm check (InstanceName) [ServerName]",
+                                 alia_list=["/mcsm c"])
 async def mcsm_check(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) < 3 or command_length > 4:
         return None
@@ -53,22 +53,22 @@ async def mcsm_check(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.check_instance_status(command[2], command[3])
 
 
-@CommandManager.add_command("/mcsm rename",
-                            command_require_permission=Mcsm.Rename,
-                            command_docs="重命名某一守护进程或实例",
-                            command_usage="/mcsm rename (OriginalName) (NewName)",
-                            alia_list=["/mcsm r"])
+@CommandManager.register_command("/mcsm rename",
+                                 command_require_permission=Mcsm.Rename,
+                                 command_docs="重命名某一守护进程或实例",
+                                 command_usage="/mcsm rename (OriginalName) (NewName)",
+                                 alia_list=["/mcsm r"])
 async def mcsm_rename(_: Message, command: list[str]) -> Optional[Result]:
     if len(command) != 4:
         return None
     return mcsm.rename(command[2], command[3])
 
 
-@CommandManager.add_command("/mcsm update",
-                            command_require_permission=Mcsm.Update.Common,
-                            command_docs="（强制）更新实例信息",
-                            command_usage="/mcsm update [true]",
-                            alia_list=["/mcsm u"])
+@CommandManager.register_command("/mcsm update",
+                                 command_require_permission=Mcsm.Update.Common,
+                                 command_docs="（强制）更新实例信息",
+                                 command_usage="/mcsm update [true]",
+                                 alia_list=["/mcsm u"])
 async def mcsm_update(message: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) > 3:
         return None
@@ -99,20 +99,20 @@ async def mcsm_update(message: Message, command: list[str]) -> Optional[Result]:
     return Result.of_failure("/mcsm update [true]")
 
 
-@CommandManager.add_command("/mcsm status",
-                            command_require_permission=Mcsm.Status,
-                            command_docs="获取mcsm状态")
+@CommandManager.register_command("/mcsm status",
+                                 command_require_permission=Mcsm.Status,
+                                 command_docs="获取mcsm状态")
 async def mcsm_status(_: Message, command: list[str]) -> Optional[Result]:
     if len(command) != 2:
         return None
     return mcsm.status()
 
 
-@CommandManager.add_command("/mcsm stop",
-                            command_require_permission=Mcsm.Stop,
-                            command_docs="停止某一实例",
-                            command_usage="/mcsm stop (InstanceName) [ServerName]",
-                            alia_list=["/mcsm s"])
+@CommandManager.register_command("/mcsm stop",
+                                 command_require_permission=Mcsm.Stop,
+                                 command_docs="停止某一实例",
+                                 command_usage="/mcsm stop (InstanceName) [ServerName]",
+                                 alia_list=["/mcsm s"])
 async def mcsm_stop(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) < 3 or command_length > 4:
         return None
@@ -121,11 +121,11 @@ async def mcsm_stop(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.stop(command[2], command[3])
 
 
-@CommandManager.add_command("/mcsm kill",
-                            command_require_permission=Mcsm.Kill,
-                            command_docs="强行停止某一实例",
-                            command_usage="/mcsm kill (InstanceName) [ServerName]",
-                            alia_list=["/mcsm k"])
+@CommandManager.register_command("/mcsm kill",
+                                 command_require_permission=Mcsm.Kill,
+                                 command_docs="强行停止某一实例",
+                                 command_usage="/mcsm kill (InstanceName) [ServerName]",
+                                 alia_list=["/mcsm k"])
 async def mcsm_kill(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) < 3 or command_length > 4:
         return None
@@ -134,11 +134,11 @@ async def mcsm_kill(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.stop(command[2], command[3], True)
 
 
-@CommandManager.add_command("/mcsm start",
-                            command_require_permission=Mcsm.Start,
-                            command_docs="开启某一实例",
-                            command_usage="/mcsm start (InstanceName) [ServerName]",
-                            alia_list=["/mcsm S"])
+@CommandManager.register_command("/mcsm start",
+                                 command_require_permission=Mcsm.Start,
+                                 command_docs="开启某一实例",
+                                 command_usage="/mcsm start (InstanceName) [ServerName]",
+                                 alia_list=["/mcsm S"])
 async def mcsm_start(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) < 3 or command_length > 4:
         return None
@@ -147,11 +147,11 @@ async def mcsm_start(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.start(command[2], command[3])
 
 
-@CommandManager.add_command("/mcsm restart",
-                            command_require_permission=Mcsm.Restart,
-                            command_docs="重启某一实例",
-                            command_usage="/mcsm restart (InstanceName) [ServerName]",
-                            alia_list=["/mcsm R"])
+@CommandManager.register_command("/mcsm restart",
+                                 command_require_permission=Mcsm.Restart,
+                                 command_docs="重启某一实例",
+                                 command_usage="/mcsm restart (InstanceName) [ServerName]",
+                                 alia_list=["/mcsm R"])
 async def mcsm_restart(_: Message, command: list[str]) -> Optional[Result]:
     if (command_length := len(command)) < 3 or command_length > 4:
         return None
@@ -160,11 +160,11 @@ async def mcsm_restart(_: Message, command: list[str]) -> Optional[Result]:
     return mcsm.restart(command[2], command[3])
 
 
-@CommandManager.add_command("/mcsm command",
-                            command_require_permission=Mcsm.Command,
-                            command_docs="向某一实例执行命令",
-                            command_usage="/mcsm command (InstanceName) (Command)",
-                            alia_list=["/mcsm C"])
+@CommandManager.register_command("/mcsm command",
+                                 command_require_permission=Mcsm.Command,
+                                 command_docs="向某一实例执行命令",
+                                 command_usage="/mcsm command (InstanceName) (Command)",
+                                 alia_list=["/mcsm C"])
 async def mcsm_command(_: Message, command: list[str]) -> Optional[Result]:
     if len(command) < 4:
         return None

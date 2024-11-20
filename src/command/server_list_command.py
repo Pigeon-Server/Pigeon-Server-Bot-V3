@@ -111,8 +111,8 @@ async def server_list_rename(_: Message, command: list[str]) -> Optional[Result]
 
 @CommandManager.add_command("/serverlist modify",
                             command_require_permission=ServerList.Modify,
-                            command_docs="/serverlist modify (ServerName) (NewServerIp)",
-                            command_usage="修改某个服务器ip",
+                            command_docs="修改某个服务器ip",
+                            command_usage="/serverlist modify (ServerName) (NewServerIp)",
                             alia_list=["/sl m"])
 async def server_list_modify(_: Message, command: list[str]) -> Optional[Result]:
     if len(command) < 4:

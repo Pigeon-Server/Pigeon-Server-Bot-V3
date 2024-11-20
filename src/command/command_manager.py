@@ -101,7 +101,7 @@ class CommandManager:
                 return None
             result = await command_instance.handler(message, command)
             if result is None:
-                return Result.of_failure(command_instance.usage)
+                return Result.of_failure(f"命令参数错误：{command_instance.usage}")
             return result
         except Exception as e:
             logger.error(e)
@@ -110,6 +110,8 @@ class CommandManager:
     @staticmethod
     async def help_command(_: Message, command: list[str]) -> Optional[Result]:
         require_command = command[1:]
+        if len(require_command) == 0:
+            return None
         command_node = CommandManager._command_tree.get_node(require_command)
         if command_node is None:
             return Result.of_failure(f"无法找到该命令{require_command}")
@@ -128,7 +130,7 @@ class CommandManager:
         return Result.of_success()
 
 
-help_command = Command("/help", CommandManager.help_command)
+help_command = Command("/help", CommandManager.help_command, command_usage="/help (command)")
 CommandManager.add_command(help_command)
 
 command_list = Command("/command list", CommandManager.command_list)

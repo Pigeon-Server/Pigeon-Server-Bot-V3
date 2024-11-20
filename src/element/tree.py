@@ -45,8 +45,8 @@ class Tree(Generic[T]):
 
     def __repr__(self) -> str:
         if self.is_leaf:
-            return f"BinaryTree({self._root})"
-        return f"BinaryTree(root={self._root}, children={self._children})"
+            return f"Tree({self._root})"
+        return f"Tree(root={self._root}, children={self._children})"
 
     def __str__(self) -> str:
         return self.get_tree(self)
@@ -54,7 +54,7 @@ class Tree(Generic[T]):
     def search(self, value: Union[T, 'Tree'], res: Optional[List['Tree']] = None) -> bool:
         if res is not None:
             res.append(self)
-        if isinstance(value, Tree) and self.root == value.root or value.root in self._alias:
+        if isinstance(value, Tree) and (self.root == value.root or value.root in self._alias):
             return True
         else:
             if self._root == value or value in self._alias:

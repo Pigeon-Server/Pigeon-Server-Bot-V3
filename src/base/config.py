@@ -13,7 +13,7 @@ from src.utils.version import Version
 
 
 class Config:
-    _config_version: Version = Version([1, 3, 0])
+    _config_version: Version = Version([1, 3, 1])
     _main_config: Optional[MainConfig] = None
     _sys_config: Optional[SysConfig] = None
 

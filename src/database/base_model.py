@@ -1,35 +1,39 @@
 from contextlib import contextmanager
 
 from peewee import Database, Model
-from playhouse.pool import PooledMySQLDatabase, PooledPostgresqlDatabase, PooledSqliteDatabase
 
 from src.base.config import main_config
 from src.base.logger import logger
+from src.database.database import ReconnectPooledMySQLDatabase, ReconnectPooledPostgresqlDatabase, \
+    ReconnectPooledSqliteDatabase
 from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
 
 database: Database
 
 match main_config.database.type.lower():
     case 'mysql':
-        database = PooledMySQLDatabase(database=main_config.database.database_name,
-                                       host=main_config.database.host,
-                                       port=main_config.database.port,
-                                       user=main_config.database.username,
-                                       password=main_config.database.password,
-                                       max_connections=64,
-                                       stale_timeout=300)
+        database = ReconnectPooledMySQLDatabase.get_instance(database=main_config.database.database_name,
+                                                             host=main_config.database.host,
+                                                             port=main_config.database.port,
+                                                             user=main_config.database.username,
+                                                             password=main_config.database.password,
+                                                             timeout=7200,
+                                                             max_connections=64,
+                                                             stale_timeout=300)
     case 'sqlite':
-        database = PooledSqliteDatabase(database=main_config.database.database_name,
-                                        max_connections=64,
-                                        stale_timeout=300)
+        database = ReconnectPooledSqliteDatabase.get_instance(database=main_config.database.database_name,
+                                                              timeout=7200,
+                                                              max_connections=64,
+                                                              stale_timeout=300)
     case 'postgresql':
-        database = PooledPostgresqlDatabase(database=main_config.database.database_name,
-                                            host=main_config.database.host,
-                                            port=main_config.database.port,
-                                            user=main_config.database.username,
-                                            password=main_config.database.password,
-                                            max_connections=64,
-                                            stale_timeout=300)
+        database = ReconnectPooledPostgresqlDatabase.get_instance(database=main_config.database.database_name,
+                                                                  host=main_config.database.host,
+                                                                  port=main_config.database.port,
+                                                                  user=main_config.database.username,
+                                                                  password=main_config.database.password,
+                                                                  timeout=7200,
+                                                                  max_connections=64,
+                                                                  stale_timeout=300)
     case _:
         logger.critical(f'Database type {main_config.database.type} not supported')
 

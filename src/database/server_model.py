@@ -1,13 +1,14 @@
-from peewee import CharField, IntegerField, SQL
+from peewee import CharField, IntegerField, SQL, AutoField, BooleanField
 
 from src.database.base_model import BaseModel
 
 
 class ServerList(BaseModel):
-    enable = IntegerField(constraints=[SQL("DEFAULT 1")])
+    id = AutoField()
+    server_name = CharField(max_length=80, unique=True)
+    server_ip = CharField(max_length=80)
     priority = IntegerField(constraints=[SQL("DEFAULT 0")])
-    server_ip = CharField()
-    server_name = CharField()
+    enable = BooleanField(constraints=[SQL("DEFAULT 1")])
 
     class Meta:
         table_name = 'server_list'
@@ -20,8 +21,8 @@ class ServerList(BaseModel):
 
 
 class Whitelist(BaseModel):
-    uuid = CharField(column_name='UUID', null=True)
-    user = CharField(null=True)
+    uuid = CharField(max_length=100, column_name='UUID', null=True)
+    user = CharField(max_length=100, null=True)
 
     class Meta:
         table_name = 'whitelist'

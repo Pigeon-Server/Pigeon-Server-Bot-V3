@@ -4,13 +4,14 @@ from satori import LoginStatus, WebsocketsInfo
 from satori.client import Account, App
 
 from src.base.config import main_config, sys_config
+from src.base.event_bus import event_bus
 from src.base.logger import logger
 from src.bot.thread import update_mcsm_info_thread
-from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
+from src.bus.event.event import ServerEvent
 from src.utils.message_sender import MessageSender
 from src.utils.reply_message import ReplyMessageSender
 
-LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.STARTING)
+event_bus.publish_sync(ServerEvent.STARTING)
 
 logger.debug("Initializing Bot...")
 
@@ -26,7 +27,7 @@ async def on_startup(account: Account, status: LoginStatus):
     if account.self_id == main_config.login_config.qq:
         match status:
             case LoginStatus.CONNECT:
-                LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.STARTED)
+                await event_bus.publish(ServerEvent.STARTED)
                 MessageSender.set_account(account)
                 update_mcsm_info_thread.start()
                 if not sys_config.dev:
@@ -44,11 +45,11 @@ async def on_startup(account: Account, status: LoginStatus):
                 logger.info(f"Process WorkDir: {getcwd()}")
                 logger.success(f"{account.self_id} Online")
             case LoginStatus.OFFLINE:
-                LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.STOPPING)
+                await event_bus.publish(ServerEvent.STOPPING)
                 logger.success(f"{account.self_id} Offline")
                 if not sys_config.dev:
                     await account.send_message(main_config.group_config.admin_group, f"plugin offline")
-                LifeCycleManager.emit_life_cycle_event(LifeCycleEvent.STOPPED)
+                await event_bus.publish(ServerEvent.STOPPED)
 
 
 logger.debug("Bot initialized, ready to start.")

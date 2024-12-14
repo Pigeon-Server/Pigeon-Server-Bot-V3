@@ -7,13 +7,16 @@ from src.utils.model_utils import ModelUtils
 
 logger.debug("Register command handler...")
 
-from src.command.mcsm_command import *
-from src.command.other_command import *
-from src.command.server_list_command import *
-from src.command.server_status_command import *
-from src.command.permission_command import *
+from src.command.command import *
 
 logger.debug("Initializing message handler...")
+
+
+async def message_logger(message: Message, **_) -> None:
+    logger.info(f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
+
+
+event_bus.add_aspect(MessageEvent.MESSAGE_CREATED, message_logger)
 
 
 @app.register
@@ -23,9 +26,7 @@ async def on_message(_: Account, event: Event):
         return
     if not sys_config.dev:
         ModelUtils.translate_message_to_model(message).save(True)
-    logger.info(
-        f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
-    await CommandManager.message_listener(message, event)
+    await event_bus.publish(MessageEvent.MESSAGE_CREATED, message, event)
 
 
 logger.debug("Bot starting...")

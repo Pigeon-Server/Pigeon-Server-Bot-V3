@@ -1,4 +1,4 @@
-from asyncio import AbstractEventLoop, get_event_loop, run_coroutine_threadsafe
+from asyncio import AbstractEventLoop, new_event_loop, run_coroutine_threadsafe
 from asyncio import Event as AsyncEvent
 from threading import Timer
 from typing import Awaitable, Callable, Optional
@@ -18,7 +18,7 @@ class Reply:
     _timeout: int
     _app: App
     _timer: Optional[Timer] = None
-    _loop: AbstractEventLoop = get_event_loop()
+    _loop: AbstractEventLoop = new_event_loop()
     _accept_checker: Callable[[str], bool]
     _reject_checker: Callable[[str], bool]
 

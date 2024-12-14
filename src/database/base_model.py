@@ -3,10 +3,11 @@ from contextlib import contextmanager
 from peewee import Database, Model
 
 from src.base.config import main_config
+from src.base.event_bus import event_bus
 from src.base.logger import logger
+from src.bus.event.event import ServerEvent
 from src.database.database import ReconnectPooledMySQLDatabase, ReconnectPooledPostgresqlDatabase, \
     ReconnectPooledSqliteDatabase
-from src.utils.life_cycle_manager import LifeCycleEvent, LifeCycleManager
 
 database: Database
 
@@ -37,7 +38,7 @@ match main_config.database.type.lower():
     case _:
         logger.critical(f'Database type {main_config.database.type} not supported')
 
-LifeCycleManager.add_life_cycle_event(LifeCycleEvent.STOPPING, lambda: database.close())
+event_bus.subscribe(ServerEvent.STOPPING, lambda: database.close())
 
 
 class BaseModel(Model):

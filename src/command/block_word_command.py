@@ -1,7 +1,4 @@
-from typing import Callable, Optional
-
-from peewee import fn
-
+from typing import Optional
 from src.command.command_manager import CommandManager
 from src.database.message_model import BlockWord
 from src.element.message import Message

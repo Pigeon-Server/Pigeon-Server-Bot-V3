@@ -3,7 +3,9 @@ from typing import Callable, Dict, Optional, Union
 
 from satori import Event, Image
 
+from src.base.event_bus import event_bus
 from src.base.logger import logger
+from src.bus.event.event import MessageEvent
 from src.element.command import Command
 from src.element.message import Message
 from src.element.result import Result
@@ -70,7 +72,7 @@ class CommandManager:
         return decorator
 
     @staticmethod
-    async def message_listener(message: Message, event: Event) -> None:
+    async def message_listener(message: Message, event: Event, **_) -> None:
         if not message.is_command:
             return
         try:
@@ -135,3 +137,5 @@ CommandManager.register_command(help_command)
 
 command_list = Command("/command list", CommandManager.command_list)
 CommandManager.register_command(command_list)
+
+event_bus.subscribe(MessageEvent.MESSAGE_CREATED, CommandManager.message_listener)

@@ -1,22 +1,24 @@
 from satori import Event
 from satori.client import Account
 
+from src.base.config import sys_config
+from src.base.event_bus import event_bus
 from src.base.logger import logger
 from src.bot.app import app
+from src.bus.event.event import MessageEvent
+from src.element.message import Message
 from src.utils.model_utils import ModelUtils
+from src.utils.module_utils import dynamic_import_all
 
 logger.debug("Register command handler...")
 
-from src.command.command import *
+dynamic_import_all("src/command", ["command_manager.py"])
+
+logger.debug("Register event handler...")
+
+dynamic_import_all("src/filter")
 
 logger.debug("Initializing message handler...")
-
-
-async def message_logger(message: Message, **_) -> None:
-    logger.info(f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
-
-
-event_bus.add_aspect(MessageEvent.MESSAGE_CREATED, message_logger)
 
 
 @app.register

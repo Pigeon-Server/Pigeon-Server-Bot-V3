@@ -10,6 +10,13 @@ from loguru import logger
 from src.base.config import sys_config
 from src.utils.file_utils import check_directory
 
+
+def log_filter(record) -> bool:
+    print(record)
+    print(type(record))
+    return True
+
+
 # 检查是否存在logs文件夹
 check_directory(join(getcwd(), "logs"), create_if_not_exist=True)
 
@@ -23,7 +30,8 @@ logger.debug(f"Change logger level to {sys_config.log_level.upper()}")
 logger.remove()
 logger.add(stdout,
            format=log_format,
-           level=sys_config.log_level.upper())
+           level=sys_config.log_level.upper(),
+           filter=log_filter)
 logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}.log"),
            format=log_format, rotation="00:00", compression="zip",
            level=sys_config.log_level.upper())

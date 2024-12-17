@@ -140,6 +140,18 @@ class ServerList:
                       .insert(Weight))
 
 
+class BlockWords:
+    Add: Tree = Tree("BlockWords.Add")
+    Del: Tree = Tree("BlockWords.Del")
+    Reload: Tree = Tree("BlockWords.Reload")
+    List: Tree = Tree("BlockWords.List")
+    instance: Tree = (Tree("BlockWords.*")
+                      .insert(Add)
+                      .insert(Del)
+                      .insert(Reload)
+                      .insert(List))
+
+
 class Other:
     Reboot: Tree = Tree("Other.Reboot")
     Word: Tree = Tree("Other.Word")

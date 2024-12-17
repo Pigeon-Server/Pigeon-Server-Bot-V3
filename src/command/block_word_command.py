@@ -2,7 +2,9 @@ from typing import Optional
 from src.command.command_manager import CommandManager
 from src.database.message_model import BlockWord
 from src.element.message import Message
+from src.element.permissions import BlockWords
 from src.element.result import Result
+from src.module.blockmessage import BlockMessage
 
 
 def get_group_id(group_id: str) -> Optional[str]:
@@ -26,7 +28,8 @@ async def blockword_command(_: Message, __: list[str]) -> Optional[Result]:
 
 @CommandManager.register_command("/blockword list",
                                  command_docs="列出所有屏蔽词",
-                                 alia_list=["/bw l"])
+                                 alia_list=["/bw l"],
+                                 command_require_permission=BlockWords.List)
 async def blockword_list_command(_: Message, __: list[str]) -> Optional[Result]:
     res: list[BlockWord] = BlockWord.select().order_by(BlockWord.group_id).execute()
     data = {}
@@ -40,7 +43,8 @@ async def blockword_list_command(_: Message, __: list[str]) -> Optional[Result]:
 
 @CommandManager.register_command("/blockword add",
                                  command_docs="添加屏蔽词",
-                                 alia_list=["/bw a"])
+                                 alia_list=["/bw a"],
+                                 command_require_permission=BlockWords.Add)
 async def blockword_add_command(message: Message, command_list: list[str]) -> Optional[Result]:
     if len(command_list) < 3:
         return None
@@ -55,12 +59,14 @@ async def blockword_add_command(message: Message, command_list: list[str]) -> Op
              } for word in words]
     for i in range(0, len(data), 100):
         BlockWord.insert_many(data[i:i + 100]).execute()
+    BlockMessage.update_block_words()
     return Result.of_success(f"为群「{group_id}」添加屏蔽词「{', '.join(words)}」")
 
 
 @CommandManager.register_command("/blockword del",
                                  command_docs="删除屏蔽词",
-                                 alia_list=["/bw d"])
+                                 alia_list=["/bw d"],
+                                 command_require_permission=BlockWords.Del)
 async def blockword_del_command(message: Message, command_list: list[str]) -> Optional[Result]:
     if len(command_list) < 3:
         return None
@@ -71,4 +77,14 @@ async def blockword_del_command(message: Message, command_list: list[str]) -> Op
     else:
         words = command_list[3:]
     BlockWord.delete().where((BlockWord.group_id == group_id) & (BlockWord.block_word << words)).execute()
+    BlockMessage.update_block_words()
     return Result.of_success(f"为群「{group_id}」删除屏蔽词「{', '.join(words)}」")
+
+
+@CommandManager.register_command("/blockword reload",
+                                 command_docs="重载屏蔽词",
+                                 alia_list=["/bw r"],
+                                 command_require_permission=BlockWords.Reload)
+async def blockword_del_command(_: Message, __: list[str]) -> Optional[Result]:
+    BlockMessage.update_block_words()
+    return Result.of_success(f"重载屏蔽词成功")

@@ -8,7 +8,3 @@ from src.module.blockmessage import BlockMessage
 @event_bus.on_event_filter(MessageEvent.MESSAGE_CREATED)
 def message_logger(message: Message, *_, **__) -> None:
     logger.info(f'[消息]<-{message.group_info}-{message.sender_info}:{message.message}')
-
-
-# event_bus.add_filter(MessageEvent.MESSAGE_CREATED, message_logger)
-# event_bus.add_filter(MessageEvent.MESSAGE_CREATED, BlockMessage.check_message)

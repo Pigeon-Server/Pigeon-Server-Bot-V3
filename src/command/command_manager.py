@@ -72,7 +72,7 @@ class CommandManager:
         return decorator
 
     @staticmethod
-    @event_bus.on_event(MessageEvent.MESSAGE_CREATED)
+    @event_bus.on(MessageEvent.MESSAGE_CREATED)
     async def message_listener(message: Message, event: Event, **_) -> None:
         if not message.is_command:
             return

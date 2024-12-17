@@ -1,26 +1,21 @@
 from datetime import datetime
 from typing import List, Type, Union
 
-from satori import Element, Event, MessageObject
+from satori import Channel, Element, Event
 from satori.element import At, Audio, Custom, File, Image, Quote, Text, Video
 
 event_type: Type = Union[At, Text, Image, Audio, Video, File, Quote, Custom]
 
 
 class Message:
-    _event: Event
-    _raw_message: MessageObject
-    _elements: List[Element]
-    _message: str = ""
-    _has_quote: bool = False
-    _quote_id: str = ""
-    _send_time: datetime
-
     def __init__(self, event: Event):
         self._event = event
         self._send_time = event.timestamp
         self._raw_message = event.message
         self._elements = self._raw_message.message
+        self._message = ""
+        self._has_quote = False
+        self._quote_id: str = ""
         for element in self._elements:
             if isinstance(element, At):
                 self._message += f"@{element.name}({element.id})"
@@ -65,6 +60,10 @@ class Message:
     @property
     def raw_message(self) -> str:
         return self._raw_message.content
+
+    @property
+    def channel(self) -> Channel:
+        return self._event.channel
 
     @property
     def group_id(self) -> str:

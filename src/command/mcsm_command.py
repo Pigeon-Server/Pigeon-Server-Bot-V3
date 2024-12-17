@@ -6,7 +6,7 @@ from src.element.message import Message
 from src.element.permissions import Mcsm
 from src.element.result import Result
 from src.type.types import ReplyType
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 from src.utils.permission_helper import PermissionHelper
 from src.utils.reply_message import ReplyMessageSender
 
@@ -77,22 +77,22 @@ async def mcsm_update(message: Message, command: list[str]) -> Optional[Result]:
         return Result.of_success("操作成功")
     if PermissionHelper.require_permission(message, Mcsm.Update.Force) and command[2].lower() == "true":
         msg = f"确认强制更新mcsm信息\n这将会清空所有自定义设置！\n是否继续(是/否)？"
-        target = (await MessageSender.send_message(message.group_id, msg))[0]
+        target = (await MessageHelper.send_message(message.group_id, msg))[0]
         result = await ReplyMessageSender.wait_reply_async(message, 60)
         match result:
             case ReplyType.REJECT:
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        "操作已取消",
                                                        message.sender_id)
                 return Result.of_success()
             case ReplyType.ACCEPT:
                 mcsm.get_mcsm_info(True)
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        "操作成功",
                                                        message.sender_id)
                 return Result.of_failure()
             case ReplyType.TIMEOUT:
-                await MessageSender.send_quote_message(message.group_id, target.id, "操作超时",
+                await MessageHelper.send_quote_message(message.group_id, target.id, "操作超时",
                                                        message.sender_id)
                 return Result.of_failure()
         return Result.of_failure()

@@ -12,27 +12,21 @@ from src.type.types import ReplyType
 
 
 class Reply:
-    _target_message: Message
-    _callback: Callable[[ReplyType], Awaitable[Any]]
-    _enable_timeout: bool = False
-    _timeout: int
-    _app: App
-    _timer: Optional[Timer] = None
-    _loop: AbstractEventLoop = new_event_loop()
-    _accept_checker: Callable[[str], bool]
-    _reject_checker: Callable[[str], bool]
-
     def __init__(self, app: App, target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
                  timeout: int = -1, accept_checker: Optional[Callable[[str], bool]] = None,
                  reject_checker: Optional[Callable[[str], bool]] = None):
-        self._target_message = target_message
-        self._callback = callback
+        self._target_message: Message = target_message
+        self._callback: Callable[[ReplyType], Awaitable[Any]] = callback
+        self._timer: Optional[Timer] = None
         if timeout != -1:
             self._enable_timeout = True
             self._timeout = timeout
-        self._app = app
-        self._accept_checker = accept_checker if accept_checker else lambda msg: msg == "是"
-        self._reject_checker = reject_checker if reject_checker else lambda msg: msg == "否"
+        else:
+            self._enable_timeout = False
+        self._app: App = app
+        self._loop: AbstractEventLoop = new_event_loop()
+        self._accept_checker: Callable[[str], bool] = accept_checker if accept_checker else lambda msg: msg == "是"
+        self._reject_checker: Callable[[str], bool] = reject_checker if reject_checker else lambda msg: msg == "否"
 
     def start(self) -> None:
         if self._enable_timeout:
@@ -67,19 +61,19 @@ class Reply:
 class ReplyMessageSender:
     _app: App
 
-    @staticmethod
-    def set_app(app: App):
-        ReplyMessageSender._app = app
+    @classmethod
+    def set_app(cls, app: App):
+        cls._app = app
 
-    @staticmethod
-    def create_reply(target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
+    @classmethod
+    def create_reply(cls, target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
                      timeout: int, accept_checker: Optional[Callable[[str], bool]] = None,
                      reject_checker: Optional[Callable[[str], bool]] = None) -> Reply:
-        return Reply(ReplyMessageSender._app, target_message, callback, timeout,
+        return Reply(cls._app, target_message, callback, timeout,
                      accept_checker, reject_checker)
 
-    @staticmethod
-    async def wait_reply_async(target_message: Message, timeout: int,
+    @classmethod
+    async def wait_reply_async(cls, target_message: Message, timeout: int,
                                accept_checker: Optional[Callable[[str], bool]] = None,
                                reject_checker: Optional[Callable[[str], bool]] = None) -> ReplyType:
         res_event = AsyncEvent()
@@ -90,7 +84,7 @@ class ReplyMessageSender:
             res_event.set()
             res = reply_type
 
-        Reply(ReplyMessageSender._app, target_message, callback, timeout,
+        Reply(cls._app, target_message, callback, timeout,
               accept_checker, reject_checker).start()
 
         await res_event.wait()

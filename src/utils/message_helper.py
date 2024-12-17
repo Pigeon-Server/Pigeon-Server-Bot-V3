@@ -10,7 +10,7 @@ from src.element.message import Message
 from src.type.types import MessageType
 
 
-class MessageSender:
+class MessageHelper:
     _account: Optional[Account] = None
 
     @classmethod
@@ -67,3 +67,17 @@ class MessageSender:
             message.append(" ")
         message.append(msg)
         return await cls.send_message(channel_id, message)
+
+    @classmethod
+    async def retract_message(cls, message: Message) -> None:
+        try:
+            await cls._account.message_delete(message.group_id, message.message_id)
+        except Exception as e:
+            logger.error(e)
+
+    @classmethod
+    async def mute_member(cls, message: Message) -> None:
+        try:
+            await cls._account.guild_member_mute(message.group_id, message.sender_id, 60)
+        except Exception as e:
+            logger.error(e)

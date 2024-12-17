@@ -10,9 +10,9 @@ from src.database.server_model import ServerList
 class ServerStatus:
     _server: Optional[dict] = None
 
-    @staticmethod
-    def reload_server_list() -> None:
-        ServerStatus._server = ServerStatus.get_server_list()
+    @classmethod
+    def reload_server_list(cls) -> None:
+        cls._server = cls.get_server_list()
 
     @staticmethod
     def get_server_list() -> dict:
@@ -37,16 +37,16 @@ class ServerStatus:
             logger.error(error)
             return f"Can't connect to server: {ip}"
 
-    @staticmethod
-    def get_online_player(full: bool = False) -> str:
-        if ServerStatus._server is None:
-            ServerStatus.reload_server_list()
+    @classmethod
+    def get_online_player(cls, full: bool = False) -> str:
+        if cls._server is None:
+            cls.reload_server_list()
         output_message = ["[服务器状态]", "", "在线玩家列表: "]
         player_max = 0
         player_online = 0
-        for server_name in ServerStatus._server:
+        for server_name in cls._server:
             try:
-                server_status = JavaServer.lookup(ServerStatus._server[server_name]).status()
+                server_status = JavaServer.lookup(cls._server[server_name]).status()
                 player_max += server_status.players.max
                 player_online += server_status.players.online
                 message = f"{server_name}({server_status.players.online}): "

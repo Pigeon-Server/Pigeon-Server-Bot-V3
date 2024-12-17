@@ -11,10 +11,8 @@ from src.base.config import sys_config
 from src.utils.file_utils import check_directory
 
 
-def log_filter(record) -> bool:
-    print(record)
-    print(type(record))
-    return True
+def log_filter(record: dict) -> bool:
+    return not (record.get("name") == "satori.client.network.websocket" and record.get("function") == "message_receive")
 
 
 # 检查是否存在logs文件夹
@@ -34,11 +32,13 @@ logger.add(stdout,
            filter=log_filter)
 logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}.log"),
            format=log_format, rotation="00:00", compression="zip",
-           level=sys_config.log_level.upper())
+           level=sys_config.log_level.upper(),
+           filter=log_filter)
 if sys_config.log_level.upper() != "TRACE":
     logger.add(join(getcwd(), f"./logs/output_{datetime.strftime(datetime.now(), '%Y-%m-%d')}-full.log"),
                format=log_format, rotation="00:00", compression="zip",
-               level="TRACE")
+               level="TRACE",
+               filter=log_filter)
 logger.add(lambda _: exit(-1), level="CRITICAL")
 
 

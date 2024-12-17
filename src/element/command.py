@@ -6,13 +6,6 @@ from src.utils.utils import random_string
 
 
 class Command:
-    _command: str
-    _command_handler: CommandHandler
-    _command_name: Optional[str]
-    _command_require_permission: Optional[Tree]
-    _command_docs: Optional[str]
-    _command_usage: Optional[str]
-
     def __init__(self,
                  command: str,
                  command_handler: CommandHandler,

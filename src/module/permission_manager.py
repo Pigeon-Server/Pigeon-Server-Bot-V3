@@ -7,19 +7,16 @@ from src.utils.json_utils import read_json
 
 
 class PermissionManager(JsonDataBase):
-    _group_permission: JsonDataBase
-    _permission_node_list: str
-
     def __init__(self) -> None:
         """
         类构造函数
         """
         super().__init__("permission.json", DataType.DICT)
-        self._group_permission = JsonDataBase("permissionGroup.json", DataType.DICT)
+        self._group_permission: JsonDataBase = JsonDataBase("permissionGroup.json", DataType.DICT)
         if self._group_permission._stored_data == {}:
             self._group_permission._stored_data = read_json("permission.json5")
             self._group_permission.write_data()
-        self._permission_node_list = str(Root.instance)
+        self._permission_node_list: str = str(Root.instance)
 
     def reload_group_permission(self, over_write: bool = False) -> Result:
         """

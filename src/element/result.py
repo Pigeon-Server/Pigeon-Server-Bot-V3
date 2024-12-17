@@ -2,12 +2,9 @@ from typing import Optional
 
 
 class Result:
-    _status: bool
-    _message: Optional[str]
-
     def __init__(self, status: bool, message: Optional[str] = None):
-        self._status = status
-        self._message = message
+        self._status: bool = status
+        self._message: Optional[str] = message
 
     @property
     def status(self) -> bool:

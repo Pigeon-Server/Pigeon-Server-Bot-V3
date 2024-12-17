@@ -6,13 +6,11 @@ from src.type.types import HttpCode
 
 
 class Response:
-    _status: HttpCode
-    _body: ResponseHeader
-    _time: int
 
     def __init__(self, body: ResponseHeader):
-        self._body = ResponseHeader(body) if isinstance(body, dict) else body
-        self._time = self._body.time
+        self._body: ResponseHeader = ResponseHeader(body) if isinstance(body, dict) else body
+        self._time: int = self._body.time
+        self._status: HttpCode
         match self._body.status:
             case 200:
                 self._status = HttpCode.OK

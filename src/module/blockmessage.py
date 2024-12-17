@@ -1,11 +1,12 @@
-from typing import Optional, Union
-from re import compile, match, Pattern, IGNORECASE
+from typing import Optional
+from re import compile, findall, Pattern, IGNORECASE
 
+from src.base.event_bus import event_bus
 from src.base.logger import logger
-from src.bus.event.event import Event
+from src.bus.event.event import Event, MessageEvent
 from src.database.message_model import BlockWord
 from src.element.message import Message
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 
 
 class BlockMessage:
@@ -13,7 +14,7 @@ class BlockMessage:
     _patterns: Optional[dict[str, Pattern]] = None
 
     @classmethod
-    def updateBlockWords(cls):
+    def update_block_words(cls):
         cls._wordlist = {}
         cls._patterns = {}
         tmp = {}
@@ -29,18 +30,27 @@ class BlockMessage:
             tmp[group].sort(key=lambda x: len(x), reverse=True)
             cls._patterns[group] = compile("|".join(tmp[group]), IGNORECASE)
 
-    @classmethod
-    async def checkMessage(cls, message: Message, event: Event, *_, **__) -> Optional[bool]:
+    @staticmethod
+    @event_bus.on_event_filter(MessageEvent.MESSAGE_CREATED)
+    async def check_message(message: Message, event: Event, *_, **__) -> Optional[bool]:
         logger.debug(f"Checking message: {message}")
-        if cls._wordlist is None or cls._patterns is None:
-            cls.updateBlockWords()
-        if "default" in cls._patterns:
-            block_word = match(cls._patterns["default"], message.message)
-            if block_word is not None:
-                await MessageSender.send_message(event, f"发现违禁词{block_word[0]}")
+        if message.is_command:
+            return
+        if BlockMessage._wordlist is None or BlockMessage._patterns is None:
+            BlockMessage.update_block_words()
+        if "default" in BlockMessage._patterns:
+            block_word = findall(BlockMessage._patterns["default"], message.message)
+            if len(block_word) != 0:
+                logger.debug(f"Block word found: {block_word}")
+                await MessageHelper.send_message(event, f"发现违禁词{block_word[0]}")
+                await MessageHelper.retract_message(message)
+                await MessageHelper.mute_member(message)
                 return True
-        if message.group_id in cls._patterns:
-            block_word = match(cls._patterns[message.group_id], message.message)
-            if block_word is not None:
-                await MessageSender.send_message(event, f"发现违禁词{block_word[0]}")
+        if message.group_id in BlockMessage._patterns:
+            block_word = findall(BlockMessage._patterns[message.group_id], message.message)
+            if len(block_word) != 0:
+                logger.debug(f"Block word found: {block_word}")
+                await MessageHelper.send_message(event, f"发现违禁词{block_word[0]}")
+                await MessageHelper.retract_message(message)
+                await MessageHelper.mute_member(message)
                 return True

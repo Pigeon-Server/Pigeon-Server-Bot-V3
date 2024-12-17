@@ -8,7 +8,7 @@ from src.base.event_bus import event_bus
 from src.base.logger import logger
 from src.bot.thread import update_mcsm_info_thread
 from src.bus.event.event import ServerEvent
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 from src.utils.reply_message import ReplyMessageSender
 
 event_bus.publish_sync(ServerEvent.STARTING)
@@ -28,10 +28,10 @@ async def on_startup(account: Account, status: LoginStatus):
         match status:
             case LoginStatus.CONNECT:
                 await event_bus.publish(ServerEvent.STARTED)
-                MessageSender.set_account(account)
+                MessageHelper.set_account(account)
                 update_mcsm_info_thread.start()
                 if not sys_config.dev:
-                    await MessageSender.send_message(main_config.group_config.admin_group, f"plugin online")
+                    await MessageHelper.send_message(main_config.group_config.admin_group, f"plugin online")
                 logger.info("\n  _____  _                               _____                               \n"
                             " |  __ \\(_)                             / ____|                              \n"
                             " | |__) |_   __ _   ___   ___   _ __   | (___    ___  _ __ __   __ ___  _ __ \n"

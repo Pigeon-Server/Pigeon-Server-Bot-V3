@@ -11,27 +11,22 @@ from src.type.types import ReplyType
 
 
 class Confirm:
-    _target_message: Message
-    _callback: Callable[[ReplyType], Awaitable[Any]]
-    _enable_timeout: bool = False
-    _timeout: int
-    _app: App
-    _timer: Optional[Timer] = None
-    _loop: AbstractEventLoop = get_event_loop()
-    _accept_checker: Callable[[str], bool]
-    _reject_checker: Callable[[str], bool]
 
     def __init__(self, app: App, target_message: Message, callback: Callable[[ReplyType], Awaitable[Any]],
                  timeout: int = -1, accept_checker: Optional[Callable[[str], bool]] = None,
                  reject_checker: Optional[Callable[[str], bool]] = None):
-        self._target_message = target_message
-        self._callback = callback
+        self._target_message: Message = target_message
+        self._callback: Callable[[ReplyType], Awaitable[Any]] = callback
         if timeout != -1:
             self._enable_timeout = True
             self._timeout = timeout
-        self._app = app
-        self._accept_checker = accept_checker if accept_checker else lambda msg: msg == "是"
-        self._reject_checker = reject_checker if reject_checker else lambda msg: msg == "否"
+        else:
+            self._enable_timeout = False
+        self._app: App = app
+        self._timer: Optional[Timer] = None
+        self._loop: AbstractEventLoop = get_event_loop()
+        self._accept_checker: Callable[[str], bool] = accept_checker if accept_checker else lambda msg: msg == "是"
+        self._reject_checker: Callable[[str], bool] = reject_checker if reject_checker else lambda msg: msg == "否"
 
     def start(self) -> None:
         if self._enable_timeout:

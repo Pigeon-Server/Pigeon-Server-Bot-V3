@@ -2,10 +2,6 @@ from src.type.types import VersionType
 
 
 class Version:
-    _major: int = 0
-    _minor: int = 0
-    _patch: int = 0
-
     def __init__(self, version: str | list[int]):
         if isinstance(version, str):
             version = version.split('.')

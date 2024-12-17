@@ -4,14 +4,10 @@ T = TypeVar('T')
 
 
 class Tree(Generic[T]):
-    _root: T
-    _alias: Set[T]
-    _children: List['Tree']
-
     def __init__(self, root: T, alias: Set[T] = None) -> None:
-        self._root = root
-        self._alias = alias or set()
-        self._children = []
+        self._root: T = root
+        self._alias: Set[T] = alias or set()
+        self._children: List['Tree'] = []
 
     def insert(self, value: Union[T, 'Tree'], alias: Set[T] = None) -> 'Tree':
         if isinstance(value, Tree):

@@ -8,7 +8,7 @@ from src.element.message import Message
 from src.element.permissions import Permission
 from src.element.result import Result
 from src.type.types import ReplyType
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 from src.utils.permission_helper import PermissionHelper
 from src.utils.reply_message import ReplyMessageSender
 
@@ -99,26 +99,26 @@ async def permission_player_clone(message: Message, command: list[str]) -> Optio
     if clone_src is None or clone_dest is None:
         return None
     msg = f"确认克隆「{clone_src}」用户的`所有权限`到「{clone_dest}」(是/否)？"
-    target = (await MessageSender.send_message(message.group_id, msg))[0]
+    target = (await MessageHelper.send_message(message.group_id, msg))[0]
     result = await ReplyMessageSender.wait_reply_async(message, 60)
     match result:
         case ReplyType.REJECT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作已取消",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作已取消",
                                                    message.sender_id)
             return Result.of_success()
         case ReplyType.ACCEPT:
             res = PermissionHelper.get_permission_manager().clone_player_permission(clone_src, clone_dest)
             if res.is_success:
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        f"操作成功, {res.message}",
                                                        message.sender_id)
                 return Result.of_success()
-            await MessageSender.send_quote_message(message.group_id, target.id,
+            await MessageHelper.send_quote_message(message.group_id, target.id,
                                                    f"操作失败, {res.message}",
                                                    message.sender_id)
             return Result.of_failure()
         case ReplyType.TIMEOUT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作超时",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作超时",
                                                    message.sender_id)
             return Result.of_failure()
     return Result.of_failure()
@@ -196,26 +196,26 @@ async def permission_player_del(message: Message, command: list[str]) -> Optiona
     if user_id is None:
         return None
     msg = f"是否删除「{user_id}」用户的权限信息(是/否)？"
-    target = (await MessageSender.send_message(message.group_id, msg))[0]
+    target = (await MessageHelper.send_message(message.group_id, msg))[0]
     result = await ReplyMessageSender.wait_reply_async(message, 60)
     match result:
         case ReplyType.REJECT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作已取消",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作已取消",
                                                    message.sender_id)
             return Result.of_success()
         case ReplyType.ACCEPT:
             res = PermissionHelper.get_permission_manager().del_player(user_id)
             if res.is_success:
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        f"操作成功, {res.message}",
                                                        message.sender_id)
                 return Result.of_success()
-            await MessageSender.send_quote_message(message.group_id, target.id,
+            await MessageHelper.send_quote_message(message.group_id, target.id,
                                                    f"操作失败, {res.message}",
                                                    message.sender_id)
             return Result.of_failure()
         case ReplyType.TIMEOUT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作超时",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作超时",
                                                    message.sender_id)
             return Result.of_failure()
     return Result.of_failure()
@@ -305,26 +305,26 @@ async def permission_group_clone(message: Message, command: list[str]) -> Option
     if len(command) >= 6:
         return None
     msg = f"确认克隆权限组「{command[3]}」的`所有权限`到权限组「{command[4]}」(是/否)？"
-    target = (await MessageSender.send_message(message.group_id, msg))[0]
+    target = (await MessageHelper.send_message(message.group_id, msg))[0]
     result = await ReplyMessageSender.wait_reply_async(message, 60)
     match result:
         case ReplyType.REJECT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作已取消",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作已取消",
                                                    message.sender_id)
             return Result.of_success()
         case ReplyType.ACCEPT:
             res = PermissionHelper.get_permission_manager().clone_group_permission(command[3], command[4])
             if res.is_success:
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        f"操作成功, {res.message}",
                                                        message.sender_id)
                 return Result.of_success()
-            await MessageSender.send_quote_message(message.group_id, target.id,
+            await MessageHelper.send_quote_message(message.group_id, target.id,
                                                    f"操作失败, {res.message}",
                                                    message.sender_id)
             return Result.of_failure()
         case ReplyType.TIMEOUT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作超时",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作超时",
                                                    message.sender_id)
             return Result.of_failure()
     return Result.of_failure()
@@ -376,26 +376,26 @@ async def permission_group_del(message: Message, command: list[str]) -> Optional
     if len(command) >= 5:
         return None
     msg = f"是否删除权限组「{command[3]}」(是/否)？"
-    target = (await MessageSender.send_message(message.group_id, msg))[0]
+    target = (await MessageHelper.send_message(message.group_id, msg))[0]
     result = await ReplyMessageSender.wait_reply_async(message, 60)
     match result:
         case ReplyType.REJECT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作已取消",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作已取消",
                                                    message.sender_id)
             return Result.of_success()
         case ReplyType.ACCEPT:
             res = PermissionHelper.get_permission_manager().del_group(command[3])
             if res.is_success:
-                await MessageSender.send_quote_message(message.group_id, target.id,
+                await MessageHelper.send_quote_message(message.group_id, target.id,
                                                        f"操作成功, {res.message}",
                                                        message.sender_id)
                 return Result.of_success()
-            await MessageSender.send_quote_message(message.group_id, target.id,
+            await MessageHelper.send_quote_message(message.group_id, target.id,
                                                    f"操作失败, {res.message}",
                                                    message.sender_id)
             return Result.of_failure()
         case ReplyType.TIMEOUT:
-            await MessageSender.send_quote_message(message.group_id, target.id, "操作超时",
+            await MessageHelper.send_quote_message(message.group_id, target.id, "操作超时",
                                                    message.sender_id)
             return Result.of_failure()
     return Result.of_failure()
@@ -463,7 +463,7 @@ async def permission_reload(message: Message, command: list[str]) -> Optional[Re
 async def permission_list(message: Message, command: list[str]) -> Optional[Result]:
     if len(command) == 2:
         with open(permission_image_dir, "rb") as f:
-            await MessageSender.send_message(message.group_id,
+            await MessageHelper.send_message(message.group_id,
                                              [Image.of(raw=f.read(), mime="image/png")])
         return Result.of_success()
     return None

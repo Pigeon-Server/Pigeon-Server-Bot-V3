@@ -6,6 +6,8 @@ from src.element.result import Result
 
 
 def get_group_id(group_id: str) -> Optional[str]:
+    if group_id == "default":
+        return "default"
     try:
         return str(int(group_id))
     except ValueError:
@@ -40,12 +42,14 @@ async def blockword_list_command(_: Message, __: list[str]) -> Optional[Result]:
                                  command_docs="添加屏蔽词",
                                  alia_list=["/bw a"])
 async def blockword_add_command(message: Message, command_list: list[str]) -> Optional[Result]:
-    if len(command_list) < 4:
+    if len(command_list) < 3:
         return None
     group_id = get_group_id(command_list[2])
     if group_id is None:
         group_id = message.group_id
-    words = command_list[3:]
+        words = command_list[2:]
+    else:
+        words = command_list[3:]
     data = [{"group_id": group_id,
              "block_word": word
              } for word in words]
@@ -58,11 +62,13 @@ async def blockword_add_command(message: Message, command_list: list[str]) -> Op
                                  command_docs="删除屏蔽词",
                                  alia_list=["/bw d"])
 async def blockword_del_command(message: Message, command_list: list[str]) -> Optional[Result]:
-    if len(command_list) < 4:
+    if len(command_list) < 3:
         return None
     group_id = get_group_id(command_list[2])
     if group_id is None:
         group_id = message.group_id
-    words = command_list[3:]
+        words = command_list[2:]
+    else:
+        words = command_list[3:]
     BlockWord.delete().where((BlockWord.group_id == group_id) & (BlockWord.block_word << words)).execute()
     return Result.of_success(f"为群「{group_id}」删除屏蔽词「{', '.join(words)}」")

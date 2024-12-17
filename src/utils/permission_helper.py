@@ -4,7 +4,7 @@ from typing import Optional
 from src.element.message import Message
 from src.element.tree import Tree
 from src.module.permission_manager import PermissionManager
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 
 
 class PermissionHelper:
@@ -24,7 +24,7 @@ class PermissionHelper:
         if not message.is_command:
             return False
         if cls._permission_manager.check_player_permission(message.sender_id, permission).is_fail:
-            MessageSender.send_message(message.group_id, fail_message)
+            MessageHelper.send_message(message.group_id, fail_message)
             return False
         return True
 

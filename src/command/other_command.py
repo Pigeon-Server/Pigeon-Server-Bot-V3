@@ -10,7 +10,7 @@ from src.database.server_model import Whitelist as WhitelistModel
 from src.element.message import Message
 from src.element.permissions import Other, Whitelist
 from src.element.result import Result
-from src.utils.message_sender import MessageSender
+from src.utils.message_helper import MessageHelper
 
 pattern: Pattern = compile(r"(\[回复\([\s\S]+\)])?@[\s\S]+\(\d+\)( )?")
 wordcloud_path = join(getcwd(), "image/wordcloud.png")
@@ -21,7 +21,7 @@ wordcloud_path = join(getcwd(), "image/wordcloud.png")
                                  command_docs="重启插件")
 async def bot_restart(_: Message, __: list[str]) -> None:
     if not sys_config.dev:
-        await MessageSender.send_message(main_config.group_config.admin_group, f"plugin offline")
+        await MessageHelper.send_message(main_config.group_config.admin_group, f"plugin offline")
     exit(0)
 
 

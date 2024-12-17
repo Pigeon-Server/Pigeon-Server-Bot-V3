@@ -165,4 +165,5 @@ class Root:
                       .insert(Permission.instance)
                       .insert(Whitelist.instance)
                       .insert(ServerList.instance)
+                      .insert(BlockWords.instance)
                       .insert(Other.instance))

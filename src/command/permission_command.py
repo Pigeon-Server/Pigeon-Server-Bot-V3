@@ -450,7 +450,7 @@ async def permission_reload(message: Message, command: list[str]) -> Optional[Re
     if (command_length := len(command)) == 2:
         return Result.of_success(PermissionHelper.get_permission_manager().reload_group_permission().message)
     if command_length == 3 and command[2] == "true":
-        if PermissionHelper.require_permission(message, Permission.Group.Reload.Force):
+        if await PermissionHelper.require_permission(message, Permission.Group.Reload.Force):
             return Result.of_success(PermissionHelper.get_permission_manager().reload_group_permission(True).message)
         return Result.of_failure()
     return None

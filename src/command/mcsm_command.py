@@ -75,7 +75,7 @@ async def mcsm_update(message: Message, command: list[str]) -> Optional[Result]:
     if command_length == 2:
         mcsm.get_mcsm_info()
         return Result.of_success("操作成功")
-    if PermissionHelper.require_permission(message, Mcsm.Update.Force) and command[2].lower() == "true":
+    if await PermissionHelper.require_permission(message, Mcsm.Update.Force) and command[2].lower() == "true":
         msg = f"确认强制更新mcsm信息\n这将会清空所有自定义设置！\n是否继续(是/否)？"
         target = (await MessageHelper.send_message(message.group_id, msg))[0]
         result = await ReplyMessageSender.wait_reply_async(message, 60)

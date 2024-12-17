@@ -100,7 +100,7 @@ class CommandManager:
                 return Result.of_failure(f"未知命令 {message.message}")
             command_instance = cls._command_store[command_node]
             if (command_instance.permission and
-                    not PermissionHelper.require_permission(message, command_instance.permission)):
+                    not await PermissionHelper.require_permission(message, command_instance.permission)):
                 return None
             result = await command_instance.handler(message, command)
             if result is None:

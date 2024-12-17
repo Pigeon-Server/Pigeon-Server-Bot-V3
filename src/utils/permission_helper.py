@@ -20,11 +20,11 @@ class PermissionHelper:
         cls._permission_manager = permission_manager
 
     @classmethod
-    def require_permission(cls, message: Message, permission: Tree, fail_message: str = "你无权这么做") -> bool:
+    async def require_permission(cls, message: Message, permission: Tree, fail_message: str = "你无权这么做") -> bool:
         if not message.is_command:
             return False
         if cls._permission_manager.check_player_permission(message.sender_id, permission).is_fail:
-            MessageHelper.send_message(message.group_id, fail_message)
+            await MessageHelper.send_message(message.group_id, fail_message)
             return False
         return True
 

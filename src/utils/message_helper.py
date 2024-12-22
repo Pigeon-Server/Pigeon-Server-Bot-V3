@@ -70,10 +70,12 @@ class MessageHelper:
 
     @classmethod
     async def retract_message(cls, message: Message) -> None:
-        try:
-            await cls._account.message_delete(message.group_id, message.message_id)
-        except Exception as e:
-            logger.error(e)
+        # TODO: 撤回消息接口会报错，已向 Chronocat 提交issue，https://github.com/chrononeko/bugtracker/issues/84
+        pass
+        # try:
+        #     await cls._account.message_delete(message.group_id, message.message_id)
+        # except Exception as e:
+        #     logger.error(e)
 
     @classmethod
     async def mute_member(cls, message: Message) -> None:

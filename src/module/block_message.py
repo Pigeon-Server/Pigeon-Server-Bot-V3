@@ -42,7 +42,6 @@ class BlockMessage:
             block_word = findall(BlockMessage._patterns["default"], message.message)
             if len(block_word) != 0:
                 logger.debug(f"Block word found: {block_word}")
-                await MessageHelper.send_message(event, f"发现违禁词{block_word[0]}")
                 await MessageHelper.retract_message(message)
                 await MessageHelper.mute_member(message)
                 return True
@@ -50,7 +49,6 @@ class BlockMessage:
             block_word = findall(BlockMessage._patterns[message.group_id], message.message)
             if len(block_word) != 0:
                 logger.debug(f"Block word found: {block_word}")
-                await MessageHelper.send_message(event, f"发现违禁词{block_word[0]}")
                 await MessageHelper.retract_message(message)
                 await MessageHelper.mute_member(message)
                 return True

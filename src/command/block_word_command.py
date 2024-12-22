@@ -4,7 +4,7 @@ from src.database.message_model import BlockWord
 from src.element.message import Message
 from src.element.permissions import BlockWords
 from src.element.result import Result
-from src.module.blockmessage import BlockMessage
+from src.module.block_message import BlockMessage
 
 
 def get_group_id(group_id: str) -> Optional[str]:

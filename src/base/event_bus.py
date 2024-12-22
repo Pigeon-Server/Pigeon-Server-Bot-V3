@@ -8,5 +8,5 @@ event_bus = EventBus()
 
 
 @event_bus.on_global_event_filter()
-async def log_aspect(event_type: Union[Event, str], *args, **kwargs) -> None:
+async def event_logger(event_type: Union[Event, str], *args, **kwargs) -> None:
     logger.trace(f"Event type: {event_type}, Args: {args}, Kwargs: {kwargs}")

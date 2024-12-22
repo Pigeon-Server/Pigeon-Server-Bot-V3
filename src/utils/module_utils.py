@@ -1,4 +1,5 @@
 from importlib import import_module
+from os.path import join
 from pathlib import Path
 from sys import path
 from typing import Optional, Union
@@ -23,6 +24,24 @@ class WithSystemPath:
             logger.error(exc_val)
 
 
+def dynamic_import_module(module_name: str) -> None:
+    try:
+        import_module(module_name)
+        logger.success(f"Imported module {module_name}")
+    except ModuleNotFoundError:
+        logger.error(f"Module {module_name} not found")
+    except ImportError as e:
+        logger.error(f"Failed to import {module_name}: {e}")
+
+
+def dynamic_import(module_path: Union[Path, str], module_name: str) -> None:
+    with WithSystemPath(module_path) as module_dir:
+        if not module_dir.is_dir():
+            logger.error(f"The path {module_dir} is not a valid directory.")
+            return
+        dynamic_import_module(module_name)
+
+
 def dynamic_import_all(module_path: str, expect_module_name: Optional[list[str]] = None) -> None:
     if expect_module_name is None:
         expect_module_name = []
@@ -36,10 +55,4 @@ def dynamic_import_all(module_path: str, expect_module_name: Optional[list[str]]
             module_name = py_file.stem
             if module_name == "__init__" or py_file.name in expect_module_name or module_name in expect_module_name:
                 continue
-            try:
-                import_module(module_name)
-                logger.success(f"Successfully imported {module_name}")
-            except ModuleNotFoundError:
-                logger.error(f"Module {module_name} not found")
-            except ImportError as e:
-                logger.error(f"Failed to import {module_name}: {e}")
+            dynamic_import_module(module_name)

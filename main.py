@@ -8,15 +8,16 @@ from src.bot.app import app
 from src.bus.event.event import MessageEvent
 from src.element.message import Message
 from src.utils.model_utils import ModelUtils
-from src.utils.module_utils import dynamic_import_all
+from src.utils.module_utils import dynamic_import, dynamic_import_all
 
 logger.debug("Register command handler...")
 
-dynamic_import_all("src/command", ["command_manager.py"])
+dynamic_import_all("src/command", ["command_manager"])
 
 logger.debug("Register event handler...")
 
 dynamic_import_all("src/filter")
+dynamic_import("src/module", "block_message")
 
 logger.debug("Initializing message handler...")
 

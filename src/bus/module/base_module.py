@@ -6,7 +6,7 @@ from src.bus.event.event import Event
 
 class BaseModule(ABC):
     @abstractmethod
-    async def resolve(self, event: Union[Event, str], *args, **kwargs) -> bool:
+    async def resolve(self, event: Union[Event, str], args, kwargs) -> bool:
         raise NotImplementedError
 
     @abstractmethod

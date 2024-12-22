@@ -14,10 +14,14 @@ logger.debug("Register command handler...")
 
 dynamic_import_all("src/command", ["command_manager"])
 
-logger.debug("Register event handler...")
+logger.debug("Register event filter...")
 
 dynamic_import_all("src/filter")
 dynamic_import("src/module", "block_message")
+
+logger.debug("Register event inject...")
+
+dynamic_import_all("src/inject")
 
 logger.debug("Initializing message handler...")
 

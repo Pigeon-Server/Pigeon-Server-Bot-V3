@@ -17,9 +17,9 @@ class EventBus(BaseBus, BusFilter, BusInject):
         BusInject.__init__(self)
 
     async def publish(self, event: Union[Event, str], *args, **kwargs) -> None:
-        if await BusFilter.resolve(self, event, *args, **kwargs):
+        await BusInject.resolve(self, event, args, kwargs)
+        if await BusFilter.resolve(self, event, args, kwargs):
             return
-        await BusInject.resolve(self, event, *args, **kwargs)
         await super().publish(event, *args, **kwargs)
 
     def clear(self):

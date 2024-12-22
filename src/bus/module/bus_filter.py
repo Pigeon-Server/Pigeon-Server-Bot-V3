@@ -21,14 +21,14 @@ class BusFilter(BaseModule):
         self._filters.clear()
         self._global_filters.clear()
 
-    async def resolve(self, event: Union[Event, str], *args, **kwargs) -> bool:
-        if await self._apply_global_filter(event, *args, **kwargs):
+    async def resolve(self, event: Union[Event, str], args, kwargs) -> bool:
+        if await self._apply_global_filter(event, args, kwargs):
             return True
-        if await self._apply_filter(event, *args, **kwargs):
+        if await self._apply_filter(event, args, kwargs):
             return True
         return False
 
-    async def _apply_filter(self, event: Union[Event, str], *args, **kwargs) -> bool:
+    async def _apply_filter(self, event: Union[Event, str], args, kwargs) -> bool:
         if event in self._filters:
             for callback in self._filters[event].sync_callback:
                 if callback(*args, **kwargs):
@@ -37,7 +37,7 @@ class BusFilter(BaseModule):
                 if await callback(*args, **kwargs):
                     return True
 
-    async def _apply_global_filter(self, event: Union[Event, str], *args, **kwargs) -> bool:
+    async def _apply_global_filter(self, event: Union[Event, str], args, kwargs) -> bool:
         for callback in self._global_filters.sync_callback:
             if callback(event, *args, **kwargs):
                 return True

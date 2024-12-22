@@ -21,7 +21,7 @@ class BusInject(BaseModule):
         self._injects.clear()
         self._global_injects.clear()
 
-    async def resolve(self, event: Union[Event, str], *args, **kwargs) -> bool:
+    async def resolve(self, event: Union[Event, str], args, kwargs) -> bool:
         await self._apply_global_injects(args, kwargs)
         await self._apply_event_injects(event, args, kwargs)
         return True

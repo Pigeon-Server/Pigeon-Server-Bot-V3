@@ -7,7 +7,7 @@ from src.bus.event.event import ServerEvent
 from src.database.base_model import database
 from src.database.mcsm_model import McsmDaemon, McsmInstance
 from src.database.message_model import BlockWord, Message
-from src.database.punish_model import Punishment
+from src.database.user_model import User
 from src.database.server_model import ServerList, Whitelist
 from src.module.mcsm.mcsm_class import McsmManager
 from src.module.permission_manager import PermissionManager
@@ -21,7 +21,7 @@ logger.debug("Permission manager initialized.")
 
 try:
     logger.debug("Database is initializing...")
-    database.create_tables([ServerList, Whitelist, Message, McsmDaemon, McsmInstance, BlockWord, Punishment])
+    database.create_tables([ServerList, Whitelist, Message, McsmDaemon, McsmInstance, BlockWord, User])
     logger.success("Database initialized")
 except OperationalError as e:
     logger.error(e)

@@ -1,4 +1,4 @@
-from peewee import AutoField, CharField, CompositeKey, DateTimeField, IntegerField, SQL, TextField, BooleanField
+from peewee import AutoField, CharField, DateTimeField, IntegerField, SQL, TextField, BooleanField
 
 from src.database.base_model import BaseModel
 

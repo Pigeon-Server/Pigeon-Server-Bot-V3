@@ -13,5 +13,12 @@ class ServerEvent(Event):
     STOPPED = "server_stopped"
 
 
+class OperationEvent(Event):
+    USER_MUTE = "user_mute"
+    USER_UNMUTE = "user_unmute"
+
+
 class MessageEvent(Event):
     MESSAGE_CREATED = "message_created"
+    MESSAGE_DELETED = "message_deleted"
+    MESSAGE_UPDATED = "message_updated"

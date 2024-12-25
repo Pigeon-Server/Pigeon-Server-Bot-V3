@@ -1,28 +1,28 @@
-from peewee import AutoField, CharField, IntegerField, BooleanField, DateTimeField
+from peewee import AutoField, CharField, IntegerField, BooleanField, DateTimeField, ForeignKeyField
 
 from src.database.base_model import BaseModel
 from src.element.message import Message
 
 
-class Punishment(BaseModel):
+class User(BaseModel):
     id = AutoField()
     user_id = CharField(max_length=16, unique=True)
-    user_name = CharField(max_length=16)
+    user_name = CharField(max_length=64, unique=True)
     punish_level = IntegerField(default=0)
     under_punishment = BooleanField(default=False)
     punishment_end_date = DateTimeField(null=True)
 
     class Meta:
-        table_name = 'punishments'
+        table_name = 'users'
 
     def __str__(self):
-        return (f"{self.user_name}({self.user_id})：\n"
+        return (f"{self.user_name}({self.user_id}):\n"
                 f"禁言中：{'是' if self.under_punishment else '否'}\n"
                 f"累积处罚等级：{self.punish_level}"
                 f"{f'\n解禁时间：{self.punishment_end_date}' if self.under_punishment else ''}")
 
     @classmethod
-    def get_or_create(cls, message: Message) -> 'Punishment':
+    def get_or_create(cls, message: Message) -> 'User':
         punishment = cls.select().where(cls.user_id == message.sender_id).execute()
         if len(punishment) > 0:
             return punishment[0]

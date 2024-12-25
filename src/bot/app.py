@@ -1,7 +1,7 @@
 from os import getcwd, getpid
 
-from satori import LoginStatus, WebsocketsInfo
-from satori.client import Account, App
+from satori import LoginStatus
+from satori.client import Account, App, WebsocketsInfo
 
 from src.base.config import main_config, sys_config
 from src.base.event_bus import event_bus

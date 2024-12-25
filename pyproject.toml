@@ -1,0 +1,25 @@
+[project]
+name = "Pigeon-Bot-v3"
+version = "1.0.0"
+description = "Default template for PDM package"
+authors = [
+    { name = "Half_nothing", email = "Half_nothing@163.com" },
+]
+dependencies = [
+    "half-utils>=1.0.0",
+    "satori-python-core>=0.16.2",
+    "satori-python-client>=0.16.2",
+    "pillow>=11.0.0",
+    "mcstatus>=11.1.1",
+    "jieba>=0.42.1",
+    "wordcloud>=1.9.4",
+    "bidict>=0.23.1",
+    "requests>=2.32.3",
+    "peewee>=3.17.8"
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+
+[tool.pdm]
+distribution = false

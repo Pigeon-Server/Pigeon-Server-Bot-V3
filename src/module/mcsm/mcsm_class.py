@@ -6,7 +6,6 @@ from typing import Optional
 
 from requests import get
 
-import src.bot.plugin
 from src.base.config import main_config, sys_config
 from src.base.logger import logger
 from src.element.response import Response
